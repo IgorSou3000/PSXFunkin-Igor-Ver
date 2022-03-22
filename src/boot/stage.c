@@ -1317,62 +1317,33 @@ void Stage_Tick(void)
 	{
 		case StageState_Play:
 		{
-            if (stage.stage_id == StageId_4_4)
+           //OG code by Unstop4ble,Changes by IgorSou3000
+			//middle note x
+			if(stage.middlescroll)
 			{
-			note_y[0] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[1] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[2] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[3] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[4] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[5] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[6] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[7] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
+				for (int i = 0; i <= 3; i++)
+				{
+					u16 x = i*34;
+				//bf
+				note_x[i] = FIXED_DEC(x - 60,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+				}
 
-			note_y[0] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[1] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[2] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[3] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[4] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[5] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[6] = FIXED_DEC(40 + (stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-			note_y[7] = FIXED_DEC(40 + (-stage.notemoving_pos / 4) - SCREEN_HEIGHT2, 1);
-
-			if (stage.notemoving_srctog == 0)
-			{
-				if (stage.notemoving_timer == 0)
-				{
-					stage.notemoving_scroll += 1;
-					stage.notemoving_timer = 5;
-				}
-				if (stage.notemoving_pos > 10)
-				{
-					stage.notemoving_scroll = 5;
-					stage.notemoving_srctog = 1;
-				}
+				//opponent
+				note_x[4] = note_x[5] = note_x[6] = note_x[7] = FIXED_DEC(-256,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 			}
-			if (stage.notemoving_srctog == 1)
-			{
-				if (stage.notemoving_timer == 0)
-				{
-					stage.notemoving_scroll -= 1;
-					stage.notemoving_timer = 5;
-				}
-				if (stage.notemoving_pos < -10)
-				{
-					stage.notemoving_scroll = -5;
-					stage.notemoving_srctog = 0;
-				}
-			}
-			if (stage.notemoving_timer > 0)
-				stage.notemoving_timer -= 1;
-			
-			stage.notemoving_pos += stage.notemoving_scroll;
-			}
-
 			else
 			{
-			for (int i = 0; i <= 7;i++)
-			note_y[i] = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
+				  for (int i = 0; i <= 3; i++)
+				  {
+                 u16 xp = (i == 0) ? 26 : (i + 1)*34 - 8;
+				  //bf
+				  note_x[i] = FIXED_DEC(xp,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+				  }
+				//opponent
+				note_x[4] = FIXED_DEC(-128,1) - FIXED_DEC(SCREEN_WIDEADD,4);
+				note_x[5] = FIXED_DEC(-94,1) - FIXED_DEC(SCREEN_WIDEADD,4); //+34
+				note_x[6] = FIXED_DEC(-60,1) - FIXED_DEC(SCREEN_WIDEADD,4);
+				note_x[7] = FIXED_DEC(-26,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 			}
 
 			//Clear per-frame flags

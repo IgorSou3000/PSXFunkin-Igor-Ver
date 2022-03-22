@@ -94,6 +94,7 @@ static struct
 	u8 page, next_page;
 	boolean page_swap;
 	u8 select, next_select, selectoptions;
+	boolean swap;
 	
 	fixed_t scroll;
 	fixed_t trans_time;
@@ -1096,10 +1097,12 @@ void Menu_Tick(void)
 					} spec_enum;
 				} spec;
 			} menu_mainoptions[] = {
+				//general options
 				{OptType_Enum,    "Gamemode ", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
-				//{OptType_Boolean, "INTERPOLATION", &stage.expsync},
 				{OptType_Boolean, "Ghost Tap ", &stage.ghost, {.spec_boolean = {0}}},
+				//Note options
 				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
 			};
 			
 
@@ -1116,33 +1119,34 @@ void Menu_Tick(void)
 			if (menu.page_swap)
 				menu.scroll = COUNT_OF(menu_mainoptions) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"OPTIONS",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
-			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
 				//Change option
+				if (menu.swap == false)
+				{
 				if (pad_state.press & PAD_UP)
 				{
+					if (menu.select == 0)
+					menu.swap = true;
+					 
 					if (menu.select > 0)
 						menu.select--;
-					else
-						menu.select = COUNT_OF(menu_mainoptions) - 1;
 				}
+			}
 				if (pad_state.press & PAD_DOWN)
 				{
 					if (menu.select < COUNT_OF(menu_mainoptions) - 1)
 						menu.select++;
-					else
-						menu.select = 0;
+						
+					if (menu.swap == true)
+					menu.select = 0;
+
+					menu.swap = false;
 				}
 				//Change The Main options
+				if (menu.swap == true)
+				{
 				if (pad_state.press & PAD_LEFT)
 				{
 					if (menu.selectoptions > 0)
@@ -1150,6 +1154,8 @@ void Menu_Tick(void)
 					else
 						menu.selectoptions = COUNT_OF(menu_options) - 1;
 				}
+				if (menu.swap == true)
+				{
 				if (pad_state.press & PAD_RIGHT)
 				{
 					if (menu.selectoptions < COUNT_OF(menu_options) - 1)
@@ -1157,8 +1163,11 @@ void Menu_Tick(void)
 					else
 						menu.selectoptions = 0;
 				}
+			}
+		}
 				
 				//Handle option changing
+				if (menu.swap == false)
 				switch (menu_mainoptions[menu.select].type)
 				{
 					case OptType_Boolean:
@@ -1205,6 +1214,7 @@ void Menu_Tick(void)
 				    20,
 					FontAlign_Left
 				);
+				//draw square for general,notes and misc, and make a different color when u select
 				RECT square_src = {26 + x, 15, 90, 18};
 				if (menu.selectoptions != i)
 				Gfx_BlendRect(&square_src, 85, 82, 75, 0);
@@ -1228,7 +1238,8 @@ void Menu_Tick(void)
 						sprintf(text, "%s %s", menu_mainoptions[i].text, menu_mainoptions[i].spec.spec_enum.strs[*((s32*)menu_mainoptions[i].value)]);
 						break;
 				}
-				if (menu.select != i)
+				//draw a font with different color when u are with a option select
+				if (menu.select != i || menu.swap == true)
 				{
 				menu.font_arial.draw_col(&menu.font_arial,
 					text,
@@ -1251,6 +1262,7 @@ void Menu_Tick(void)
 				}
 			}
 			
+			//draw big square
 			RECT square_src = {26, 33, 270, 180};
 			Gfx_BlendRect(&square_src,111,111,111, 0);
 
