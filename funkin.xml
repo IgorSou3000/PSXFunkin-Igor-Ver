@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Defines the ISO project -->
+<iso_project image_name="funkin.bin" cue_sheet="funkin.cue" no_xa="0">
+	<!-- Data track -->
+	<track type="data">
+		<!-- Identifiers -->
+		<identifiers
+			system        = "PLAYSTATION"
+			application   = "PLAYSTATION"
+			volume        = "PSXFUNKIN"
+			volume_set    = "PSXFUNKIN"
+			publisher     = "CUCKYDEV"
+			copyright     = "NINJAMUFFIN99"
+			data_preparer = "NOW TAKE THE WATERMARK OUT OF ELF2X YA DUMMY"
+		/>
+		<license file="licensea.dat"/>
+		
+		<!-- Data directory tree -->
+		<directory_tree>
+			<!-- System -->
+			<file name = "system.cnf" type = "data" source = "iso/system.cnf"/>
+			<file name = "SCUS_000.00" type = "data" source = "funkin.ps-exe"/>
+			
+			<!-- Menu assets -->
+			<dir name = "menu">
+				<!-- Overlay -->
+				<file name = "menu.exe" type = "data" source = "iso/menu/menu.exe"/>
+				<file name = "menu.mus" type = "data" source = "iso/music/freakyMenu/freakyMenu.mus"/>
+			</dir>
+			
+			<!-- Week 1 assets -->
+			<dir name = "week1">
+				<!-- Overlay -->
+				<file name = "week1.exe" type = "data" source = "iso/week1/week1.exe"/>
+				<file name = "week1_1.mus" type = "data" source = "iso/music/bopeebo/bopeebo.mus"/>
+				<file name = "week1_2.mus" type = "data" source = "iso/music/fresh/fresh.mus"/>
+				<file name = "week1_3.mus" type = "data" source = "iso/music/dadbattle/dadbattle.mus"/>
+				<file name = "week1_4.mus" type = "data" source = "iso/music/tutorial/tutorial.mus"/>
+			</dir>
+			
+			<!-- Week 2 assets -->
+			<dir name = "week2">
+				<!-- Overlay -->
+				<file name = "week2.exe" type = "data" source = "iso/week2/week2.exe"/>
+				<file name = "week2_1.mus" type = "data" source = "iso/music/spookeez/spookeez.mus"/>
+				<file name = "week2_2.mus" type = "data" source = "iso/music/south/south.mus"/>
+				<file name = "week2_3.mus" type = "data" source = "iso/music/monster/monster.mus"/>
+			</dir>
+			
+			<!-- Week 3 assets -->
+			<dir name = "week3">
+				<!-- Overlay -->
+				<file name = "week3.exe" type = "data" source = "iso/week3/week3.exe"/>
+				<file name = "week3_1.mus" type = "data" source = "iso/music/pico/pico.mus"/>
+				<file name = "week3_2.mus" type = "data" source = "iso/music/philly/philly.mus"/>
+				<file name = "week3_3.mus" type = "data" source = "iso/music/blammed/blammed.mus"/>
+			</dir>
+			
+			<!-- Week 4 assets -->
+			<dir name = "week4">
+				<!-- Overlay -->
+				<file name = "week4.exe" type = "data" source = "iso/week4/week4.exe"/>
+				<file name = "week4_1.mus" type = "data" source = "iso/music/satin-panties/satin-panties.mus"/>
+				<file name = "week4_2.mus" type = "data" source = "iso/music/high/high.mus"/>
+				<file name = "week4_3.mus" type = "data" source = "iso/music/milf/milf.mus"/>
+				<file name = "week4_4.mus" type = "data" source = "iso/music/test/test.mus"/>
+			</dir>
+			
+			<!-- Week 6 assets -->
+			<dir name = "week6">
+				<!-- Overlay -->
+				<file name = "week6.exe" type = "data" source = "iso/week6/week6.exe"/>
+				<file name = "week6_1.mus" type = "data" source = "iso/music/senpai/senpai.mus"/>
+				<file name = "week6_2.mus" type = "data" source = "iso/music/roses/roses.mus"/>
+				<file name = "week6_3.mus" type = "data" source = "iso/music/thorns/thorns.mus"/>
+			</dir>
+		</directory_tree>
+	</track>
+</iso_project>

@@ -1,0 +1,8 @@
+TOOLS = tools/funkinarcpak tools/funkinchtpak tools/funkintimpak tools/funkinexepak tools/funkinmuspak tools/bin2h
+
+all: $(TOOLS)
+
+$(TOOLS):
+	cd $@ && $(MAKE)
+
+.PHONY: all $(TOOLS)

@@ -1,0 +1,86 @@
+/*
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
+#include "../io.h"
+
+#include "../mem.h"
+#include "../audio.h"
+#include "../main.h"
+
+//IO functions
+void IO_Init(void)
+{
+	//Initialize CD IO
+	CdInit();
+}
+
+void IO_Quit(void)
+{
+	
+}
+
+void IO_FindFile(CdlFILE *file, const char *path)
+{
+	printf("[IO_FindFile] Searching for %s\n", path);
+	
+	//Stop playing mus
+	Audio_StopMus();
+	
+	//Search for file
+	if (!CdSearchFile(file, (char*)path))
+	{
+		sprintf(error_msg, "[IO_FindFile] %s not found", path);
+		ErrorLock();
+	}
+}
+
+void IO_SeekFile(CdlFILE *file)
+{
+	//Stop playing mus
+	Audio_StopMus();
+	
+	//Seek to file position
+	CdControlB(CdlSeekL, (u8*)&file->pos, NULL);
+}
+
+IO_Data IO_ReadFile(CdlFILE *file)
+{
+	//Stop playing mus
+	Audio_StopMus();
+	
+	//Get number of sectors then bytes for the file
+	size_t sects = (file->size + 0x7FF) >> 11;
+	size_t size = sects << 11;
+	
+	//Allocate a buffer for the file
+	IO_Data buffer = (IO_Data)Mem_Alloc(size);
+	if (buffer == NULL)
+	{
+		sprintf(error_msg, "[IO_AsyncReadFile] Malloc (size %X) fail", size);
+		ErrorLock();
+		return NULL;
+	}
+	
+	//Read file
+	CdReadyCallback(NULL);
+	CdControl(CdlSetloc, (u8*)&file->pos, NULL);
+	CdRead(sects, buffer, CdlModeSpeed);
+	CdReadSync(0, NULL);
+	
+	return buffer;
+}
+
+IO_Data IO_Read(const char *path)
+{
+	printf("[IO_Read] Reading file %s\n", path);
+	
+	//Search for file
+	CdlFILE file;
+	IO_FindFile(&file, path);
+	
+	//Read file
+	return IO_ReadFile(&file);
+}

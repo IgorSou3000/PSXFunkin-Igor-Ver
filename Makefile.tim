@@ -1,0 +1,154 @@
+all: \
+	iso/menu/back.tim \
+	iso/menu/ng.tim \
+	iso/menu/story.tim \
+	iso/menu/title.tim \
+	iso/menu/loading.tim \
+	iso/font/bold.tim \
+	iso/font/arial.tim \
+	iso/stage/hud0.tim \
+	iso/week1/back0.tim \
+	iso/week1/back1.tim \
+	iso/week1/hud1.tim \
+	iso/week2/back0.tim \
+	iso/week2/back1.tim \
+	iso/week2/back2.tim \
+	iso/week2/hud1.tim \
+	iso/week3/back0.tim \
+	iso/week3/back1.tim \
+	iso/week3/back2.tim \
+	iso/week3/back3.tim \
+	iso/week3/back4.tim \
+	iso/week3/back5.tim \
+	iso/week3/hud1.tim \
+	iso/week4/back0.tim \
+	iso/week4/back1.tim \
+	iso/week4/back2.tim \
+	iso/week4/back3.tim \
+	iso/week4/back4.tim \
+	iso/week4/hench.arc \
+	iso/week4/hud1.tim \
+	iso/week5/back0.tim \
+	iso/week5/back1.tim \
+	iso/week5/back2.tim \
+	iso/week5/back3.tim \
+	iso/week5/back4.tim \
+	iso/week5/back5.tim \
+	iso/week6/back0.tim \
+	iso/week6/back1.tim \
+	iso/week6/back2.tim \
+	iso/week6/back3.tim \
+	iso/week6/hud0.tim \
+	iso/week6/hud1.tim \
+	iso/week7/back0.tim \
+	iso/week7/back1.tim \
+	iso/week7/back2.tim \
+	iso/week7/back3.tim \
+	iso/menup/main.arc \
+	iso/menuo/main.arc \
+	iso/bf/main.arc \
+	iso/bf/dead.arc \
+	iso/bf/weeb.arc \
+	iso/dad/main.arc \
+	iso/spook/main.arc \
+	iso/pico/main.arc \
+	iso/mom/main.arc \
+	iso/mom/hair.tim \
+	iso/bf/xmas.arc \
+	iso/xmasp/main.arc \
+	iso/senpai/main.arc \
+	iso/senpaim/main.arc \
+	iso/spirit/main.arc \
+	iso/tank/main.arc \
+	iso/tank/ugh.arc \
+	iso/tank/good.arc \
+	iso/gf/main.arc \
+	iso/gf/tut.arc \
+	iso/gf/weeb.arc \
+	iso/gf/speaker.tim \
+	iso/clucky/main.arc \
+
+iso/%.tim: iso/%.png
+	tools/funkintimpak/funkintimpak $@ $<
+
+iso/%.arc:
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Menu
+iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/font/bold.tim iso/font/arial.tim
+
+# BF
+iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim
+iso/bf/dead.arc: iso/bf/dead1.tim iso/bf/dead2.tim iso/bf/retry.tim
+iso/bf/weeb.arc: iso/bf/weeb0.tim iso/bf/weeb1.tim
+
+# Menu Player
+iso/menup/main.arc: iso/menup/bf0.tim iso/menup/bf1.tim
+
+# Menu Opponent
+iso/menuo/main.arc: iso/menuo/dad.tim iso/menuo/spook.tim
+
+# BF
+iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim
+
+# Dad
+iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim
+
+# Spook
+iso/spook/main.arc: iso/spook/idle0.tim iso/spook/idle1.tim iso/spook/idle2.tim iso/spook/left.tim iso/spook/down.tim iso/spook/up.tim iso/spook/right.tim
+
+# Pico
+iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim
+
+# Mom
+iso/mom/main.arc: iso/mom/idle0.tim iso/mom/idle1.tim iso/mom/left.tim iso/mom/down.tim iso/mom/up.tim iso/mom/right.tim
+
+# Xmas BF
+iso/bf/xmas.arc: iso/bf/xmasbf0.tim iso/bf/xmasbf1.tim iso/bf/xmasbf2.tim iso/bf/xmasbf3.tim iso/bf/dead0.tim
+
+# Xmas Parents
+iso/xmasp/main.arc: iso/xmasp/idle0.tim iso/xmasp/idle1.tim iso/xmasp/idle2.tim iso/xmasp/idle3.tim iso/xmasp/lefta0.tim iso/xmasp/lefta1.tim iso/xmasp/leftb0.tim iso/xmasp/leftb1.tim iso/xmasp/downa0.tim iso/xmasp/downa1.tim iso/xmasp/downb0.tim iso/xmasp/downb1.tim iso/xmasp/upa0.tim iso/xmasp/upa1.tim iso/xmasp/upb0.tim iso/xmasp/upb1.tim iso/xmasp/righta0.tim iso/xmasp/righta1.tim iso/xmasp/rightb0.tim iso/xmasp/rightb1.tim
+
+# Senpai
+iso/senpai/main.arc: iso/senpai/senpai0.tim iso/senpai/senpai1.tim
+iso/senpaim/main.arc: iso/senpaim/senpai0.tim iso/senpaim/senpai1.tim
+
+# Spirit
+iso/spirit/main.arc: iso/spirit/spirit0.tim iso/spirit/spirit1.tim
+
+# Tank
+iso/tank/main.arc: iso/tank/idle0.tim iso/tank/idle1.tim iso/tank/left.tim iso/tank/down.tim iso/tank/up.tim iso/tank/right.tim
+iso/tank/ugh.arc: iso/tank/ugh0.tim iso/tank/ugh1.tim
+iso/tank/good.arc: iso/tank/good0.tim iso/tank/good1.tim iso/tank/good2.tim iso/tank/good3.tim
+
+# GF
+iso/gf/main.arc: iso/gf/gf0.tim iso/gf/gf1.tim iso/gf/gf2.tim
+iso/gf/tut.arc: iso/gf/tut0.tim iso/gf/tut1.tim
+iso/gf/weeb.arc: iso/gf/weeb0.tim iso/gf/weeb1.tim
+
+# Clucky
+iso/clucky/main.arc: iso/clucky/idle0.tim iso/clucky/idle1.tim iso/clucky/left.tim iso/clucky/down.tim iso/clucky/up.tim iso/clucky/right.tim
+
+# Stages
+# Week 1
+iso/week1/week1.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
+
+# Week 2
+iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+
+# Week 3
+iso/week3/week3.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+
+# Week 4
+iso/week4/week4.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim
+iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
+
+# Week 5
+iso/week5/week5.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
+
+# Week 6
+iso/week6/week6a.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
+iso/week6/week6b.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back3.tim
+
+# Week 7
+iso/week7/week7.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
