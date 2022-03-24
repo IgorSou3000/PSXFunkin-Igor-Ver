@@ -23,7 +23,6 @@
 #include "object/splash.h"
 
 //Stage constants
-//#define STAGE_PERFECT //Play all notes perfectly
 //#define STAGE_NOHUD //Disable the HUD
 
 //#define STAGE_FREECAM //Freecam
@@ -74,16 +73,6 @@ StageOverlay_Free stageoverlay_free;
 StageOverlay_GetChart stageoverlay_getchart;
 StageOverlay_LoadScreen stageoverlay_loadscreen;
 StageOverlay_NextStage stageoverlay_nextstage;
-
-//healthbar player variables
-fixed_t barp_r;
-fixed_t barp_g;
-fixed_t barp_b;
-
-//healthbar opponent variables
-fixed_t baro_r;
-fixed_t baro_g;
-fixed_t baro_b;
 
 //Stage definitions
 #include "stagedef_disc1.h"
@@ -278,6 +267,10 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	);
 	if (combo != NULL)
 		ObjectList_Add(&stage.objlist_fg, (Object*)combo);
+        
+		//instakill if the option "onlysick" is on
+		if (stage.onlysick && hit_type != 0)
+		this->health -= 0x7000;
 	
 	//Create note splashes if SICK
 	if (hit_type == 0)
@@ -435,7 +428,8 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			this->character->set_anim(this->character, note_anims[type & 0x3][0]);
 		Stage_MissNote(this);
 		
-		this->health -= 400;
+		//instakill if the option "instakill" is on
+		this->health -= ((stage.instakill)) ? 0x7000: 400;
 		this->score -= 1;
 		this->refresh_score = true;
 		
@@ -513,7 +507,8 @@ static void Stage_SustainCheck(PlayerState *this, u8 type)
 static void Stage_ProcessPlayer(PlayerState *this, Pad *pad, boolean playing)
 {
 	//Handle player note presses
-	#ifndef STAGE_PERFECT
+	if (!(stage.botplay))
+	{
 		if (playing)
 		{
 			u8 i = (this->character == stage.opponent) ? NOTE_FLAG_OPPONENT : 0;
@@ -544,10 +539,11 @@ static void Stage_ProcessPlayer(PlayerState *this, Pad *pad, boolean playing)
 			this->pad_held = this->character->pad_held = 0;
 			this->pad_press = 0;
 		}
-	#endif
+	}
 	
-	#ifdef STAGE_PERFECT
 		//Do perfect note checks
+		if (stage.botplay)
+		{
 		if (playing)
 		{
 			u8 i = (this->character == stage.opponent) ? NOTE_FLAG_OPPONENT : 0;
@@ -607,7 +603,7 @@ static void Stage_ProcessPlayer(PlayerState *this, Pad *pad, boolean playing)
 			this->pad_held = this->character->pad_held = 0;
 			this->pad_press = 0;
 		}
-	#endif
+	}
 }
 
 //Stage drawing functions
@@ -820,7 +816,8 @@ static void Stage_DrawNotes(void)
 					//Missed note
 					Stage_CutVocal();
 					Stage_MissNote(this);
-					this->health -= 475;
+				    //instakill if the option "instakill" is on
+		            this->health -= ((stage.instakill)) ? 0x7000: 475;
 					
 					//Send miss packet
 					#ifdef PSXF_NETWORK
@@ -1654,23 +1651,42 @@ void Stage_Tick(void)
 				}
 			}
 			
+			//Draw botplay
+			if (stage.botplay)
+			{
+			RECT bot_fill = {172, 227, 67, 16};
+			RECT_FIXED bot_dst = {FIXED_DEC(-33,1), FIXED_DEC(-60,1), FIXED_DEC(67,1), FIXED_DEC(16,1)};
+				
+			bot_dst.w = bot_fill.w << FIXED_SHIFT;
+			if (animf_count & 20)
+			Stage_DrawTex(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump);
+			}
+
 			if (stage.mode < StageMode_2P)
 			{
-			//Draw healthbar player
-			barp_r = (fixed_t)((stage.player->health_b >> 16) & 0xFF) << FIXED_SHIFT;
-			barp_g = (fixed_t)((stage.player->health_b >>  8) & 0xFF) << FIXED_SHIFT;
-			barp_b = (fixed_t)((stage.player->health_b >>  0) & 0xFF) << FIXED_SHIFT;
+			//make healthbar color player
+			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
+			u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
+			u8 barp_b = (stage.player->health_b >>  0) & 0xFF;
 			
-			//Draw healthbar opponent
-		    baro_r = (fixed_t)((stage.opponent->health_b >> 16) & 0xFF) << FIXED_SHIFT;
-			baro_g = (fixed_t)((stage.opponent->health_b >>  8) & 0xFF) << FIXED_SHIFT;
-		    baro_b = (fixed_t)((stage.opponent->health_b >>  0) & 0xFF) << FIXED_SHIFT;
+			//make healthbar color opponent
+		    u8 baro_r = (stage.opponent->health_b >> 16) & 0xFF;
+			u8 baro_g = (stage.opponent->health_b >>  8) & 0xFF;
+		    u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
+
+			//use og bar color
+                if (stage.og_healthbar)
+				{
+				 stage.player->health_b = 0xFF66FF33;
+				 stage.opponent->health_b = 0xFFFF0000;
+				}
 
 				//Perform health checks
 				if (stage.player_state[0].health <= 0)
 				{
 					//Player has died
 					stage.player_state[0].health = 0;
+					stage.state = StageState_Dead;
 				}
 				if (stage.player_state[0].health > 20000)
 					stage.player_state[0].health = 20000;
@@ -1686,10 +1702,13 @@ void Stage_Tick(void)
 			    if (stage.downscroll)
 					health_fill.y = health_border.y = health_back.y = 20;
 
-				Gfx_DrawRect(&health_fill, baro_r >> (FIXED_SHIFT + 1), baro_g >> (FIXED_SHIFT + 1), baro_b >> (FIXED_SHIFT + 1));
-				Gfx_DrawRect(&health_back, barp_r >> (FIXED_SHIFT + 1), barp_g >> (FIXED_SHIFT + 1), barp_b >> (FIXED_SHIFT + 1));
+		        //draw healthbar
+				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
+				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
 				Gfx_DrawRect(&health_border, 0,   0,  0);
 			}
+
+			FntPrint("step: %d", stage.song_step);
 			
 			//Draw stage foreground
 			if (stageoverlay_drawfg != NULL)
@@ -1716,6 +1735,106 @@ void Stage_Tick(void)
 			//Draw stage background
 			if (stageoverlay_drawbg != NULL)
 				stageoverlay_drawbg();
+			break;
+		}
+		case StageState_Dead: //Start BREAK animation
+		{
+		    //Stop music immediately or start pixel gameover song
+			if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+			{
+			Audio_LoadMus("\\MENU\\OVER_3.MUS;1");
+	        Audio_PlayMus(true);
+	        Audio_SetVolume(0, 0x3FFF, 0x0000);
+	        Audio_SetVolume(1, 0x0000, 0x3FFF);
+			}
+			else
+			Audio_StopMus();
+
+		    //Free stage data
+		    Mem_Free(stage.chart_data);
+		    stage.chart_data = NULL;
+	
+	        //Free objects
+	        ObjectList_Free(&stage.objlist_splash);
+	        ObjectList_Free(&stage.objlist_fg);
+	        ObjectList_Free(&stage.objlist_bg);
+			
+			//Free opponent and girlfriend
+			Character_Free(stage.opponent);
+			stage.opponent = NULL;
+			Character_Free(stage.gf);
+			stage.gf = NULL;
+	
+			
+			//Reset stage state
+			stage.flag = 0;
+			stage.bump = stage.sbump = FIXED_UNIT;
+			
+			//Change background colour to black
+			Gfx_SetClear(0, 0, 0);
+			
+			//Run death animation, focus on player, and change state
+			stage.player->set_anim(stage.player, PlayerAnim_Dead0);
+			
+			Stage_FocusCharacter(stage.player, 0);
+			stage.song_time = 0;
+			
+			stage.state = StageState_DeadLoad;
+		}
+	//Fallthrough
+		case StageState_DeadLoad:
+		{
+			//Scroll camera and tick player
+			if (stage.song_time < FIXED_UNIT)
+				stage.song_time += FIXED_UNIT / 60;
+			stage.camera.td = FIXED_DEC(-2, 100) + FIXED_MUL(stage.song_time, FIXED_DEC(45, 1000));
+			if (stage.camera.td > 0)
+				Stage_ScrollCamera();
+			stage.player->tick(stage.player);
+			
+			//Drop mic and change state if CD has finished reading and animation has ended
+			if (stage.player->animatable.anim != PlayerAnim_Dead1)
+				break;
+			
+			stage.player->set_anim(stage.player, PlayerAnim_Dead2);
+			stage.camera.td = FIXED_DEC(25, 1000);
+			stage.state = StageState_DeadDrop;
+			break;
+		}
+		case StageState_DeadDrop:
+		{
+			//Scroll camera and tick player
+			Stage_ScrollCamera();
+			stage.player->tick(stage.player);
+			
+			//Enter next state once mic has been dropped
+			if (stage.player->animatable.anim == PlayerAnim_Dead3)
+			{
+				stage.state = StageState_DeadRetry;
+				if (stage.stage_id < StageId_6_1 || stage.stage_id > StageId_6_3)
+				{
+				Audio_LoadMus("\\MENU\\OVER_1.MUS;1");
+	            Audio_PlayMus(true);
+	            Audio_SetVolume(0, 0x3FFF, 0x0000);
+	            Audio_SetVolume(1, 0x0000, 0x3FFF);
+				}
+			}
+			break;
+		}
+		case StageState_DeadRetry:
+		{
+			//Randomly twitch
+			if (stage.player->animatable.anim == PlayerAnim_Dead3)
+			{
+				if (RandomRange(0, 29) == 0)
+					stage.player->set_anim(stage.player, PlayerAnim_Dead4);
+				if (RandomRange(0, 29) == 0)
+					stage.player->set_anim(stage.player, PlayerAnim_Dead5);
+			}
+			
+			//Scroll camera and tick player
+			Stage_ScrollCamera();
+			stage.player->tick(stage.player);
 			break;
 		}
 		default:

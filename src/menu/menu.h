@@ -19,6 +19,7 @@ typedef enum
 	MenuPage_Freeplay,
 	MenuPage_Mods,
 	MenuPage_Options,
+	MenuPage_SaveArea,
 	
 	#ifdef PSXF_NETWORK
 		MenuPage_NetJoin,

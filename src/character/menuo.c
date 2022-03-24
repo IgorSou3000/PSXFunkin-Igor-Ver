@@ -19,6 +19,7 @@ static u8 char_menuo_arc_main[] = {
 enum
 {
 	MenuO_ArcMain_Dad,
+	MenuO_ArcMain_Spook,
 	
 	MenuO_Arc_Max,
 };
@@ -44,11 +45,18 @@ static const CharFrame char_menuo_frame[] = {
 	{MenuO_ArcMain_Dad, {  2, 123,  67, 122}, { 42, 183+4}}, //3 idle 4
 	{MenuO_ArcMain_Dad, { 74, 123,  66, 123}, { 42, 183+4}}, //4 idle 5
 	{MenuO_ArcMain_Dad, {141, 123,  67, 123}, { 42, 183+4}}, //5 idle 6
+
+	{MenuO_ArcMain_Spook, {  0,   0,  58,  84}, { 42, 153+3}}, //6 idle 1
+	{MenuO_ArcMain_Spook, { 60,   0,  58,  83}, { 43, 153+2}}, //7 idle 2
+	{MenuO_ArcMain_Spook, {120,   0,  54,  75}, { 41, 148}}, //8 idle 3
+	{MenuO_ArcMain_Spook, {176,   0,  54,  76}, { 41, 148}}, //9 idle 4
+	{MenuO_ArcMain_Spook, {  0,  87,  76,  82}, { 48, 153}}, //10 idle 5
+	{MenuO_ArcMain_Spook, { 78,  86,  73,  80}, { 48, 154}}, //11 idle 6
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
 	{2, (const u8[]){ 0,  1,  2,  3,  4,  5, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 4,  5, ASCR_BACK, 1}},         //CharAnim_Left
+	{2, (const u8[]){ 6,  7,  8,  9, 10, 11, 8,  9, ASCR_CHGANI, CharAnim_Left}},         //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
 	{2, (const u8[]){ 6,  7, ASCR_BACK, 1}},         //CharAnim_Down
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_DownAlt
@@ -129,7 +137,8 @@ static Character *Char_MenuO_New(fixed_t x, fixed_t y)
 	
 	//Load art
 	const char **pathp = (const char *[]){
-		"dad.tim", //MenuO_ArcMain_Idle0
+		"dad.tim", //MenuO_ArcMain_Dad
+		"spook.tim", //MenuO_ArcMain_Spook
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

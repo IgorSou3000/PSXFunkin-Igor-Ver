@@ -182,13 +182,15 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean ghost, downscroll, expsync,  middlescroll;
+	boolean ghost, downscroll, expsync,  middlescroll, instakill, botplay, og_healthbar, onlysick;
 	s32 mode;
 	
 	u32 offset;
+
+	boolean save;
 	
 	//HUD textures
-	Gfx_Tex tex_hud0, tex_hud1;
+	Gfx_Tex tex_hud0, tex_hud1, tex_huds;
 	
 	//Stage data
 	const StageDef *stage_def;

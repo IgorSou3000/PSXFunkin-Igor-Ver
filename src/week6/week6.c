@@ -81,11 +81,12 @@ static const Animation freaks_anim[] = {
 
 //Characters
 //Boyfriend
-#include "character/bf.c"
+#include "character/bfweeb.c"
 
 //Senpai
 #include "character/senpai.c"
 #include "character/senpaim.c"
+#include "character/spirit.c"
 
 //Girlfriend
 #include "character/gfweeb.c"
@@ -134,6 +135,7 @@ static void Week6_Load(void)
 	IO_Data overlay_data;
 	
 	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
+	Gfx_LoadTex(&stage.tex_huds, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //huds.tim
 	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
 	Gfx_LoadTex(&week6_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
@@ -142,7 +144,7 @@ static void Week6_Load(void)
 	Gfx_LoadTex(&week6_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
 	
 	//Load characters
-	stage.player = Char_BF_New(FIXED_DEC(52,1), FIXED_DEC(50,1));
+	stage.player = Char_BFWeeb_New(FIXED_DEC(52,1), FIXED_DEC(50,1));
 	switch (stage.stage_id)
 	{
 		case StageId_6_1: //Senpai
@@ -152,7 +154,7 @@ static void Week6_Load(void)
 			stage.opponent = Char_SenpaiM_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
 			break;
 		case StageId_6_3: //Thorns
-			stage.opponent = Char_Senpai_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
+			stage.opponent = Char_Spirit_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
 			break;
 		default:
 		    stage.opponent = Char_Senpai_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
@@ -389,7 +391,7 @@ static boolean Week6_NextStage(void)
 			stage.stage_id = StageId_6_3;
 			stageoverlay_drawbg = Week6_DrawBG3;
 			Character_Free(stage.opponent);
-			stage.opponent = Char_SenpaiM_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
+			stage.opponent = Char_Spirit_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
 			return true;
 		case StageId_6_3: //Thorns
 			return false;

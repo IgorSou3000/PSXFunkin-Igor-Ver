@@ -4,14 +4,16 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "spirit.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
-#include "../random.h"
-#include "../mutil.h"
+//Spirit assets
+static u8 char_spirit_arc_main[] = {
+	#include "iso/spirit/main.arc.h"
+};
 
 //Dad character structure
 enum
@@ -207,15 +209,14 @@ Character *Char_Spirit_New(fixed_t x, fixed_t y)
 	//Set character information
 	this->character.spec = 0;
 	
-	this->character.health_i = 9;
+	this->character.health_i = 2;
+	this->character.health_b = 0xFFff3a6e;
 	
 	this->character.focus_x = FIXED_DEC(24,1);
 	this->character.focus_y = FIXED_DEC(-55,1);
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\SPIRIT.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"spirit0.tim", //Spirit_ArcMain_Spirit0
 		"spirit1.tim", //Spirit_ArcMain_Spirit1
@@ -223,7 +224,7 @@ Character *Char_Spirit_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_spirit_arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

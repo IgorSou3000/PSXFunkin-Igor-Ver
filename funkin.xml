@@ -27,6 +27,8 @@
 				<!-- Overlay -->
 				<file name = "menu.exe" type = "data" source = "iso/menu/menu.exe"/>
 				<file name = "menu.mus" type = "data" source = "iso/music/freakyMenu/freakyMenu.mus"/>
+				<file name = "over_1.mus" type = "data" source = "iso/music/gameover/gameover.mus"/>
+				<file name = "over_3.mus" type = "data" source = "iso/music/gameoverpixel/gameoverpixel.mus"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

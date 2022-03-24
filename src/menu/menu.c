@@ -22,6 +22,7 @@
 #include "boot/loadscr.h"
 
 #include "boot/stage.h"
+#include "boot/save.h"
 
 //Characters
 //Menu BF
@@ -86,6 +87,13 @@ static const char *funny_messages[][2] = {
 typedef char MenuStr[MENUSTR_CHARS + 1];
 
 #endif
+
+struct 
+  {
+    char *p_title;
+    char *p_message;
+    int  *p_data;
+  } envMessage;
 
 //Menu state
 static struct
@@ -691,6 +699,32 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Story:
 		{
+                   
+			        //opponent stuff
+					if (pad_state.press & (PAD_DOWN | PAD_UP))
+					{
+					//shit code that fixes an opponent bug
+					s16 check = 0;
+					if (pad_state.press & PAD_UP)
+					check = -1;
+
+					if (pad_state.press & PAD_DOWN)
+					check = 1;
+
+					switch (menu.select + check)
+					{
+						case 0: //Dad
+						case 1:
+						menu.opponent->set_anim(menu.opponent, CharAnim_Idle);
+							break;
+						case 2: //Spook
+						menu.opponent->set_anim(menu.opponent, CharAnim_Left);
+							break;
+						case 3: //Options
+							break;
+					}
+			}
+
 			static const struct
 			{
 				const char *week;
@@ -1098,14 +1132,19 @@ void Menu_Tick(void)
 				} spec;
 			} menu_mainoptions[] = {
 				//general options
-				{OptType_Enum,    "Gamemode ", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
-				{OptType_Boolean, "Ghost Tap ", &stage.ghost, {.spec_boolean = {0}}},
+				{OptType_Enum,    "Gamemode", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
+				{OptType_Boolean, "Ghost Tap", &stage.ghost, {.spec_boolean = {0}}},
+				{OptType_Boolean, "BotPlay", &stage.botplay, {.spec_boolean = {0}}},
+				{OptType_Boolean, "OgHealthBar", &stage.og_healthbar, {.spec_boolean = {0}}},
 				//Note options
 				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
+				//Misc options
+				{OptType_Boolean, "Instakill", &stage.instakill, {.spec_boolean = {0}}},
+				{OptType_Boolean, "OnlySick", &stage.onlysick, {.spec_boolean = {0}}},
 			};
 			
-
+            //options
 			static const struct
 			{
 			const char *text;
@@ -1192,6 +1231,12 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
+
+			  if (pad_state.press & PAD_L2)
+			  {
+					menu.next_page = MenuPage_SaveArea;
+					Trans_Start();
+				}
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
@@ -1200,12 +1245,7 @@ void Menu_Tick(void)
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				s32 x = (i * 90);
-				if (y <= -SCREEN_HEIGHT2 - 8)
-					continue;
-				if (y >= SCREEN_HEIGHT2 + 8)
-					break;
 				
 				//Draw text
 				menu.font_arial.draw(&menu.font_arial,
@@ -1225,7 +1265,7 @@ void Menu_Tick(void)
 			for (u8 i = 0; i < COUNT_OF(menu_mainoptions); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8;
+				s32 y = (i * 15) - 8;
 				
 				//Draw text
 				char text[0x80];
@@ -1265,6 +1305,50 @@ void Menu_Tick(void)
 			//draw big square
 			RECT square_src = {26, 33, 270, 180};
 			Gfx_BlendRect(&square_src,111,111,111, 0);
+
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 >> 1, 113 >> 1, 155 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+	case MenuPage_SaveArea:
+		{
+			if (pad_state.press & PAD_START)
+			{
+			char *p_title = "Memory Card Write Example\nWROTE:";
+           char *p_message = "I LOVE YOU SO MUCH LONG TIME";
+  int len = 0;
+  
+  len = strlen(p_message);
+  
+  envMessage.p_title = p_title;
+  envMessage.p_message = p_message;
+  envMessage.p_data = &len;
+  
+  memoryCardWrite(p_message, strlen(p_message));
+			}
+            
+			if (pad_state.press & PAD_CROSS)
+			{
+			 char *p_title = "Memory Card Read Example\nREAD:";
+  
+  envMessage.p_title = p_title;
+  envMessage.p_message = memoryCardRead(128);
+  envMessage.p_data = strlen(envMessage.p_message);
+			}
+
+			//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					menu.next_page = MenuPage_Main;
+					menu.next_select = 3; //Options
+					Trans_Start();
+				}
+	FntPrint("message: %c", envMessage.p_message);
 
 			//Draw background
 			Menu_DrawBack(

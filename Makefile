@@ -9,6 +9,7 @@ SRCS = src/boot/main.c \
        src/boot/trans.c \
        src/boot/loadscr.c \
        src/boot/menu.c \
+       src/boot/save.c \
        src/boot/stage.c \
        src/boot/psx/psx.c \
        src/boot/psx/io.c \
@@ -39,7 +40,7 @@ LDFLAGS += -Wl,--start-group
 LDFLAGS += -lapi
 #LDFLAGS += -lc
 LDFLAGS += -lc2
-#LDFLAGS += -lcard
+LDFLAGS += -lcard
 LDFLAGS += -lcd
 #LDFLAGS += -lcomb
 LDFLAGS += -lds
@@ -50,7 +51,7 @@ LDFLAGS += -lgpu
 #LDFLAGS += -lgun
 #LDFLAGS += -lhmd
 #LDFLAGS += -lmath
-#LDFLAGS += -lmcrd
+LDFLAGS += -lmcrd
 #LDFLAGS += -lmcx
 LDFLAGS += -lpad
 LDFLAGS += -lpress
@@ -74,8 +75,8 @@ iso/%.exe:
 	tools/funkinexepak/funkinexepak $@ $^
 
 iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/font/bold.tim iso/font/arial.tim
-iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
-iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/week2/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
-iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/week3/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
-iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/week4/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
-iso/week6/week6.exe: Overlay.week6 iso/week6/hud0.tim iso/week6/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim iso/week6/back3.tim
+iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/huds.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
+iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/stage/huds.tim iso/week2/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/stage/huds.tim iso/week3/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/stage/huds.tim iso/week4/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
+iso/week6/week6.exe: Overlay.week6 iso/week6/hud0.tim iso/stage/huds.tim iso/week6/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim iso/week6/back3.tim

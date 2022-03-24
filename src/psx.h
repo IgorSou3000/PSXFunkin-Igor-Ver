@@ -53,6 +53,7 @@ extern char **my_argv;
 	#include <libgpu.h>
 	#include <libspu.h>
 	#include <libcd.h>
+	#include <libmcrd.h>
 	#include <libsnd.h>
 	#include <libapi.h>
 

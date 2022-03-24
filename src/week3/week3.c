@@ -11,6 +11,9 @@
 #include "boot/main.h"
 #include "boot/mem.h"
 
+fixed_t fade;
+fixed_t fadespd = FIXED_DEC(150,1);
+
 //Charts
 static u8 week3_cht_pico_easy[] = {
 	#include "iso/chart/pico-easy.json.cht.h"
@@ -104,6 +107,7 @@ static void Week3_Load(void)
 	IO_Data overlay_data;
 	
 	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
+	Gfx_LoadTex(&stage.tex_huds, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //huds.tim
 	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
 	Gfx_LoadTex(&week3_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
@@ -124,8 +128,49 @@ static void Week3_Load(void)
 	//Initialize train state
 	week3_train_x = TRAIN_END_X;
 	week3_train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B);
+
+	Gfx_SetClear(0, 0, 0);
 }
 
+static void Week3_Tick()
+{
+	//Stage specific events
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	{
+		switch (stage.stage_id)
+		{
+			case StageId_3_3:
+				//Change zoom
+				if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
+					stage.player->focus_zoom = stage.opponent->focus_zoom = FIXED_DEC(14,10);
+				else 
+				   stage.player->focus_zoom = stage.opponent->focus_zoom = FIXED_DEC(1,1);
+				break;
+			default:
+				break;
+		}
+	}
+}
+static void Week3_DrawFG()
+{
+	//Draw white fade
+    if (fade > 0)
+	{
+	static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	u8 flash_col = fade >> FIXED_SHIFT;
+	Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
+	fade -= FIXED_MUL(fadespd, timer_dt);
+	}
+    
+	if ((stage.stage_id == StageId_3_3 && stage.song_step == 512) || (stage.stage_id == StageId_3_3 && stage.song_step == 768))
+	fade = FIXED_DEC(255,1);
+
+	if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
+	{
+    RECT screen_src = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	Gfx_BlendRect(&screen_src, week3_win_r, week3_win_g, week3_win_b, 90);
+	}
+}
 static void Week3_DrawBG()
 {
 	fixed_t fx, fy;
@@ -155,6 +200,8 @@ static void Week3_DrawBG()
 	}
 	
 	//Draw rooftop
+	if ((stage.stage_id == StageId_3_3 && stage.song_step < 513) || (stage.stage_id == StageId_3_3 && stage.song_step > 768) || (stage.stage_id != StageId_3_3))
+	{
 	fx = stage.camera.x;
 	fy = stage.camera.y;
 	
@@ -273,7 +320,7 @@ static void Week3_DrawBG()
 		Stage_DrawTexCol(&week3_tex_back1, &lightl_src, &lightl_dst, stage.camera.bzoom, win_r, win_g, win_b);
 		Stage_DrawTexCol(&week3_tex_back1, &lightr_src, &lightr_dst, stage.camera.bzoom, win_r, win_g, win_b);
 	}
-	
+
 	//Draw buildings
 	RECT building_src = {0, 0, 255, 127};
 	RECT_FIXED building_dst = {
@@ -308,7 +355,8 @@ static void Week3_DrawBG()
 	sky_dst.x += sky_dst.w;
 	sky_src.y += 128;
 	Stage_DrawTex(&week3_tex_back5, &sky_src, &sky_dst, stage.camera.bzoom);
-}
+	}
+ }
 
 static IO_Data Week3_GetChart(void)
 {
@@ -341,10 +389,10 @@ void Week3_SetPtr(void)
 {
 	//Set pointers
 	stageoverlay_load = Week3_Load;
-	stageoverlay_tick = NULL;
+	stageoverlay_tick = Week3_Tick;
 	stageoverlay_drawbg = Week3_DrawBG;
 	stageoverlay_drawmd = NULL;
-	stageoverlay_drawfg = NULL;
+	stageoverlay_drawfg = Week3_DrawFG;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week3_GetChart;
 	stageoverlay_loadscreen = Week3_LoadScreen;

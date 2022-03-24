@@ -4,13 +4,17 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "bf.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/random.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../random.h"
-#include "../main.h"
+//Boyfriend player assets
+static u8 char_bfweeb_arc_main[] = {
+	#include "iso/bf/weeb.arc.h"
+};
 
 //Boyfriend skull fragments
 static SkullFragment char_bfweeb_skull[15] = {
@@ -39,6 +43,10 @@ enum
 {
 	BFWeeb_ArcMain_Weeb0,
 	BFWeeb_ArcMain_Weeb1,
+	BFWeeb_ArcMain_Weeb2,
+	BFWeeb_ArcMain_Weeb3,
+	BFWeeb_ArcMain_Weeb4,
+	BFWeeb_ArcMain_Weeb5,
 	
 	BFWeeb_ArcMain_Max,
 };
@@ -102,6 +110,64 @@ static const CharFrame char_bfweeb_frame[] = {
 	
 	{BFWeeb_ArcMain_Weeb1, {175,   0,  54,  56}, { 22,  52}}, //19 right miss 1
 	{BFWeeb_ArcMain_Weeb1, {  0,  54,  55,  56}, { 22,  52}}, //20 right miss 2
+
+	{BFWeeb_ArcMain_Weeb1, { 56,  62,  64,  60}, { 56 - 25,  60 - 3}}, //21 death weeb 1 1
+	{BFWeeb_ArcMain_Weeb1, {120,  64,  73,  60}, { 57 - 25,  60 - 3}}, //22 death weeb 1 2
+	{BFWeeb_ArcMain_Weeb1, {  0, 120,  68,  58}, { 57 - 25,  58 - 3}}, //23 death weeb 1 3
+	{BFWeeb_ArcMain_Weeb1, { 69, 123,  73,  58}, { 61 - 25,  58 - 3}}, //24 death weeb 1 4
+	{BFWeeb_ArcMain_Weeb1, {144, 125,  71,  58}, { 58 - 25,  58 - 3}}, //25 death weeb 1 5
+	{BFWeeb_ArcMain_Weeb1, {  0, 179,  58,  58}, { 53 - 25,  58 - 3}}, //26 death weeb 1 6
+
+	{BFWeeb_ArcMain_Weeb2, {  4,   1,  58,  58}, { 53 - 25,  58 - 3}}, //27 death weeb 2 1
+	{BFWeeb_ArcMain_Weeb2, { 64,   1,  58,  58}, { 53 - 25,  58 - 3}}, //28 death weeb 2 2
+	{BFWeeb_ArcMain_Weeb2, {126,   1,  58,  58}, { 53 - 25,  58 - 3}}, //29 death weeb 2 3
+	{BFWeeb_ArcMain_Weeb2, {188,   0,  61,  64}, { 56 - 25,  58 - 3}}, //30 death weeb 2 4
+	{BFWeeb_ArcMain_Weeb2, {  3,  65,  59,  60}, { 54 - 25,  58 - 3}}, //31 death weeb 2 5
+	{BFWeeb_ArcMain_Weeb2, { 63,  65,  58,  63}, { 53 - 25,  58 - 3}}, //32 death weeb 2 6
+	{BFWeeb_ArcMain_Weeb2, {122,  65,  58,  62}, { 53 - 25,  58 - 3}}, //33 death weeb 2 7
+	{BFWeeb_ArcMain_Weeb2, {186,  65,  58,  62}, { 53 - 25,  58 - 3}}, //34 death weeb 2 8
+	{BFWeeb_ArcMain_Weeb2, {  4, 129,  58,  62}, { 53 - 25,  58 - 3}}, //35 death weeb 2 9
+	{BFWeeb_ArcMain_Weeb2, { 63, 129,  58,  62}, { 53 - 25,  58 - 3}}, //36 death weeb 2 10
+	{BFWeeb_ArcMain_Weeb2, {122, 129,  58,  62}, { 53 - 25,  58 - 3}}, //37 death weeb 2 11
+	{BFWeeb_ArcMain_Weeb2, {184, 129,  58,  62}, { 53 - 25,  58 - 3}}, //38 death weeb 2 12
+	{BFWeeb_ArcMain_Weeb2, {  4, 193,  58,  62}, { 53 - 25,  58 - 3}}, //39 death weeb 2 13
+	{BFWeeb_ArcMain_Weeb2, { 63, 193,  58,  62}, { 53 - 25,  58 - 3}}, //40 death weeb 2 14
+	{BFWeeb_ArcMain_Weeb2, {122, 193,  58,  62}, { 53 - 25,  58 - 3}}, //41 death weeb 2 15
+	{BFWeeb_ArcMain_Weeb2, {181, 193,  58,  62}, { 53 - 25,  58 - 3}}, //42 death weeb 2 16
+
+	{BFWeeb_ArcMain_Weeb3, {  4,   1,  58,  62}, { 53 - 25,  58 - 3}}, //43 death weeb 2 1
+	{BFWeeb_ArcMain_Weeb3, { 64,   1,  58,  62}, { 53 - 25,  58 - 3}}, //44 death weeb 2 2
+	{BFWeeb_ArcMain_Weeb3, {126,   1,  58,  62}, { 53 - 25,  58 - 3}}, //45 death weeb 2 3
+	{BFWeeb_ArcMain_Weeb3, {191,   1,  58,  62}, { 53 - 25,  58 - 3}}, //46 death weeb 2 4
+	{BFWeeb_ArcMain_Weeb3, {  4,  65,  58,  62}, { 53 - 25,  58 - 3}}, //47 death weeb 2 5
+	{BFWeeb_ArcMain_Weeb3, { 63,  65,  58,  62}, { 53 - 25,  58 - 3}}, //48 death weeb 2 6
+	{BFWeeb_ArcMain_Weeb3, {122,  65,  58,  62}, { 53 - 25,  58 - 3}}, //49 death weeb 2 7
+	{BFWeeb_ArcMain_Weeb3, {186,  65,  58,  62}, { 53 - 25,  58 - 3}}, //50 death weeb 2 8
+	{BFWeeb_ArcMain_Weeb3, {  4, 129,  58,  62}, { 53 - 25,  58 - 3}}, //51 death weeb 2 9
+	{BFWeeb_ArcMain_Weeb3, { 63, 129,  58,  62}, { 53 - 25,  58 - 3}}, //52 death weeb 2 10
+	{BFWeeb_ArcMain_Weeb3, {122, 129,  58,  62}, { 53 - 25,  58 - 3}}, //53 death weeb 2 11
+	{BFWeeb_ArcMain_Weeb3, {184, 129,  58,  62}, { 53 - 25,  58 - 3}}, //54 death weeb 2 12
+	{BFWeeb_ArcMain_Weeb3, {  4, 193,  58,  62}, { 53 - 25,  58 - 3}}, //55 death weeb 2 13
+	{BFWeeb_ArcMain_Weeb3, { 63, 193,  58,  62}, { 53 - 25,  58 - 3}}, //56 death weeb 2 14
+	{BFWeeb_ArcMain_Weeb3, {122, 193,  58,  62}, { 53 - 25,  58 - 3}}, //57 death weeb 2 15
+	{BFWeeb_ArcMain_Weeb3, {181, 193,  58,  62}, { 53 - 25,  58 - 3}}, //58 death weeb 2 16
+
+	{BFWeeb_ArcMain_Weeb4, {  5,   2,  58,  62}, { 53 - 25,  58 - 3}}, //59 death weeb 2 1
+	{BFWeeb_ArcMain_Weeb4, { 65,   2,  58,  62}, { 53 - 25,  58 - 3}}, //60 death weeb 2 2
+	{BFWeeb_ArcMain_Weeb4, {127,   2,  58,  62}, { 53 - 25,  58 - 3}}, //61 death weeb 2 3
+	{BFWeeb_ArcMain_Weeb4, {192,   2,  58,  62}, { 53 - 25,  58 - 3}}, //62 death weeb 2 4
+	{BFWeeb_ArcMain_Weeb4, {  5,  66,  58,  62}, { 53 - 25,  58 - 3}}, //63 death weeb 2 5
+	{BFWeeb_ArcMain_Weeb4, { 64,  66,  58,  62}, { 53 - 25,  58 - 3}}, //64 death weeb 2 6
+	{BFWeeb_ArcMain_Weeb4, {123,  66,  58,  62}, { 53 - 25,  58 - 3}}, //65 death weeb 2 7
+
+	{BFWeeb_ArcMain_Weeb5, {  2,   6,  58,  62}, { 53 - 25,  58 - 3}}, //66 death weeb 2 1
+	{BFWeeb_ArcMain_Weeb5, { 65,   6,  58,  62}, { 53 - 25,  58 - 3}}, //67 death weeb 2 2
+	{BFWeeb_ArcMain_Weeb5, {131,   6,  58,  62}, { 53 - 25,  58 - 3}}, //68 death weeb 2 3
+	{BFWeeb_ArcMain_Weeb5, {197,   6,  58,  62}, { 53 - 25,  58 - 3}}, //69 death weeb 2 4
+	{BFWeeb_ArcMain_Weeb5, {  2,  73,  58,  62}, { 53 - 25,  58 - 3}}, //70 death weeb 2 5
+	{BFWeeb_ArcMain_Weeb5, { 63,  73,  58,  62}, { 53 - 25,  58 - 3}}, //71 death weeb 2 6
+	{BFWeeb_ArcMain_Weeb5, {125,  73,  58,  62}, { 53 - 25,  58 - 3}}, //72 death weeb 2 7
+	{BFWeeb_ArcMain_Weeb5, {195,  73,  58,  62}, { 53 - 25,  58 - 3}}, //73 death weeb 2 8
 };
 
 static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
@@ -123,13 +189,15 @@ static const Animation char_bfweeb_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){20, 21, 22, ASCR_BACK, 1}},        //PlayerAnim_Peace
 	{2, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
 	
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
-	{2, (const u8[]){ 0,  1,  2,  3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{5, (const u8[]){21, 21, 22, 22, 23, 23, 24, 25, 26, ASCR_CHGANI, PlayerAnim_Dead1}}, //CharAnim_Idle
+	{1, (const u8[]){26, 26, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,  ASCR_CHGANI, PlayerAnim_Dead3}}, //CharAnim_Idle
+	{2, (const u8[]){59, 60, 61, 62, 63, 64, 65, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){59, 60, 61, 62, 63, 64, 65, ASCR_CHGANI, PlayerAnim_Dead3}},             //PlayerAnim_Dead4
+	{2, (const u8[]){59, 60, 61, 62, 63, 64, 65, ASCR_CHGANI, PlayerAnim_Dead3}}, 
+
+	{2, (const u8[]){66, 67, 68, 69, 70, 71, 71, 71, 71, 72, 72, 72, 72, 73, 73, 73, 58, 58, 58, 58, 58, 58, ASCR_CHGANI, PlayerAnim_Dead7}},
+	{3, (const u8[]){58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, ASCR_BACK, 1}},
 };
 
 //Boyfriend Weeb player functions
@@ -290,35 +358,13 @@ void Char_BFWeeb_Tick(Character *character)
 
 void Char_BFWeeb_SetAnim(Character *character, u8 anim)
 {
-	Char_BF *this = (Char_BF*)character;
 	
 	//Perform animation checks
 	switch (anim)
 	{
 		case PlayerAnim_Dead0:
-			//Begin reading dead.arc and adjust focus
-			//this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
+			//Begin adjust focus
 			character->focus_x = FIXED_DEC(0,1);
-			character->focus_y = FIXED_DEC(-40,1);
-			character->focus_zoom = FIXED_DEC(125,100);
-			break;
-		case PlayerAnim_Dead2:
-			//Unload main.arc
-			Mem_Free(this->arc_main);
-			this->arc_main = this->arc_dead;
-			this->arc_dead = NULL;
-			
-			//Find dead.arc files
-			const char **pathp = (const char *[]){
-				"deadw0.tim", //BFWeeb_ArcDead_DeadW0
-				NULL
-			};
-			IO_Data *arc_ptr = this->arc_ptr;
-			for (; *pathp != NULL; pathp++)
-				*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
-			
-			//Load retry art
-			//Gfx_LoadTex(&this->tex_retry, this->arc_ptr[BFWeeb_ArcDead_Retry], 0);
 			break;
 	}
 	
@@ -358,25 +404,26 @@ Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	//Set character information
 	this->character.spec = CHAR_SPEC_MISSANIM;
 	
-	this->character.health_i = 7;
+	this->character.health_b = 0xFF7cd6f5;
+	this->character.health_i = 0;
 	
 	this->character.focus_x = FIXED_DEC(-34,1);
 	this->character.focus_y = FIXED_DEC(-40,1);
 	this->character.focus_zoom = FIXED_DEC(2,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\BFWEEB.ARC;1");
-	this->arc_dead = NULL;
-	IO_FindFile(&this->file_dead_arc, "\\CHAR\\BFDEAD.ARC;1");
-	
 	const char **pathp = (const char *[]){
-		"weeb0.tim",  //BFWeeb_ArcMain_Weeb0
-		"weeb1.tim",  //BFWeeb_ArcMain_Weeb1
+		"weeb0.tim",   //BF_ArcMain_BF0
+		"weeb1.tim",   //BF_ArcMain_BF1
+		"weeb2.tim",   //BF_ArcMain_BF0
+		"weeb3.tim",   //BF_ArcMain_BF1
+		"weeb4.tim",   //BF_ArcMain_BF0
+		"weeb5.tim",   //BF_ArcMain_BF0
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_bfweeb_arc_main, *pathp);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;
