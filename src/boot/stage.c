@@ -1700,8 +1700,10 @@ void Stage_Tick(void)
 				RECT health_back = {33, 210, 256, 4};
 				RECT health_border = {32, 209, 258, 6};
 			    if (stage.downscroll)
-					health_fill.y = health_border.y = health_back.y = 20;
-
+                            {
+			      health_fill.y = health_back.y = 20;
+                              health_border.y = 19;
+                             }
 		        //draw healthbar
 				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
 				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
