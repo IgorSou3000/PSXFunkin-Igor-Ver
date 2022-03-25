@@ -11,6 +11,10 @@
 #include "boot/main.h"
 #include "boot/mem.h"
 
+//thunder stuff
+fixed_t week2_thunder;
+fixed_t week2_thunderspd = FIXED_DEC(200,1);
+
 //Charts
 static u8 week2_cht_spookeez_easy[] = {
 	#include "iso/chart/spookeez-easy.json.cht.h"
@@ -67,6 +71,9 @@ static IO_Data week2_cht[][3] = {
 //Spooky Kids
 #include "character/spook.c"
 
+//Monster
+#include "character/monster.c"
+
 //Girlfriend
 #include "character/gf.c"
 
@@ -80,6 +87,12 @@ static fixed_t Char_GF_GetParallax(Char_GF *this)
 static Gfx_Tex week2_tex_back0; //Background
 static Gfx_Tex week2_tex_back1; //Window
 static Gfx_Tex week2_tex_back2; //Lightning window
+static Gfx_Tex week2_tex_back3; //Lightning window 2
+
+
+//Lightning Window Animation
+boolean week2_lightanim;
+s16 week2_anims;
 
 //Week 2 background functions
 static void Week2_Load(void)
@@ -94,19 +107,131 @@ static void Week2_Load(void)
 	Gfx_LoadTex(&week2_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
 	Gfx_LoadTex(&week2_tex_back1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1.tim
 	Gfx_LoadTex(&week2_tex_back2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back2.tim
+	Gfx_LoadTex(&week2_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(56,1), FIXED_DEC(85,1));
+
+	if (stage.stage_id == StageId_2_3) //monster
+	stage.opponent = Char_Monster_New(FIXED_DEC(-90,1), FIXED_DEC(85,1));
+	else
 	stage.opponent = Char_Spook_New(FIXED_DEC(-90,1), FIXED_DEC(85,1));
+
 	stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-15,1));
 }
 
+static void Week2_Tick()
+{
+	for (Note *note = stage.cur_note;; note++)
+			{
+				if (note->pos > (stage.note_scroll >> FIXED_SHIFT))
+				break;
+	//Stage specific events
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	{
+		switch (stage.stage_id)
+		{
+			case StageId_2_1:
+			case StageId_2_2:
+			case StageId_2_3:
+            //make sure the thunder and the stuffs just be on when opponent hit da notes
+				//BF sweat
+				if ((RandomRange(0, 60) == 2) && note->type & (NOTE_FLAG_OPPONENT))
+				{
+					week2_lightanim = true;
+					stage.player->set_anim(stage.player, PlayerAnim_Sweat);
+					week2_thunder = FIXED_DEC(255,1);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	//windows anim
+	if (week2_lightanim == true)
+		week2_anims = (stage.song_step >> 1) % 0x5;
+    
+	//stop windows anim
+			if (week2_anims == 4)
+			week2_lightanim = false;
+}
+
+static void Week2_DrawFG()
+{
+    //Draw white week2_thunder
+    if (week2_thunder > 0)
+	{
+	static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	u8 flash_col = week2_thunder >> FIXED_SHIFT;
+	Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
+	week2_thunder -= FIXED_MUL(week2_thunderspd, timer_dt);
+	}
+}
 static void Week2_DrawBG()
 {
 	fixed_t fx, fy;
 	fx = stage.camera.x;
 	fy = stage.camera.y;
+    
+	FntPrint("lightwin %d", week2_anims);
 	
+	if (week2_lightanim == true && week2_anims == 3)
+	{
+	//Draw Lightning window 4
+	RECT lightning4_src = {0,128, 220, 127};
+	RECT_FIXED lightning4_dst = {
+		FIXED_DEC(-172,1) - fx,
+		FIXED_DEC(-128,1) - fy,
+		FIXED_DEC(216,1),
+		FIXED_DEC(120,1)
+	};
+
+	Stage_DrawTex(&week2_tex_back3, &lightning4_src, &lightning4_dst, stage.camera.bzoom);
+}
+    
+	if (week2_lightanim == true && week2_anims == 2)
+	{
+	//Draw Lightning window 3
+	RECT lightning3_src = {0, 0, 220, 127};
+	RECT_FIXED lightning3_dst = {
+		FIXED_DEC(-170,1) - fx,
+		FIXED_DEC(-128,1) - fy,
+		FIXED_DEC(216,1),
+		FIXED_DEC(120,1)
+	};
+
+	Stage_DrawTex(&week2_tex_back3, &lightning3_src, &lightning3_dst, stage.camera.bzoom);
+}
+    
+	if (week2_lightanim == true && week2_anims == 1)
+	{
+	//Draw Lightning window 2
+	RECT lightning2_src = {0,128, 220, 127};
+	RECT_FIXED lightning2_dst = {
+		FIXED_DEC(-170,1) - fx,
+		FIXED_DEC(-125,1) - fy,
+		FIXED_DEC(216,1),
+		FIXED_DEC(120,1)
+	};
+
+	Stage_DrawTex(&week2_tex_back2, &lightning2_src, &lightning2_dst, stage.camera.bzoom);
+}
+	
+	if (week2_lightanim == true && week2_anims == 0)
+	{
+	//Draw Lightning window
+	RECT lightning_src = {0, 0, 220, 127};
+	RECT_FIXED lightning_dst = {
+		FIXED_DEC(-170,1) - fx,
+		FIXED_DEC(-125,1) - fy,
+		FIXED_DEC(216,1),
+		FIXED_DEC(120,1)
+	};
+
+	Stage_DrawTex(&week2_tex_back2, &lightning_src, &lightning_dst, stage.camera.bzoom);
+}
+
 	//Draw window
 	RECT window_src = {0, 0, 228, 128};
 	RECT_FIXED window_dst = {
@@ -160,6 +285,8 @@ static boolean Week2_NextStage(void)
 			return true;
 		case StageId_2_2: //South
 			stage.stage_id = StageId_2_3;
+			Character_Free(stage.opponent);
+			stage.opponent = Char_Monster_New(FIXED_DEC(-90,1), FIXED_DEC(85,1));
 			return true;
 		case StageId_2_3: //Monster
 			return false;
@@ -172,10 +299,10 @@ void Week2_SetPtr(void)
 {
 	//Set pointers
 	stageoverlay_load = Week2_Load;
-	stageoverlay_tick = NULL;
+	stageoverlay_tick = Week2_Tick;
 	stageoverlay_drawbg = Week2_DrawBG;
 	stageoverlay_drawmd = NULL;
-	stageoverlay_drawfg = NULL;
+	stageoverlay_drawfg = Week2_DrawFG;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week2_GetChart;
 	stageoverlay_loadscreen = Week2_LoadScreen;

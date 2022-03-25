@@ -96,10 +96,10 @@ static const CharFrame char_bf_frame[] = {
 	{BF_ArcMain_BF3, {  0, 103, 104, 103}, { 54,  96}}, //14 peace 2
 	{BF_ArcMain_BF3, {105, 106, 104, 104}, { 54,  97}}, //15 peace 3
 	
-	{BF_ArcMain_BF4, {  0,   0, 128, 128}, { 53,  92}}, //16 sweat 1
-	{BF_ArcMain_BF4, {128,   0, 128, 128}, { 53,  93}}, //17 sweat 2
-	{BF_ArcMain_BF4, {  0, 128, 128, 128}, { 53,  98}}, //18 sweat 3
-	{BF_ArcMain_BF4, {128, 128, 128, 128}, { 53,  98}}, //19 sweat 4
+	{BF_ArcMain_BF4, {  0,   0, 103, 104}, { 53,  96}}, //16 sweat 2
+	{BF_ArcMain_BF4, {104,   0, 103, 104}, { 53,  96}}, //17 sweat 1
+	{BF_ArcMain_BF4, {  0, 105, 102, 104}, { 53,  97}}, //18 sweat 2
+	{BF_ArcMain_BF4, {103, 105, 103, 104}, { 53,  97}}, //19 sweat 3
 	
 	{BF_ArcMain_BF5, {  0,   0,  93, 108}, { 52, 101}}, //20 left miss 1
 	{BF_ArcMain_BF5, { 94,   0,  93, 108}, { 52, 101}}, //21 left miss 2

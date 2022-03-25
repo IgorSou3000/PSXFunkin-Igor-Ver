@@ -257,6 +257,10 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	//Restore vocals and health
 	Stage_StartVocal();
 	this->health += 230;
+
+	//instakill if the option "onlysick" is on
+		if (stage.onlysick && hit_type != 0)
+		this->health -= 0x7000;
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
@@ -267,10 +271,6 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	);
 	if (combo != NULL)
 		ObjectList_Add(&stage.objlist_fg, (Object*)combo);
-        
-		//instakill if the option "onlysick" is on
-		if (stage.onlysick && hit_type != 0)
-		this->health -= 0x7000;
 	
 	//Create note splashes if SICK
 	if (hit_type == 0)
@@ -693,21 +693,21 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	//Check if we should use 'dying' frame
 	s8 dying;
 	if (ox < 0)
-		dying = (health >= 18000) * 32;
+		dying = (health >= 18000) * 50;
 	else
-		dying = (health <= 2000) * 32;
+		dying = (health <= 2000) * 50;
 	
 	//Get src and dst
 	fixed_t hx = (128 << FIXED_SHIFT) * (10000 - health) / 10000;
 	RECT src = {
-		(i % 1) * 64 + dying,
-	    (i / 1) * 32,
-		32,
-		32
+		(i % 1) * 100 + dying,
+	    (i / 1) * 50,
+	    50,
+		50
 	};
 	RECT_FIXED dst = {
-		hx + ox * FIXED_DEC(18,1) - FIXED_DEC(12,1),
-		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 12, 1),
+		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(19,1),
+		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 24, 1),
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
@@ -1710,12 +1710,12 @@ void Stage_Tick(void)
 
 			FntPrint("step: %d", stage.song_step);
 			
+			//Tick foreground objects
+			ObjectList_Tick(&stage.objlist_fg);
+			
 			//Draw stage foreground
 			if (stageoverlay_drawfg != NULL)
 				stageoverlay_drawfg();
-			
-			//Tick foreground objects
-			ObjectList_Tick(&stage.objlist_fg);
 			
 			//Tick characters
 			stage.player->tick(stage.player);
