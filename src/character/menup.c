@@ -40,19 +40,19 @@ typedef struct
 
 //Menu BF player definitions
 static const CharFrame char_menubf_frame[] = {
-	{BF_ArcMain_BF0, {  1,   1, 109, 105}, { 99, 104}}, //0 idle 1
-	{BF_ArcMain_BF0, {112,   1, 107, 106}, { 98, 106}}, //1 idle 2
-	{BF_ArcMain_BF0, {  3, 112, 109, 109}, { 99, 109}}, //2 idle 3
-	{BF_ArcMain_BF0, {122, 112, 109, 109}, { 99, 109}}, //3 idle 4
+	{BF_ArcMain_BF0, {  0,   0, 100,  97}, { 54,  92}}, //0 idle 1
+	{BF_ArcMain_BF0, {101,   0, 101,  97}, { 54,  92}}, //1 idle 2
+	{BF_ArcMain_BF0, {  0, 98, 100, 98}, { 53,  93}}, //2 idle 3
+	{BF_ArcMain_BF0, {101, 98, 100, 101}, { 53,  96}}, //3 idle 4
 	
-	{BF_ArcMain_BF1, {  4,   2, 105, 112}, { 99, 110}}, //4 peace 1
-	{BF_ArcMain_BF1, {115,   4, 110, 110}, { 99, 108}}, //5 peace 2
-	{BF_ArcMain_BF1, {  5, 124, 111, 110}, { 99, 108}}, //6 peace 3
+	{BF_ArcMain_BF1, {  0,   0,  98, 104}, { 55,  99}}, //13 peace 1
+	{BF_ArcMain_BF1, { 99,   0, 103, 103}, { 55,  97}}, //14 peace 2
+	{BF_ArcMain_BF1, {  0, 105, 104, 103}, { 55,  97}}, //15 peace 3
 };
 
 static const Animation char_menubf_anim[PlayerAnim_Max] = {
-	{2, (const u8[]){ 0,  1,  2,  3,  3,  3,  3,  3,  3, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
-	{2, (const u8[]){ 4,  5,  6,  6,  6,  6,  6,  6,  6,  6,  ASCR_BACK, 1}},             //CharAnim_Left
+	{1, (const u8[]){ 0, 0,  1, 1,  2, 2,  3, 3, 3, 3, 3, 3, 3, 3, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
+	{1, (const u8[]){ 4, 4, 4, 5, 5,  6,  6,  6,  6,  6,  6,  6,  6,  ASCR_BACK, 1}},             //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
 	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},             //CharAnim_Down
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_DownAlt

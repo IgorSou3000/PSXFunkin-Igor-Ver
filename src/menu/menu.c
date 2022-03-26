@@ -328,7 +328,7 @@ void Menu_Load2(MenuPage page)
 	
 	//Initialize Girlfriend, Menu BF, Menu Opponents and stage
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
-	menu.bf = Char_BF_New(FIXED_DEC(45,1), FIXED_DEC( 24,1));
+	menu.bf = Char_BF_New(FIXED_DEC(0,1), FIXED_DEC( 17,1));
 	menu.opponent = Char_MenuO_New(FIXED_DEC(-90,1), FIXED_DEC(84,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;

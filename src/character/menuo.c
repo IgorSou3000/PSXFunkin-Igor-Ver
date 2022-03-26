@@ -39,12 +39,12 @@ typedef struct
 
 //MenuO character definitions
 static const CharFrame char_menuo_frame[] = {
-	{MenuO_ArcMain_Dad, {  2,   1,  68, 121}, { 42, 183+3}}, //0 idle 1
-	{MenuO_ArcMain_Dad, { 70,   2,  68, 120}, { 43, 183+2}}, //1 idle 2
-	{MenuO_ArcMain_Dad, {138,   1,  68, 121}, { 43, 183+3}}, //2 idle 3
-	{MenuO_ArcMain_Dad, {  2, 123,  67, 122}, { 42, 183+4}}, //3 idle 4
-	{MenuO_ArcMain_Dad, { 74, 123,  66, 123}, { 42, 183+4}}, //4 idle 5
-	{MenuO_ArcMain_Dad, {141, 123,  67, 123}, { 42, 183+4}}, //5 idle 6
+	{MenuO_ArcMain_Dad, {  0,   1,  68, 121}, { 26 + 30, 115 + 68}}, //0 idle 1
+	{MenuO_ArcMain_Dad, { 69,   0,  68, 120}, { 27 + 30, 115 + 68}}, //1 idle 2
+	{MenuO_ArcMain_Dad, {138,   1,  68, 121}, { 27 + 30, 115 + 68}}, //2 idle 3
+	{MenuO_ArcMain_Dad, {  0, 123,  66, 122}, { 26 + 30, 116 + 68}}, //3 idle 4
+	{MenuO_ArcMain_Dad, { 71, 122,  66, 123}, { 26 + 30, 117 + 68}}, //4 idle 5
+	{MenuO_ArcMain_Dad, {138, 122,  67, 123}, { 26 + 30, 117 + 68}}, //5 idle 6
 
 	{MenuO_ArcMain_Spook, {  0,   0,  58,  84}, { 42, 153+3}}, //6 idle 1
 	{MenuO_ArcMain_Spook, { 60,   0,  58,  83}, { 43, 153+2}}, //7 idle 2
@@ -55,7 +55,7 @@ static const CharFrame char_menuo_frame[] = {
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
-	{2, (const u8[]){ 0,  1,  2,  3,  4,  5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
+	{1, (const u8[]){ 0, 0, 1,  1,  2, 2, 3, 3,  4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
 	{2, (const u8[]){ 6,  7,  8,  9, 10, 11, 8,  9, ASCR_CHGANI, CharAnim_Left}},         //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
 	{2, (const u8[]){ 6,  7, ASCR_BACK, 1}},         //CharAnim_Down
