@@ -8,6 +8,7 @@
 #include "boot/mem.h"
 #include "boot/archive.h"
 #include "boot/stage.h"
+#include "boot/random.h"
 #include "boot/main.h"
 
 //Dad character assets
@@ -24,6 +25,10 @@ enum
 	Dad_ArcMain_Down,
 	Dad_ArcMain_Up,
 	Dad_ArcMain_Right,
+	Dad_ArcMain_MissLeft,
+	Dad_ArcMain_MissDown,
+	Dad_ArcMain_MissUp,
+	Dad_ArcMain_MissRight,
 	
 	Dad_Arc_Max,
 };
@@ -59,9 +64,21 @@ static const CharFrame char_dad_frame[] = {
 	
 	{Dad_ArcMain_Right, {  0,   0, 117, 199}, { 43, 189+4}}, //10 right 1
 	{Dad_ArcMain_Right, {118,   0, 114, 199}, { 42, 189+4}}, //11 right 2
+
+	{Dad_ArcMain_MissLeft, {  0,   0,  93, 195}, { 40, 185+4}}, //12 Miss left 1
+	{Dad_ArcMain_MissLeft, { 94,   0,  95, 195}, { 40, 185+4}}, //13 Miss left 2
+	
+	{Dad_ArcMain_MissDown, {  0,   0, 118, 183}, { 43, 174+4}}, //14 Miss down 1
+	{Dad_ArcMain_MissDown, {119,   0, 117, 183}, { 43, 175+4}}, //15 Miss down 2
+	
+	{Dad_ArcMain_MissUp, {  0,   0, 102, 205}, { 40, 196+4}}, //16 Miss up 1
+	{Dad_ArcMain_MissUp, {103,   0, 103, 203}, { 40, 194+4}}, //17 Miss up 2
+	
+	{Dad_ArcMain_MissRight, {  0,   0, 117, 199}, { 43, 189+4}}, //18 Miss right 1
+	{Dad_ArcMain_MissRight, {118,   0, 114, 199}, { 42, 189+4}}, //19 Miss right 2
 };
 
-static const Animation char_dad_anim[CharAnim_Max] = {
+static const Animation char_dad_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){ 1,  2,  3,  0, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 4,  5, ASCR_BACK, 1}},         //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
@@ -71,6 +88,11 @@ static const Animation char_dad_anim[CharAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_UpAlt
 	{2, (const u8[]){10, 11, ASCR_BACK, 1}},         //CharAnim_Right
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_RightAlt
+
+	{1, (const u8[]){ 4, 12, 12, 13, ASCR_BACK, 1}},     //PlayerAnim_LeftMiss
+	{1, (const u8[]){ 6, 14, 14, 15, ASCR_BACK, 1}},     //PlayerAnim_DownMiss
+	{1, (const u8[]){ 8, 16, 16, 17, ASCR_BACK, 1}},     //PlayerAnim_UpMiss
+	{1, (const u8[]){10, 18, 18, 19, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
 };
 
 //Dad character functions
@@ -133,7 +155,7 @@ static Character *Char_Dad_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = 0;
+	this->character.spec = CHAR_SPEC_MISSANIM;
 	
 	this->character.health_b = 0xFFaf67d0;
 	this->character.health_i = 1;
@@ -150,6 +172,11 @@ static Character *Char_Dad_New(fixed_t x, fixed_t y)
 		"down.tim",  //Dad_ArcMain_Down
 		"up.tim",    //Dad_ArcMain_Up
 		"right.tim", //Dad_ArcMain_Right
+
+		"missl.tim",  //Dad_ArcMain_MissLeft
+		"missd.tim",  //Dad_ArcMain_MissDown
+		"missu.tim",    //Dad_ArcMain_MissUp
+		"missr.tim", //Dad_ArcMain_MissRight
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

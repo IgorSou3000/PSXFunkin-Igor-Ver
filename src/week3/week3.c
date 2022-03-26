@@ -11,8 +11,8 @@
 #include "boot/main.h"
 #include "boot/mem.h"
 
-fixed_t fade;
-fixed_t fadespd = FIXED_DEC(150,1);
+fixed_t week3_fade;
+fixed_t week3_fadespd = FIXED_DEC(150,1);
 
 //Charts
 static u8 week3_cht_pico_easy[] = {
@@ -153,17 +153,17 @@ static void Week3_Tick()
 }
 static void Week3_DrawFG()
 {
-	//Draw white fade
-    if (fade > 0)
+	//Draw white week3_fade
+    if (week3_fade > 0)
 	{
 	static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	u8 flash_col = fade >> FIXED_SHIFT;
+	u8 flash_col = week3_fade >> FIXED_SHIFT;
 	Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
-	fade -= FIXED_MUL(fadespd, timer_dt);
+	week3_fade -= FIXED_MUL(week3_fadespd, timer_dt);
 	}
     
 	if ((stage.stage_id == StageId_3_3 && stage.song_step == 512) || (stage.stage_id == StageId_3_3 && stage.song_step == 768))
-	fade = FIXED_DEC(255,1);
+	week3_fade = FIXED_DEC(255,1);
 
 	if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
 	{

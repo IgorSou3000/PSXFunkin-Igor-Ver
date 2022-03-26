@@ -49,6 +49,10 @@ static u8 week1_cht_tutorial_hard[] = {
 	#include "iso/chart/tutorial-hard.json.cht.h"
 };
 
+static u8 week1_cht_test[] = {
+	#include "iso/chart/test.json.cht.h"
+};
+
 static IO_Data week1_cht[][3] = {
 	{
 		(IO_Data)week1_cht_bopeebo_easy,
@@ -70,11 +74,17 @@ static IO_Data week1_cht[][3] = {
 		(IO_Data)week1_cht_tutorial_normal,
 		(IO_Data)week1_cht_tutorial_hard,
 	},
+	{
+		(IO_Data)week1_cht_test,
+		(IO_Data)week1_cht_test,
+		(IO_Data)week1_cht_test,
+	},
 };
 
 //Characters
 //Boyfriend
 #include "character/bf.c"
+#include "character/bfweeb.c"
 
 //Daddy Dearest
 #include "character/dad.c"
@@ -114,6 +124,13 @@ static void Week1_Load(void)
 		//GF as opponent
 		stage.opponent = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
 		stage.gf = NULL;
+	}
+
+	else if (stage.stage_id == StageId_4_4) //BFWeeb as opponent
+	{
+		//Dad as opponent
+		stage.opponent = Char_BFWeeb_New(FIXED_DEC(-120,1), FIXED_DEC(100,1));
+		stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
 	}
 	else
 	{
@@ -245,6 +262,9 @@ static void Week1_DrawBG()
 
 static IO_Data Week1_GetChart(void)
 {
+	if (stage.stage_id == StageId_4_4)
+	return week1_cht[4][stage.stage_diff];
+	else
 	return week1_cht[stage.stage_id - StageId_1_1][stage.stage_diff];
 }
 

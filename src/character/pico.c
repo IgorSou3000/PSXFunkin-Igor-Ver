@@ -21,6 +21,8 @@ enum
 	Pico_ArcMain_Idle,
 	Pico_ArcMain_Hit0,
 	Pico_ArcMain_Hit1,
+	Pico_ArcMain_Miss0,
+	Pico_ArcMain_Miss1,
 	
 	Pico_Arc_Max,
 };
@@ -56,9 +58,21 @@ static const CharFrame char_pico_frame[] = {
 	
 	{Pico_ArcMain_Hit1, {  0, 126, 113, 116}, { 41, 105}}, //10 right 1
 	{Pico_ArcMain_Hit1, {114, 124, 114, 117}, { 40, 106}}, //11 right 2
+
+	{Pico_ArcMain_Miss0, {  0,   0, 115, 120}, { 77, 109}}, //12 miss left 1
+	{Pico_ArcMain_Miss0, {116,   0, 111, 119}, { 73, 109}}, //13 miss left 2
+	
+	{Pico_ArcMain_Miss0, {  0, 121, 124,  98}, { 51,  87}}, //14 miss down 1
+	{Pico_ArcMain_Miss0, {125, 120, 126,  98}, { 51,  87}}, //15 miss down 2
+	
+	{Pico_ArcMain_Miss1, {  0,   0, 109, 125}, { 51, 117}}, //16 miss up 1
+	{Pico_ArcMain_Miss1, {110,   0, 109, 123}, { 51, 115}}, //17 miss up 2
+	
+	{Pico_ArcMain_Miss1, {  0, 126, 113, 116}, { 41, 105}}, //18 miss right 1
+	{Pico_ArcMain_Miss1, {114, 124, 114, 117}, { 41, 105}}, //19 miss right 2
 };
 
-static const Animation char_pico_anim[CharAnim_Max] = {
+static const Animation char_pico_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){ 0,  1,  2,  3, ASCR_BACK, 1}}, //CharAnim_Idle
 	{2, (const u8[]){ 4,  5, ASCR_BACK, 1}},         //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
@@ -68,6 +82,11 @@ static const Animation char_pico_anim[CharAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_UpAlt
 	{2, (const u8[]){10, 11, ASCR_BACK, 1}},         //CharAnim_Right
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_RightAlt
+
+	{1, (const u8[]){ 4, 12, 12, 13, ASCR_BACK, 1}},     //PlayerAnim_LeftMiss
+	{1, (const u8[]){ 6, 14, 14, 15, ASCR_BACK, 1}},     //PlayerAnim_DownMiss
+	{1, (const u8[]){ 8, 16, 16, 17, ASCR_BACK, 1}},     //PlayerAnim_UpMiss
+	{1, (const u8[]){10, 18, 18, 19, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
 };
 
 //Pico character functions
@@ -130,7 +149,7 @@ static Character *Char_Pico_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = 0;
+	this->character.spec = CHAR_SPEC_MISSANIM;
 	
 	this->character.health_i = 1;
 	this->character.health_b = 0xFFb2d151;
@@ -144,6 +163,8 @@ static Character *Char_Pico_New(fixed_t x, fixed_t y)
 		"idle.tim", //Pico_ArcMain_Idle0
 		"hit0.tim", //Pico_ArcMain_Hit0
 		"hit1.tim", //Pico_ArcMain_Hit1
+		"miss0.tim", //Pico_ArcMain_Miss0
+		"miss1.tim", //Pico_ArcMain_Miss1
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

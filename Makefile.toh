@@ -8,6 +8,7 @@ all: \
 	src/iso/gf/speaker.tim.h \
 	src/iso/dad/main.arc.h \
 	src/iso/spook/main.arc.h \
+	src/iso/monster/main.arc.h \
 	src/iso/pico/main.arc.h \
 	src/iso/mom/main.arc.h \
 	src/iso/mom/hair.tim.h \

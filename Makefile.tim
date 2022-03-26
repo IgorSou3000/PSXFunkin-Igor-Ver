@@ -14,6 +14,7 @@ all: \
 	iso/week2/back0.tim \
 	iso/week2/back1.tim \
 	iso/week2/back2.tim \
+	iso/week2/back3.tim \
 	iso/week2/hud1.tim \
 	iso/week3/back0.tim \
 	iso/week3/back1.tim \
@@ -52,6 +53,7 @@ all: \
 	iso/bf/weeb.arc \
 	iso/dad/main.arc \
 	iso/spook/main.arc \
+	iso/monster/main.arc \
 	iso/pico/main.arc \
 	iso/mom/main.arc \
 	iso/mom/hair.tim \
@@ -89,13 +91,16 @@ iso/menup/main.arc: iso/menup/bf0.tim iso/menup/bf1.tim
 iso/menuo/main.arc: iso/menuo/dad.tim iso/menuo/spook.tim
 
 # Dad
-iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim
+iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim iso/dad/missl.tim iso/dad/missd.tim iso/dad/missu.tim iso/dad/missr.tim
 
 # Spook
 iso/spook/main.arc: iso/spook/idle0.tim iso/spook/idle1.tim iso/spook/idle2.tim iso/spook/left.tim iso/spook/down.tim iso/spook/up.tim iso/spook/right.tim
 
+# Monster
+iso/monster/main.arc: iso/monster/idle0.tim iso/monster/idle1.tim iso/monster/idle2.tim iso/monster/left.tim iso/monster/down.tim iso/monster/up.tim iso/monster/right.tim
+
 # Pico
-iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim
+iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim iso/pico/miss0.tim iso/pico/miss1.tim
 
 # Mom
 iso/mom/main.arc: iso/mom/idle0.tim iso/mom/idle1.tim iso/mom/left.tim iso/mom/down.tim iso/mom/up.tim iso/mom/right.tim
@@ -131,7 +136,7 @@ iso/clucky/main.arc: iso/clucky/idle0.tim iso/clucky/idle1.tim iso/clucky/left.t
 iso/week1/week1.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
 
 # Week 2
-iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim iso/week2/back3.tim
 
 # Week 3
 iso/week3/week3.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
