@@ -139,7 +139,7 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 			FIXED_DEC(70,1),
 			(FIXED_DEC(22,1) * clipp) >> 4
 		};
-		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, stage.bump);
+		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, stage.camera.bzoom);
 		
 		//Apply gravity
 		this->hy += FIXED_MUL(this->hv, timer_dt) >> 1;
@@ -169,7 +169,7 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 			FIXED_DEC(46,1),
 			(FIXED_DEC(22,1) * clipp) >> 4
 		};
-		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, stage.bump);
+		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, stage.camera.bzoom);
 		
 		//Apply gravity
 		this->cy += FIXED_MUL(this->cv, timer_dt) >> 1;
@@ -205,7 +205,7 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 				FIXED_DEC(11,1),
 				(FIXED_DEC(12,1) * clipp) >> 4
 			};
-			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, stage.bump);
+			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, stage.camera.bzoom);
 			
 			//Apply gravity
 			this->numy[i] += FIXED_MUL(this->numv[i], timer_dt) >> 1;

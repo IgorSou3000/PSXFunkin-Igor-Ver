@@ -13,7 +13,7 @@
 
 //thunder stuff
 fixed_t week2_thunder;
-fixed_t week2_thunderspd = FIXED_DEC(200,1);
+fixed_t week2_thunderspd = FIXED_DEC(290,1);
 
 //Charts
 static u8 week2_cht_spookeez_easy[] = {
@@ -136,7 +136,7 @@ static void Week2_Tick()
 			case StageId_2_3:
             //make sure the thunder and the stuffs just be on when opponent hit da notes
 				//BF sweat
-				if ((RandomRange(0, 60) == 2) && note->type & (NOTE_FLAG_OPPONENT))
+				if ((stage.song_step >= 0 && (stage.song_step % 0x8) == 7) && RandomRange(0,50)== 45 &&  (note->type & NOTE_FLAG_OPPONENT))
 				{
 					week2_lightanim = true;
 					stage.player->set_anim(stage.player, PlayerAnim_Sweat);

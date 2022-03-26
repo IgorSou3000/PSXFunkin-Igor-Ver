@@ -42,10 +42,6 @@ static u8 week4_cht_milf_hard[] = {
 	#include "iso/chart/milf-hard.json.cht.h"
 };
 
-static u8 week4_cht_test[] = {
-	#include "iso/chart/test.json.cht.h"
-};
-
 static IO_Data week4_cht[][3] = {
 	{
 		(IO_Data)week4_cht_satin_panties_easy,
@@ -61,11 +57,6 @@ static IO_Data week4_cht[][3] = {
 		(IO_Data)week4_cht_milf_easy,
 		(IO_Data)week4_cht_milf_normal,
 		(IO_Data)week4_cht_milf_hard,
-	},
-	{
-		(IO_Data)week4_cht_test,
-		(IO_Data)week4_cht_test,
-		(IO_Data)week4_cht_test,
 	},
 };
 

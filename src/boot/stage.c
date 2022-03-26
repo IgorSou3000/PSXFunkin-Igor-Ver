@@ -705,6 +705,23 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	    50,
 		50
 	};
+	//invert icon image
+	if (stage.mode == StageMode_Swap)
+	{
+	RECT_FIXED dst = {
+		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(-20,1),
+		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 24, 1),
+		-src.w << FIXED_SHIFT,
+		src.h << FIXED_SHIFT
+	};
+	if (stage.downscroll)
+		dst.y = -dst.y - dst.h;
+	
+	//Draw health icon
+	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
+	}
+	else
+	{
 	RECT_FIXED dst = {
 		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(19,1),
 		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 24, 1),
@@ -716,6 +733,7 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	
 	//Draw health icon
 	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
+    }
 }
 
 static void Stage_DrawStrum(u8 i, RECT *note_src, RECT_FIXED *note_dst)
@@ -1700,13 +1718,27 @@ void Stage_Tick(void)
 				RECT health_back = {33, 210, 256, 4};
 				RECT health_border = {32, 209, 258, 6};
 			    if (stage.downscroll)
+<<<<<<< Updated upstream
                             {
 			      health_fill.y = health_back.y = 20;
                               health_border.y = 19;
                              }
 		        //draw healthbar
+=======
+					health_fill.y = health_border.y = health_back.y = 20;
+
+		        //draw healthbar and invert if it swap mode
+				if (stage.mode == StageMode_Swap)
+				{
+				Gfx_DrawRect(&health_fill, barp_r, barp_g, barp_b);
+				Gfx_DrawRect(&health_back, baro_r, baro_g, baro_b);
+				}
+				else
+				{
+>>>>>>> Stashed changes
 				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
 				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
+				}
 				Gfx_DrawRect(&health_border, 0,   0,  0);
 			}
 

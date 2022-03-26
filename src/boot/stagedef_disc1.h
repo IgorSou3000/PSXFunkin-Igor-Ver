@@ -62,7 +62,7 @@ static const StageDef stage_defs[StageId_Max] = {
 		"\\WEEK4\\WEEK4_3.MUS;1"
 	},
 	{ //StageId_4_4 (Test)
-		"\\WEEK4\\WEEK4.EXE;1", Week4_SetPtr,
+		"\\WEEK1\\WEEK1.EXE;1", Week1_SetPtr,
 		"\\WEEK4\\WEEK4_4.MUS;1"
 	},
 	
