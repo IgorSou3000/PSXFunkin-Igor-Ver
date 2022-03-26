@@ -88,9 +88,6 @@ iso/menup/main.arc: iso/menup/bf0.tim iso/menup/bf1.tim
 # Menu Opponent
 iso/menuo/main.arc: iso/menuo/dad.tim iso/menuo/spook.tim
 
-# BF
-iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim
-
 # Dad
 iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim
 
