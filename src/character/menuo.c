@@ -46,12 +46,12 @@ static const CharFrame char_menuo_frame[] = {
 	{MenuO_ArcMain_Dad, { 71, 122,  66, 123}, { 26 + 30, 117 + 68}}, //4 idle 5
 	{MenuO_ArcMain_Dad, {138, 122,  67, 123}, { 26 + 30, 117 + 68}}, //5 idle 6
 
-	{MenuO_ArcMain_Spook, {  0,   0,  58,  84}, { 42, 153+3}}, //6 idle 1
-	{MenuO_ArcMain_Spook, { 60,   0,  58,  83}, { 43, 153+2}}, //7 idle 2
-	{MenuO_ArcMain_Spook, {120,   0,  54,  75}, { 41, 148}}, //8 idle 3
-	{MenuO_ArcMain_Spook, {176,   0,  54,  76}, { 41, 148}}, //9 idle 4
-	{MenuO_ArcMain_Spook, {  0,  87,  76,  82}, { 48, 153}}, //10 idle 5
-	{MenuO_ArcMain_Spook, { 78,  86,  73,  80}, { 48, 154}}, //11 idle 6
+	{MenuO_ArcMain_Spook, {  0,   0,  58,  84}, { 14 + 45, 83 + 65}}, //6 idle 1
+	{MenuO_ArcMain_Spook, { 60,   0,  58,  83}, { 14 + 45, 82 + 65}}, //7 idle 2
+	{MenuO_ArcMain_Spook, {120,   0,  54,  75}, { 11 + 45, 74 + 65}}, //8 idle 3
+	{MenuO_ArcMain_Spook, {176,   0,  54,  76}, { 12 + 45, 75 + 65}}, //9 idle 4
+	{MenuO_ArcMain_Spook, {  0,  87,  76,  82}, { 22 + 45, 80 + 65}}, //10 idle 5
+	{MenuO_ArcMain_Spook, { 78,  86,  73,  80}, { 20 + 45, 79 + 65}}, //11 idle 6
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
