@@ -271,6 +271,9 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode);
 void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode);
 
+//Stage move bg function
+void Stage_MoveTex(u32 input, s16 x, s16 y);
+
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);

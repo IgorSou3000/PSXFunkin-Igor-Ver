@@ -68,6 +68,14 @@
 				<file name = "week4_3.mus" type = "data" source = "iso/music/milf/milf.mus"/>
 				<file name = "week4_4.mus" type = "data" source = "iso/music/test/test.mus"/>
 			</dir>
+			<!-- Week 4 assets -->
+			<dir name = "week5">
+				<!-- Overlay -->
+				<file name = "week5.exe" type = "data" source = "iso/week5/week5.exe"/>
+				<file name = "week5_1.mus" type = "data" source = "iso/music/cocoa/cocoa.mus"/>
+				<file name = "week5_2.mus" type = "data" source = "iso/music/eggnog/eggnog.mus"/>
+				<file name = "week5_3.mus" type = "data" source = "iso/music/winter-horrorland/winter-horrorland.mus"/>
+			</dir>
 			
 			<!-- Week 6 assets -->
 			<dir name = "week6">
@@ -77,6 +85,13 @@
 				<file name = "week6_2.mus" type = "data" source = "iso/music/roses/roses.mus"/>
 				<file name = "week6_3.mus" type = "data" source = "iso/music/thorns/thorns.mus"/>
 			</dir>
+
+			<!-- Str assets -->
+			<dir name = "str">
+				<!-- Movie -->
+				<file name = "ugh.str" type = "str" source = "iso/movie/ugh.str"/>
+			</dir>
+
 		</directory_tree>
 	</track>
 </iso_project>

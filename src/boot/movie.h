@@ -8,8 +8,20 @@
 #define PSXF_GUARD_MOVIE_H
 
 #include "psx.h"
+#include "pad.h"
+
+//define controller
+#define INPUT_STARTMOVIE  (PAD_CROSS | PAD_START)
 
 //Movie interface
-void Movie_Play(const char *path, u32 length);
+//void Movie_Play(const char *path, u32 length);
+
+typedef struct
+{
+  u8 select;
+  u8 playing;
+} Movie;
+
+void Movie_Tick();
 
 #endif

@@ -16,6 +16,9 @@ all: \
 	iso/music/high/high.mus \
 	iso/music/milf/milf.mus \
 	iso/music/test/test.mus \
+	iso/music/cocoa/cocoa.mus \
+	iso/music/eggnog/eggnog.mus \
+	iso/music/winter-horrorland/winter-horrorland.mus \
 	iso/music/senpai/senpai.mus \
 	iso/music/roses/roses.mus \
 	iso/music/thorns/thorns.mus

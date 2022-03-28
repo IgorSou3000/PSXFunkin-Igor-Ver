@@ -90,6 +90,23 @@ SECTIONS {
 			. = ALIGN(4);
 			__week4_end = .;
 		}
+		.week5
+		{
+			. = . + 2;
+			KEEP(src/week5/*.o(.text))
+			__week5_ctor = .;
+			KEEP(src/week5/*.o(.text.startup._GLOBAL__*))
+			KEEP(src/week5/*.o(.text.*))
+			KEEP(src/week5/*.o(.rodata*))
+			KEEP(src/week5/*.o(.sdata*))
+			KEEP(src/week5/*.o(.data*))
+			KEEP(src/week5/*.o(.sbss*))
+			KEEP(src/week5/*.o(.bss*))
+			KEEP(src/week5/*.o(.ctors))
+			
+			. = ALIGN(4);
+			__week5_end = .;
+		}
 		.week6
 		{
 			. = . + 2;

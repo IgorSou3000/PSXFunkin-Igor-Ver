@@ -15,6 +15,7 @@
 typedef enum
 {
 	GameLoop_Menu,
+  GameLoop_Movie,
 	GameLoop_Stage,
 } GameLoop;
 

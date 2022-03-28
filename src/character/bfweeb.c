@@ -304,8 +304,9 @@ static Character *Char_BFWeeb_New(fixed_t x, fixed_t y)
 	this->character.health_b = 0xFF7cd6f5;
 	this->character.health_i = 0;
 	
-	this->character.focus_x = (stage.stage_id == StageId_4_4) ? FIXED_DEC(50,1) : FIXED_DEC(-34,1);
-	this->character.focus_y = (stage.stage_id == StageId_4_4) ? FIXED_DEC(-65,1) : FIXED_DEC(-40,1);
+	//use different x,y and zoom for test song
+	this->character.focus_x = (stage.stage_id == StageId_4_4) ? FIXED_DEC(70,1) : FIXED_DEC(-34,1);
+	this->character.focus_y = (stage.stage_id == StageId_4_4) ? FIXED_DEC(-75,1) : FIXED_DEC(-40,1);
 	this->character.focus_zoom = (stage.stage_id == StageId_4_4) ? FIXED_DEC(1,1) : FIXED_DEC(2,1);
 	
 	//Load art

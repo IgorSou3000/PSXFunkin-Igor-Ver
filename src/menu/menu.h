@@ -33,6 +33,7 @@ typedef enum
 	#endif
 	
 	MenuPage_Stage, //Changes game loop
+	MenuPage_Movie, //Changes game loop
 } MenuPage;
 
 //Menu functions

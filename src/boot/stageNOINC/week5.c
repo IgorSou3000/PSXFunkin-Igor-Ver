@@ -106,9 +106,9 @@ void Back_Week5_DrawBG(StageBack *back)
 		RECT src;
 		fixed_t scale;
 	} floor_piece[] = {
-		{{  0, 0, 161, 256}, FIXED_DEC(14,10)},
-		{{161, 0,   9, 256}, FIXED_DEC(7,1)},
-		{{171, 0,  85, 256}, FIXED_DEC(14,10)},
+		{{  0, 0, 161, 255}, FIXED_DEC(14,10)},
+		{{161, 0,   9, 255}, FIXED_DEC(7,1)},
+		{{171, 0,  85, 255}, FIXED_DEC(14,10)},
 	};
 	
 	RECT_FIXED floor_dst = {
@@ -132,8 +132,8 @@ void Back_Week5_DrawBG(StageBack *back)
 		RECT src;
 		RECT_FIXED dst;
 	} ubop_piece[] = {
-		{{0, 0, 256, 76}, {FIXED_DEC(-200,1), FIXED_DEC(-132,1), FIXED_DEC(256,1)*6/7, FIXED_DEC(76,1)*6/7}},
-		{{0, 76, 256, 76}, {FIXED_DEC(50,1), FIXED_DEC(-132,1), FIXED_DEC(256,1)*6/7, FIXED_DEC(76,1)*6/7}}
+		{{0, 0, 255, 76}, {FIXED_DEC(-200,1), FIXED_DEC(-132,1), FIXED_DEC(255,1)*6/7, FIXED_DEC(76,1)*6/7}},
+		{{0, 76, 255, 76}, {FIXED_DEC(50,1), FIXED_DEC(-132,1), FIXED_DEC(255,1)*6/7, FIXED_DEC(76,1)*6/7}}
 	};
 	
 	const struct Back_Week5_UpperBop *ubop_p = ubop_piece;
@@ -157,9 +157,9 @@ void Back_Week5_DrawBG(StageBack *back)
 		RECT src;
 		fixed_t scale;
 	} wall_piece[] = {
-		{{  0, 0, 113, 256}, FIXED_DEC(1,1)},
-		{{113, 0,   6, 256}, FIXED_DEC(17,1)},
-		{{119, 0, 137, 256}, FIXED_DEC(1,1)},
+		{{  0, 0, 113, 255}, FIXED_DEC(1,1)},
+		{{113, 0,   6, 255}, FIXED_DEC(17,1)},
+		{{119, 0, 137, 255}, FIXED_DEC(1,1)},
 	};
 	
 	RECT_FIXED wall_dst = {

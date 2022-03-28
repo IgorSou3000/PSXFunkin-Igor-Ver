@@ -77,6 +77,22 @@ StageOverlay_NextStage stageoverlay_nextstage;
 //Stage definitions
 #include "stagedef_disc1.h"
 
+
+//Stage move bg function
+void Stage_MoveTex(u32 input, s16 x, s16 y)
+{
+  stage.botplay = true;
+    if (pad_state.held & input && pad_state.held & PAD_LEFT)
+			x--;
+	if (pad_state.held & input && pad_state.held & PAD_UP)
+			y--;
+	if (pad_state.held & input && pad_state.held & PAD_RIGHT)
+			x++;
+	if (pad_state.held & input && pad_state.held & PAD_DOWN)
+			y++;
+
+	FntPrint("bg x is %d and y is %d", x, y);
+}
 //Stage music functions
 static void Stage_StartVocal(void)
 {
@@ -1717,13 +1733,12 @@ void Stage_Tick(void)
 				RECT health_fill = {33, 210, 256 - (256 * stage.player_state[0].health / 20000), 4};
 				RECT health_back = {33, 210, 256, 4};
 				RECT health_border = {32, 209, 258, 6};
+				//draw downscroll healthbar
 			    if (stage.downscroll)
-                            {
+                 {
 			      health_fill.y = health_back.y = 20;
-                              health_border.y = 19;
-                             }
-		        //draw healthbar
-					health_fill.y = health_border.y = health_back.y = 20;
+                  health_border.y = 19;
+				 }
 
 		        //draw healthbar and invert if it swap mode
 				if (stage.mode == StageMode_Swap)

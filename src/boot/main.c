@@ -15,6 +15,7 @@
 
 #include "menu/menu.h"
 #include "stage.h"
+#include "movie.h"
 
 //Memory implementation
 //#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
@@ -159,6 +160,9 @@ int main(int argc, char **argv)
 		{
 			case GameLoop_Menu:
 				Menu_Tick();
+				break;
+			case GameLoop_Movie:
+			    Movie_Tick();
 				break;
 			case GameLoop_Stage:
 				Stage_Tick();

@@ -18,7 +18,6 @@
 
 #include "network.h"
 
-char *memoryCardRead(u32 len);
-void memoryCardWrite(char *p_phrase, u32 len);
+void Save_Tick(void);
   
 #endif

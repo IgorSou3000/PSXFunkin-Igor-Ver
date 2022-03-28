@@ -23,6 +23,7 @@
 
 #include "boot/stage.h"
 #include "boot/save.h"
+#include "boot/movie.h"
 
 //Characters
 //Menu BF
@@ -642,6 +643,14 @@ void Menu_Tick(void)
 					menu.next_select = 0;
 					menu.trans_time = FIXED_UNIT;
 				}
+
+				if (pad_state.press & PAD_SELECT)
+			{
+				menu.next_page = MenuPage_Movie;
+				menu.trans_time = FIXED_UNIT;
+				menu.page_state.title.fade = FIXED_DEC(255,1);
+				menu.page_state.title.fadespd = FIXED_DEC(300,1);
+			}
 				
 				//Return to title screen if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
@@ -1317,30 +1326,6 @@ void Menu_Tick(void)
 		}
 	case MenuPage_SaveArea:
 		{
-			if (pad_state.press & PAD_START)
-			{
-			char *p_title = "Memory Card Write Example\nWROTE:";
-           char *p_message = "I LOVE YOU SO MUCH LONG TIME";
-  int len = 0;
-  
-  len = strlen(p_message);
-  
-  envMessage.p_title = p_title;
-  envMessage.p_message = p_message;
-  envMessage.p_data = &len;
-  
-  memoryCardWrite(p_message, strlen(p_message));
-			}
-            
-			if (pad_state.press & PAD_CROSS)
-			{
-			 char *p_title = "Memory Card Read Example\nREAD:";
-  
-  envMessage.p_title = p_title;
-  envMessage.p_message = memoryCardRead(128);
-  envMessage.p_data = strlen(envMessage.p_message);
-			}
-
 			//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
@@ -1348,8 +1333,6 @@ void Menu_Tick(void)
 					menu.next_select = 3; //Options
 					Trans_Start();
 				}
-	FntPrint("message: %c", envMessage.p_message);
-
 			//Draw background
 			Menu_DrawBack(
 				true,
@@ -1882,6 +1865,16 @@ void Menu_Tick(void)
 			Menu_Unload();
 			Stage_LoadScr(menu.page_param.stage.id, menu.page_param.stage.diff, menu.page_param.stage.story);
 			return;
+		}
+		case MenuPage_Movie:
+		{
+			//Unload
+			Menu_Unload();
+			//Play movie
+			LoadScr_Start();
+			gameloop = GameLoop_Movie;
+			LoadScr_End();
+			break;
 		}
 		default:
 			break;

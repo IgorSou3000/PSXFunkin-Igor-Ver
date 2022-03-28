@@ -11,6 +11,8 @@
 #include "boot/main.h"
 #include "boot/mem.h"
 
+u16 weekx,weeky;
+
 //Charts
 static u8 week1_cht_bopeebo_easy[] = {
 	#include "iso/chart/bopeebo-easy.json.cht.h"
@@ -128,8 +130,7 @@ static void Week1_Load(void)
 
 	else if (stage.stage_id == StageId_4_4) //BFWeeb as opponent
 	{
-		//Dad as opponent
-		stage.opponent = Char_BFWeeb_New(FIXED_DEC(-120,1), FIXED_DEC(100,1));
+		stage.opponent = Char_BFWeeb_New(FIXED_DEC(-120,1), FIXED_DEC(110,1));
 		stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
 	}
 	else
@@ -142,6 +143,8 @@ static void Week1_Load(void)
 
 static void Week1_Tick()
 {
+
+	Stage_MoveTex(PAD_L2,weekx,weeky);
 	//Stage specific events
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
@@ -189,8 +192,8 @@ static void Week1_DrawBG()
 	RECT_FIXED curtainl_dst = {
 		FIXED_DEC(-250,1) - fx,
 		FIXED_DEC(-150,1) - fy,
-		FIXED_DEC(107,1),
-		FIXED_DEC(221,1)
+		FIXED_DEC(weekx,1),
+		FIXED_DEC(weeky,1)
 	};
 	RECT curtainr_src = {122, 0, 134, 255};
 	RECT_FIXED curtainr_dst = {

@@ -13,6 +13,8 @@ all: \
 	src/iso/mom/main.arc.h \
 	src/iso/mom/hair.tim.h \
 	src/iso/week4/hench.arc.h \
+	src/iso/xmasp/main.arc.h \
+	src/iso/monsterx/main.arc.h \
 	src/iso/bf/weeb.arc.h \
 	src/iso/gf/weeb.arc.h \
 	src/iso/senpai/main.arc.h \
@@ -57,6 +59,15 @@ all: \
 	src/iso/chart/milf.json.cht.h \
 	src/iso/chart/milf-hard.json.cht.h \
 	src/iso/chart/test.json.cht.h \
+	src/iso/chart/cocoa-easy.json.cht.h \
+	src/iso/chart/cocoa.json.cht.h \
+	src/iso/chart/cocoa-hard.json.cht.h \
+	src/iso/chart/eggnog-easy.json.cht.h \
+	src/iso/chart/eggnog.json.cht.h \
+	src/iso/chart/eggnog-hard.json.cht.h \
+	src/iso/chart/winter-horrorland-easy.json.cht.h \
+	src/iso/chart/winter-horrorland.json.cht.h \
+	src/iso/chart/winter-horrorland-hard.json.cht.h \
 	src/iso/chart/senpai-easy.json.cht.h \
 	src/iso/chart/senpai.json.cht.h \
 	src/iso/chart/senpai-hard.json.cht.h \

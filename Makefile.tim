@@ -36,6 +36,9 @@ all: \
 	iso/week5/back3.tim \
 	iso/week5/back4.tim \
 	iso/week5/back5.tim \
+	iso/week5/back0a2.tim \
+	iso/week5/back1a2.tim \
+	iso/week5/hud1.tim \
 	iso/week6/back0.tim \
 	iso/week6/back1.tim \
 	iso/week6/back2.tim \
@@ -59,6 +62,7 @@ all: \
 	iso/mom/hair.tim \
 	iso/bf/xmas.arc \
 	iso/xmasp/main.arc \
+	iso/monsterx/main.arc \
 	iso/senpai/main.arc \
 	iso/senpaim/main.arc \
 	iso/spirit/main.arc \
@@ -98,6 +102,9 @@ iso/spook/main.arc: iso/spook/idle0.tim iso/spook/idle1.tim iso/spook/idle2.tim 
 
 # Monster
 iso/monster/main.arc: iso/monster/idle0.tim iso/monster/idle1.tim iso/monster/idle2.tim iso/monster/left.tim iso/monster/down.tim iso/monster/up.tim iso/monster/right.tim
+
+# Monster Christimas
+iso/monsterx/main.arc: iso/monsterx/idle0.tim iso/monsterx/idle1.tim iso/monsterx/idle2.tim iso/monsterx/left.tim iso/monsterx/down.tim iso/monsterx/up.tim iso/monsterx/right.tim
 
 # Pico
 iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim iso/pico/miss0.tim iso/pico/miss1.tim
@@ -146,7 +153,7 @@ iso/week4/week4.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week4/back0.tim i
 iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
 
 # Week 5
-iso/week5/week5.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
+iso/week5/week5.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim iso/week5/back0a2.tim iso/week5/back1a2.tim
 
 # Week 6
 iso/week6/week6a.arc: iso/stage/hud0weeb.tim iso/stage/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
