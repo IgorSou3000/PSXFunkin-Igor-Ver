@@ -55,7 +55,7 @@ static const CharFrame char_menuo_frame[] = {
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
-	{1, (const u8[]){ 0, 0, 1,  1,  2, 2, 3, 3,  4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
+	{1, (const u8[]){ 0, 0, 1,  1,  2, 2, 3, 3,  4, 4, 5, 5, 5, 5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
 	{2, (const u8[]){ 6,  7, 7,  8, 8, 9, 9, 10, 11, 11, 8, 8, 9, 9, ASCR_CHGANI, CharAnim_Left}},         //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
 	{2, (const u8[]){ 6,  7, ASCR_BACK, 1}},         //CharAnim_Down
