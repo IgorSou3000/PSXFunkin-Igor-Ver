@@ -373,7 +373,7 @@ static boolean Week5_NextStage(void)
 	switch (stage.stage_id)
 	{
 		case StageId_5_1: //Cocoa
-			stage.stage_id = StageId_2_2;
+			stage.stage_id = StageId_5_2;
 			return true;
 		case StageId_5_2: //Eggnog
 			stage.stage_id = StageId_5_3;
