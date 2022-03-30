@@ -13,6 +13,9 @@ all: \
 	src/iso/mom/main.arc.h \
 	src/iso/mom/hair.tim.h \
 	src/iso/week4/hench.arc.h \
+	src/iso/bf/xmas.arc.h \
+	src/iso/gf/xmas.arc.h \
+	src/iso/gf/light.arc.h \
 	src/iso/xmasp/main.arc.h \
 	src/iso/monsterx/main.arc.h \
 	src/iso/bf/weeb.arc.h \

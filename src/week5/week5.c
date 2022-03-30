@@ -62,7 +62,7 @@ static IO_Data week5_cht[][3] = {
 
 //Characters
 //Boyfriend
-#include "character/bf.c"
+#include "character/xmasbf.c"
 
 //Christimas Parents
 #include "character/xmasp.c"
@@ -71,9 +71,9 @@ static IO_Data week5_cht[][3] = {
 #include "character/monsterx.c"
 
 //Girlfriend
-#include "character/gf.c"
+#include "character/xmasgf.c"
 
-static fixed_t Char_GF_GetParallax(Char_GF *this)
+static fixed_t Char_XmasGF_GetParallax(Char_XmasGF *this)
 {
 	(void)this;
 	return FIXED_UNIT;
@@ -83,7 +83,7 @@ static fixed_t Char_GF_GetParallax(Char_GF *this)
 static Gfx_Tex week5_tex_back0; //Back wall
 static Gfx_Tex week5_tex_back1; //Second floor
 static Gfx_Tex week5_tex_back2; //Lower bop
-static Gfx_Tex week5_tex_back3; //Santa
+//static Gfx_Tex week5_tex_back3; //Santa
 static Gfx_Tex week5_tex_back4; //Upper bop
 static Gfx_Tex week5_tex_back5; //Tree
 static Gfx_Tex week5_tex_back0a2; //Evil Back wall
@@ -102,7 +102,7 @@ static void Week5_Load(void)
 	Gfx_LoadTex(&week5_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
 	Gfx_LoadTex(&week5_tex_back1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1.tim
 	Gfx_LoadTex(&week5_tex_back2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back2.tim
-	Gfx_LoadTex(&week5_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
+	//Gfx_LoadTex(&week5_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
 	Gfx_LoadTex(&week5_tex_back4, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back4.tim
 	Gfx_LoadTex(&week5_tex_back5, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back5.tim
 
@@ -110,13 +110,13 @@ static void Week5_Load(void)
 	Gfx_LoadTex(&week5_tex_back1a2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1a2.tim
 	
 	//Load characters
-	stage.player = Char_BF_New(FIXED_DEC(90,1), FIXED_DEC(85,1));
+	stage.player = Char_XmasBF_New(FIXED_DEC(90,1), FIXED_DEC(85,1));
     
 	if (stage.stage_id == StageId_5_3)
-	stage.opponent = Char_Monsterx_New(FIXED_DEC(-190,1), FIXED_DEC(85,1));
+	stage.opponent = Char_Monsterx_New(FIXED_DEC(-125,1), FIXED_DEC(70,1));
 	else
     stage.opponent = Char_XmasP_New(FIXED_DEC(-190,1), FIXED_DEC(85,1));
-	stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-15,1));
+	stage.gf = Char_XmasGF_New(FIXED_DEC(0,1), FIXED_DEC(-15,1));
 }
 
 static void Week5_Tick()
@@ -269,7 +269,7 @@ static void Week5_DrawBG()
 	RECT_FIXED wall_fill;
 	wall_fill.x = wall_dst.x;
 	wall_fill.y = wall_dst.y + wall_dst.h - FIXED_UNIT;
-	wall_fill.w = FIXED_DEC(500,1);
+	wall_fill.w = FIXED_DEC(300,1);
 	wall_fill.h = FIXED_DEC(100,1);
 	Stage_DrawTex(&week5_tex_back0, &wall_src, &wall_fill, stage.camera.bzoom);
 	
@@ -340,12 +340,12 @@ static void Week5_DrawBGEvil()
 		0,
 		FIXED_DEC(190,1)
 	};
-	
-	RECT wall_src = {0, 255, 0, 0};
+
+	RECT wall_src = {23, 158, 0, 0};
 	RECT_FIXED wall_fill;
 	wall_fill.x = wall_dst.x;
 	wall_fill.y = wall_dst.y + wall_dst.h - FIXED_UNIT;
-	wall_fill.w = FIXED_DEC(500,1);
+	wall_fill.w = FIXED_DEC(300,1);
 	wall_fill.h = FIXED_DEC(100,1);
 	Stage_DrawTex(&week5_tex_back0a2, &wall_src, &wall_fill, stage.camera.bzoom);
 	
@@ -379,7 +379,7 @@ static boolean Week5_NextStage(void)
 			stage.stage_id = StageId_5_3;
 			stageoverlay_drawbg = Week5_DrawBGEvil; //switch to evil!!!!
 			Character_Free(stage.opponent);
-			stage.opponent = Char_Monsterx_New(FIXED_DEC(-190,1), FIXED_DEC(85,1));
+			stage.opponent = Char_Monsterx_New(FIXED_DEC(-125,1), FIXED_DEC(70,1));
 			return true;
 		case StageId_5_3: //Winter-horroland
 			return false;
