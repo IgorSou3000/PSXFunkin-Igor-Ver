@@ -5,8 +5,16 @@ Friday Night Funkin' on the PSX LOL
 Refer to [COMPILE.md](/COMPILE.md) here
 
 ## New stuffs
-Adding new stuffs like monster and week 5 monster
-![SCUS-00000_2022-03-28_11-16-37](https://user-images.githubusercontent.com/90409597/160461157-85009e08-caf3-4a5a-adb4-5f46fe765674.png)
+This Fork have new stuffs
+
+## Characters
+Igor Ver added new characters Like XmasGF,Monster and much more!
+![SCUS-00000_2022-03-31_12-36-18](https://user-images.githubusercontent.com/90409597/161094181-c9408acf-9ccf-4aa6-8faa-0f025a1634bf.png)
+
+## Oponents miss animation
+Mostly of the opponets have miss animation
+![SCUS-00000_2022-03-30_12-36-52](https://user-images.githubusercontent.com/90409597/161094409-aff3edf4-ff6f-4a42-93a2-f6336f325d1a.png)
+
 
 
 
