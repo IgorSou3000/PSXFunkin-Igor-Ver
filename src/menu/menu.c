@@ -729,7 +729,14 @@ void Menu_Tick(void)
 						case 2: //Spook
 						menu.opponent->set_anim(menu.opponent, CharAnim_Left);
 							break;
-						case 3: //Options
+						case 3: //Pico
+						menu.opponent->set_anim(menu.opponent, CharAnim_LeftAlt);
+							break;
+						case 4: //Mom
+						menu.opponent->set_anim(menu.opponent, CharAnim_Down);
+							break;
+						case 5: //Christimas Parents
+						menu.opponent->set_anim(menu.opponent, CharAnim_DownAlt);
 							break;
 					}
 			}

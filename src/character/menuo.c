@@ -20,6 +20,12 @@ enum
 {
 	MenuO_ArcMain_Dad,
 	MenuO_ArcMain_Spook,
+	MenuO_ArcMain_Pico,
+	MenuO_ArcMain_Mom,
+	MenuO_ArcMain_Xmasp0,
+	MenuO_ArcMain_Xmasp1,
+	MenuO_ArcMain_Xmasp2,
+	MenuO_ArcMain_Senpai,
 	
 	MenuO_Arc_Max,
 };
@@ -52,14 +58,36 @@ static const CharFrame char_menuo_frame[] = {
 	{MenuO_ArcMain_Spook, {176,   0,  54,  76}, { 12 + 45, 75 + 65}}, //9 idle 4
 	{MenuO_ArcMain_Spook, {  0,  87,  76,  82}, { 22 + 45, 80 + 65}}, //10 idle 5
 	{MenuO_ArcMain_Spook, { 78,  86,  73,  80}, { 20 + 45, 79 + 65}}, //11 idle 6
+
+	{MenuO_ArcMain_Pico, {  0,   0,  67,  72}, { 14 + 45, 83 + 65}}, //12 idle 1
+	{MenuO_ArcMain_Pico, { 67,   0,  68,  73}, { 14 + 45, 82 + 65}}, //13 idle 2
+	{MenuO_ArcMain_Pico, {135,   0,  69,  73}, { 11 + 45, 74 + 65}}, //14 idle 3
+	{MenuO_ArcMain_Pico, {  0,  72,  68,  73}, { 12 + 45, 75 + 65}}, //15 idle 4
+	{MenuO_ArcMain_Pico, { 68,  73,  68,  74}, { 22 + 45, 80 + 65}}, //16 idle 5
+	{MenuO_ArcMain_Pico, {136,  73,  68,  74}, { 20 + 45, 79 + 65}}, //17 idle 6
+
+	{MenuO_ArcMain_Mom, {  0,   0,  58, 125}, { 14 + 45, 83 + 65}}, //18 idle 1
+	{MenuO_ArcMain_Mom, { 58,   0,  58, 123}, { 14 + 45, 82 + 65}}, //19 idle 2
+	{MenuO_ArcMain_Mom, {116,   0,  58, 124}, { 11 + 45, 74 + 65}}, //20 idle 3
+	{MenuO_ArcMain_Mom, {174,   0,  58, 125}, { 12 + 45, 75 + 65}}, //21 idle 4
+	{MenuO_ArcMain_Mom, {  0, 126,  58, 125}, { 22 + 45, 80 + 65}}, //22 idle 5
+	{MenuO_ArcMain_Mom, { 58, 125,  58, 126}, { 20 + 45, 79 + 65}}, //23 idle 6
+	{MenuO_ArcMain_Mom, {116, 125,  58, 125}, { 20 + 45, 79 + 65}}, //24 idle 7
+
+	{MenuO_ArcMain_Xmasp0, {  0,    0, 140, 125}, { 14 + 45, 83 + 65}}, //25 idle 1
+	{MenuO_ArcMain_Xmasp0, {  0,  125, 140, 123}, { 14 + 45, 82 + 65}}, //26 idle 2
+	{MenuO_ArcMain_Xmasp1, {  0,    0, 140, 124}, { 11 + 45, 74 + 65}}, //27 idle 3
+	{MenuO_ArcMain_Xmasp1, {  0,  125, 140, 125}, { 12 + 45, 75 + 65}}, //28 idle 4
+	{MenuO_ArcMain_Xmasp2, {  0,    0, 140, 125}, { 22 + 45, 80 + 65}}, //29 idle 5
+	{MenuO_ArcMain_Xmasp2, {  0,  125, 148, 126}, { 20 + 45, 79 + 65}}, //30 idle 6
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
 	{1, (const u8[]){ 0, 0, 1,  1,  2, 2, 3, 3,  4, 4, 5, 5, 5, 5, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
 	{2, (const u8[]){ 6,  7, 7,  8, 8, 9, 9, 10, 11, 11, 8, 8, 9, 9, ASCR_CHGANI, CharAnim_Left}},         //CharAnim_Left
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
-	{2, (const u8[]){ 6,  7, ASCR_BACK, 1}},         //CharAnim_Down
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_DownAlt
+	{2, (const u8[]){12, 13, 14, 15, 16,  17, 17, ASCR_CHGANI, CharAnim_LeftAlt}},   //CharAnim_LeftAlt
+	{2, (const u8[]){18, 19, 20, 21, 22, 23, 24, 24, ASCR_CHGANI, CharAnim_Down}},         //CharAnim_Down
+	{2, (const u8[]){25, 26, 27, 28, 29, 30, 30, ASCR_CHGANI, CharAnim_DownAlt}},   //CharAnim_DownAlt
 	{2, (const u8[]){ 8,  9, ASCR_BACK, 1}},         //CharAnim_Up
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_UpAlt
 	{2, (const u8[]){10, 11, ASCR_BACK, 1}},         //CharAnim_Right
@@ -139,6 +167,11 @@ static Character *Char_MenuO_New(fixed_t x, fixed_t y)
 	const char **pathp = (const char *[]){
 		"dad.tim", //MenuO_ArcMain_Dad
 		"spook.tim", //MenuO_ArcMain_Spook
+		"pico.tim", //MenuO_ArcMain_Pico
+		"mom.tim", //MenuO_ArcMain_Mom
+		"xmasp0.tim", //MenuO_ArcMain_Xmasp0
+		"xmasp1.tim", //MenuO_ArcMain_Xmasp1
+		"xmasp2.tim", //MenuO_ArcMain_Xmasp2
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

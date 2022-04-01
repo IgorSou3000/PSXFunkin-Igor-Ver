@@ -144,7 +144,7 @@ static void Week1_Load(void)
 static void Week1_Tick()
 {
 
-	Stage_MoveTex(PAD_L2,weekx,weeky);
+	//Stage_MoveTex(PAD_L2,weekx,weeky);
 	//Stage specific events
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{

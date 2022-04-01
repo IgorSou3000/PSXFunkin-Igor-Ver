@@ -25,6 +25,10 @@ enum
 	Spook_ArcMain_Down,
 	Spook_ArcMain_Up,
 	Spook_ArcMain_Right,
+	Spook_ArcMain_MissLeft,
+	Spook_ArcMain_MissDown,
+	Spook_ArcMain_MissUp,
+	Spook_ArcMain_MissRight,
 	
 	Spook_Arc_Max,
 };
@@ -62,9 +66,20 @@ static const CharFrame char_spook_frame[] = {
 	
 	{Spook_ArcMain_Right, {  0,   0, 111, 130}, { 42, 128}}, //12 right 1
 	{Spook_ArcMain_Right, {112,   0, 110, 133}, { 39, 131}}, //13 right 2
+
+	{Spook_ArcMain_MissLeft, {  0,   0, 124, 139}, {103, 130}}, //6 left 1
+	
+	{Spook_ArcMain_MissDown, {  0,   0, 117, 102}, { 66,  99}}, //8 down 1
+	{Spook_ArcMain_MissDown, {118,   0, 113, 101}, { 65,  98}}, //9 down 2
+	
+	{Spook_ArcMain_MissUp, {  0,   0, 133, 144}, { 90, 139}}, //10 up 1
+	{Spook_ArcMain_MissUp, {137,   0, 117, 144}, { 74, 138}}, //11 up 2
+	
+	{Spook_ArcMain_MissRight, {  0,   0, 111, 130}, { 42, 128}}, //12 right 1
+	{Spook_ArcMain_MissRight, {112,   0, 110, 133}, { 39, 131}}, //13 right 2
 };
 
-static const Animation char_spook_anim[CharAnim_Max] = {
+static const Animation char_spook_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}}, //CharAnim_Idle
 	{2, (const u8[]){ 6,  7, ASCR_BACK, 1}},          //CharAnim_Left
 	{2, (const u8[]){ 0,  1,  2,  3, ASCR_BACK, 1}},  //CharAnim_LeftAlt
@@ -74,6 +89,11 @@ static const Animation char_spook_anim[CharAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}}, //CharAnim_UpAlt
 	{2, (const u8[]){12, 13, ASCR_BACK, 1}},          //CharAnim_Right
 	{2, (const u8[]){ 4,  5,  2,  3, ASCR_BACK, 1}},  //CharAnim_RightAlt
+
+	{1, (const u8[]){ 6, 14, 14, 14, ASCR_BACK, 1}},     //PlayerAnim_LeftMiss
+	{1, (const u8[]){ 8, 15, 15, 16, ASCR_BACK, 1}},     //PlayerAnim_DownMiss
+	{1, (const u8[]){10, 17, 17, 18, ASCR_BACK, 1}},     //PlayerAnim_UpMiss
+	{1, (const u8[]){12, 19, 19, 20, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
 };
 
 //Spook character functions
@@ -159,7 +179,7 @@ static Character *Char_Spook_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = 0;
+	this->character.spec = CHAR_SPEC_MISSANIM;
 	
 	this->character.health_i = 1;
 	this->character.health_b = 0xFFd47d00;
@@ -177,6 +197,10 @@ static Character *Char_Spook_New(fixed_t x, fixed_t y)
 		"down.tim",  //Spook_ArcMain_Down
 		"up.tim",    //Spook_ArcMain_Up
 		"right.tim", //Spook_ArcMain_Right
+		"missl.tim",  //Spook_ArcMain_MissLeft
+		"missd.tim",  //Spook_ArcMain_MissDown
+		"missu.tim",    //Spook_ArcMain_MissUp
+		"missr.tim", //Spook_ArcMain_MissRight
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
