@@ -4,6 +4,7 @@
 #include "week4/week4.h"
 #include "week5/week5.h"
 #include "week6/week6.h"
+#include "week7/week7.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	//Week 1
@@ -91,5 +92,17 @@ static const StageDef stage_defs[StageId_Max] = {
 	{ //StageId_6_3 (Thorns)
 		"\\WEEK6\\WEEK6.EXE;1", Week6_SetPtr,
 		"\\WEEK6\\WEEK6_3.MUS;1"
+	},
+	{ //StageId_7_1 (Ugh)
+		"\\WEEK7\\WEEK7.EXE;1", Week7_SetPtr,
+		"\\WEEK7\\WEEK7_1.MUS;1"
+	},
+	{ //StageId_7_2 (Guns)
+		"\\WEEK7\\WEEK7.EXE;1", Week7_SetPtr,
+		"\\WEEK7\\WEEK7_2.MUS;1"
+	},
+	{ //StageId_7_3 (Stress)
+		"\\WEEK7\\WEEK7.EXE;1", Week7_SetPtr,
+		"\\WEEK7\\WEEK7_3.MUS;1"
 	}
 };

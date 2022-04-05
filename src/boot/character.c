@@ -35,29 +35,32 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 
 void Character_DrawParallax(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax)
 {
+	s16 offx;
+
+	if (this->flip == true)
+	offx = -cframe->off[0];
+
+	else
+	offx = cframe->off[0];
 	//Draw character
-	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - FIXED_DEC(cframe->off[0],1);
+	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - FIXED_DEC(offx,1);
 	fixed_t y = this->y - FIXED_MUL(stage.camera.y, parallax) - FIXED_DEC(cframe->off[1],1);
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
+
 	RECT_FIXED dst = {x, y, src.w << FIXED_SHIFT, src.h << FIXED_SHIFT};
+
+	//invert character x
+	if (this->flip == true)
+	dst.w = -dst.w;
+
 	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
+
 }
 
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
 {
 	Character_DrawParallax(this, tex, cframe, FIXED_UNIT);
-}
-
-void Character_ReverseDraw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
-{
-	//Draw character
-	fixed_t x = this->x - FIXED_MUL(stage.camera.x, FIXED_UNIT) - FIXED_DEC(-cframe->off[0]*2,1);
-	fixed_t y = this->y - FIXED_MUL(stage.camera.y, FIXED_UNIT) - FIXED_DEC(cframe->off[1]*2,1);
-	
-	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
-	RECT_FIXED dst = {x, y, (-src.w*2+12) << FIXED_SHIFT, (src.h*2-12) << FIXED_SHIFT};
-	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
 }
 
 void Character_CheckStartSing(Character *this)

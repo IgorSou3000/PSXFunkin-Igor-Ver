@@ -60,6 +60,13 @@ static const u8 note_anims[4][3] = {
 	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
 };
 
+static const u8 note_revertanims[4][3] = {
+	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
+	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
+	{CharAnim_Up,    CharAnim_UpAlt,    PlayerAnim_UpMiss},
+	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
+};
+
 //Stage state
 Stage stage;
 
@@ -77,11 +84,24 @@ StageOverlay_NextStage stageoverlay_nextstage;
 //Stage definitions
 #include "stagedef_disc1.h"
 
+void Stage_Fade(u8 color, u8 colorspd, u8 mode)
+{
+	fixed_t fade = color;
+	fixed_t fadespd = colorspd;
+    //Start color
+    if (fade > 0)
+	{
+	static const RECT color_flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	u8 flash_col = fade >> FIXED_SHIFT;
+	Gfx_BlendRect(&color_flash, flash_col, flash_col, flash_col, mode);
+	fade -= FIXED_MUL(fadespd, timer_dt);
+	}
 
+	FntPrint("fade is %d", fade);
+}
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y)
 {
-  stage.botplay = true;
     if (pad_state.held & input && pad_state.held & PAD_LEFT)
 			x--;
 	if (pad_state.held & input && pad_state.held & PAD_UP)
@@ -366,8 +386,14 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			
 			//Hit the note
 			note->type |= NOTE_FLAG_HIT;
-			
-			this->character->set_anim(this->character, note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
+            
+			if (this->character->flip == true)
+		    this->flip = note_revertanims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+		    else
+		    this->flip = note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+
+			this->character->set_anim(this->character, this->flip);
+
 			u8 hit_type = Stage_HitNote(this, type, stage.note_scroll - note_fp);
 			this->arrow_hitan[type & 0x3] = stage.step_time;
 			
@@ -459,9 +485,26 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 	if (!stage.ghost)
 	{
 		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type & 0x3][2]);
+		{
+			if (this->character->flip == true)
+		       this->flip = note_revertanims[type & 0x3][2];
+
+	        else
+		      this->flip = note_anims[type & 0x3][2];
+
+			this->character->set_anim(this->character, this->flip);
+		}
 		else
-			this->character->set_anim(this->character, note_anims[type & 0x3][0]);
+		{
+			if (this->character->flip == true)
+		         this->flip = note_revertanims[type & 0x3][0];
+
+	        else
+			{
+		        this->flip = note_anims[type & 0x3][0];
+			}
+			this->character->set_anim(this->character, this->flip);
+		}
 		Stage_MissNote(this);
 		
 		//instakill if the option "instakill" is on
@@ -505,10 +548,15 @@ static void Stage_SustainCheck(PlayerState *this, u8 type)
 		//Hit the note
 		note->type |= NOTE_FLAG_HIT;
 		
-		this->character->set_anim(this->character, note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
+		if (this->character->flip == true)
+		    this->flip = note_revertanims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+		else
+		    this->flip = note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+
+		this->character->set_anim(this->character, this->flip);
 		
 		Stage_StartVocal();
-		//this->health += 230;
+		this->health += 230;
 		this->arrow_hitan[type & 0x3] = stage.step_time;
 			
 		#ifdef PSXF_NETWORK
@@ -747,23 +795,6 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	    50,
 		50
 	};
-	//invert icon image
-	if (stage.mode == StageMode_Swap)
-	{
-	RECT_FIXED dst = {
-		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(-20,1),
-		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 24, 1),
-		-src.w << FIXED_SHIFT,
-		src.h << FIXED_SHIFT
-	};
-	if (stage.downscroll)
-		dst.y = -dst.y - dst.h;
-	
-	//Draw health icon
-	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
-	}
-	else
-	{
 	RECT_FIXED dst = {
 		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(19,1),
 		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 24, 1),
@@ -772,11 +803,17 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	};
 	if (stage.downscroll)
 		dst.y = -dst.y - dst.h;
+
+	//invert icon image
+	if (stage.mode == StageMode_Swap)
+	{
+	   dst.w = -dst.w;
+	   dst.x += FIXED_DEC(34,1);
+	}
 	
 	//Draw health icon
 	Stage_DrawTex(&stage.tex_hud1, &src, &dst, FIXED_MUL(stage.bump, stage.sbump));
     }
-}
 
 static void Stage_DrawStrum(u8 i, RECT *note_src, RECT_FIXED *note_dst)
 {
@@ -1146,11 +1183,7 @@ static void Stage_LoadState(void)
 	{
 		memset(stage.player_state[i].arrow_hitan, 0, sizeof(stage.player_state[i].arrow_hitan));
 		
-		//start with full hp if 2p mode
-		if(stage.mode != StageMode_2P)
 		stage.player_state[i].health = 10000;
-		else
-		stage.player_state[i].health = 20000;
 		stage.player_state[i].combo = 0;
 		
 		stage.player_state[i].refresh_score = false;
@@ -1354,7 +1387,7 @@ void Stage_Tick(void)
 					}
 					else
 					{
-						Menu_Load(MenuPage_Mods);
+						Menu_Load(MenuPage_Credits);
 					}
 				}
 				LoadScr_End();
@@ -1611,12 +1644,18 @@ void Stage_Tick(void)
 						//Opponent note hits
 						if (playing && ((note->type ^ stage.note_swap) & NOTE_FLAG_OPPONENT) && !(note->type & NOTE_FLAG_HIT))
 						{
+							if (stage.player_state[1].character->flip == true)
+		                    stage.player_state[1].flip = note_revertanims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+
+	                        else
+		                    stage.player_state[1].flip = note_anims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+
 							//Opponent hits note
 							Stage_StartVocal();
 							if (note->type & NOTE_FLAG_SUSTAIN)
-								opponent_snote = note_anims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+								opponent_snote = stage.player_state[1].flip;
 							else
-								opponent_anote = note_anims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
+								opponent_anote = stage.player_state[1].flip;
 							note->type |= NOTE_FLAG_HIT;
 						}
 					}
@@ -1758,7 +1797,7 @@ void Stage_Tick(void)
 				//Draw number
 				miss_src.y = 240;
 				miss_src.w = 8;
-				miss_dst.x += FIXED_DEC(70,1);
+				miss_dst.x += FIXED_DEC(45,1);
 				miss_dst.w = FIXED_DEC(8,1);
 				
 				for (const char *p = this->miss_text; ; p++)
@@ -1797,25 +1836,25 @@ void Stage_Tick(void)
 					this->refresh_accuracy = false;
 				}
 				
-				//Display score
+				//Display accurate
 				RECT accuracy_src = {199, 155, 51, 9};
-				RECT_FIXED accuracy_dst = {FIXED_DEC(39,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(51,1), FIXED_DEC(9,1)};
+				RECT_FIXED accuracy_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(51,1), FIXED_DEC(9,1)};
 				if (stage.downscroll)
 					accuracy_dst.y = -accuracy_dst.y - accuracy_dst.h;
 				
 				RECT slash_src = {163, 224, 3, 13};
-				RECT_FIXED slash_dst = {FIXED_DEC(35,1), accuracy_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
+				RECT_FIXED slash_dst = {FIXED_DEC(10,1), accuracy_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
 
 				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, stage.bump);
 				
 				RECT accur_src = {138, 223, 9, 11};
 				u8 accura;
 				if (this->accuracy == 100)
-					accura = 117;
+					accura = 92;
 				else if (this->accuracy > 10)
-					accura = 110;
+					accura = 85;
 				else
-					accura = 102;
+					accura = 77;
 				
 				RECT_FIXED accur_dst = {FIXED_DEC(accura,1), accuracy_dst.y - FIXED_DEC(1,1), FIXED_DEC(9,1), FIXED_DEC(11,1)};
 				Stage_DrawTex(&stage.tex_huds, &accur_src, &accur_dst, stage.bump);
@@ -1863,9 +1902,6 @@ void Stage_Tick(void)
 
 
             
-			//health system for normal and swap mode
-			if (stage.mode != StageMode_2P)
-			{
 			//make healthbar color player
 			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
 			u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
@@ -1877,12 +1913,15 @@ void Stage_Tick(void)
 		    u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
 
 			//use og bar color
-                if (stage.og_healthbar)
-				{
-				 stage.player->health_b = 0xFF66FF33;
-				 stage.opponent->health_b = 0xFFFF0000;
-				}
+            if (stage.og_healthbar)
+			{
+			 stage.player->health_b = 0xFF66FF33;
+			 stage.opponent->health_b = 0xFFFF0000;
+			}
 
+			//health system for normal and swap mode
+			if (stage.mode != StageMode_2P)
+			{
 				//Perform health checks
 				if (stage.player_state[0].health <= 0)
 				{
@@ -1901,12 +1940,13 @@ void Stage_Tick(void)
 				RECT health_fill = {33, 210, 256 - (256 * stage.player_state[0].health / 20000), 4};
 				RECT health_back = {33, 210, 256, 4};
 				RECT health_border = {32, 209, 258, 6};
+
 				//draw downscroll healthbar
 			    if (stage.downscroll)
                  {
 			      health_fill.y = health_back.y = 20;
                   health_border.y = 19;
-				 }
+			      }
 
 		        //draw healthbar and invert if it swap mode
 				if (stage.mode == StageMode_Swap)
@@ -1925,22 +1965,6 @@ void Stage_Tick(void)
 			//health system for multiplayer
 			else
 			{
-			//make healthbar color player
-			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
-			u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
-			u8 barp_b = (stage.player->health_b >>  0) & 0xFF;
-			
-			//make healthbar color opponent
-		    u8 baro_r = (stage.opponent->health_b >> 16) & 0xFF;
-			u8 baro_g = (stage.opponent->health_b >>  8) & 0xFF;
-		    u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
-
-			    //use og bar color
-                if (stage.og_healthbar)
-				{
-				 stage.player->health_b = 0xFF66FF33;
-				 stage.opponent->health_b = 0xFFFF0000;
-				}
 
 				//Perform health checks
 				if (stage.player_state[0].health <= 0)
@@ -1949,8 +1973,8 @@ void Stage_Tick(void)
 					stage.player_state[0].health = 0;
 					stage.state = StageState_Dead;
 				}
-				if (stage.player_state[0].health > 20000)
-					stage.player_state[0].health = 20000;
+				if (stage.player_state[0].health > 10000)
+					stage.player_state[0].health = 10000;
 
 				//Perform health checks
 				if (stage.player_state[1].health <= 0)
@@ -1959,8 +1983,8 @@ void Stage_Tick(void)
 					stage.player_state[1].health = 0;
 					stage.state = StageState_Dead;
 				}
-				if (stage.player_state[1].health > 20000)
-					stage.player_state[1].health = 20000;
+				if (stage.player_state[1].health > 10000)
+					stage.player_state[1].health = 10000;
 				
 				//Draw health heads
 				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[0].character->health_i,  1);
@@ -1968,15 +1992,16 @@ void Stage_Tick(void)
 
 				
 				//Draw health bar
-				//RECT health_fill = {33, 210, 128 - (128 * stage.player_state[1].health / 20000), 4};
+				RECT health_fill = {33, 210, 128 - (128 * stage.player_state[1].health / 20000), 4};
 				RECT health_back = {225, 210, 128 - (128 *  stage.player_state[0].health / 20000), 4};
 				RECT health_border = {32, 209, 258, 6};
+
 				//draw downscroll healthbar
 			    if (stage.downscroll)
                  {
-			     // health_fill.y = health_back.y = 20;
+			      health_fill.y = health_back.y = 20;
                   health_border.y = 19;
-				 }
+			     }
 
 		        //draw healthbar
 				//Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);

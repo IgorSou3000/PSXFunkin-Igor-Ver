@@ -14,7 +14,6 @@ all: \
 	iso/week2/back0.tim \
 	iso/week2/back1.tim \
 	iso/week2/back2.tim \
-	iso/week2/back3.tim \
 	iso/week2/hud1.tim \
 	iso/week3/back0.tim \
 	iso/week3/back1.tim \
@@ -48,6 +47,7 @@ all: \
 	iso/week7/back1.tim \
 	iso/week7/back2.tim \
 	iso/week7/back3.tim \
+	iso/week7/hud1.tim \
 	iso/menup/main.arc \
 	iso/menuo/main.arc \
 	iso/bf/main.arc \
@@ -59,6 +59,7 @@ all: \
 	iso/spook/main.arc \
 	iso/monster/main.arc \
 	iso/pico/main.arc \
+	iso/bf/car.arc \
 	iso/mom/main.arc \
 	iso/mom/hair.tim \
 	iso/bf/xmas.arc \
@@ -115,6 +116,9 @@ iso/monsterx/main.arc: iso/monsterx/idle0.tim iso/monsterx/idle1.tim iso/monster
 # Pico
 iso/pico/main.arc: iso/pico/idle.tim iso/pico/hit0.tim iso/pico/hit1.tim iso/pico/miss0.tim iso/pico/miss1.tim
 
+# BF Car
+iso/bf/car.arc: iso/bf/bfcar0.tim iso/bf/bfcar1.tim iso/bf/bfcar2.tim iso/bf/bfcar3.tim iso/bf/bfcar4.tim iso/bf/bfcar5.tim iso/bf/bfcar6.tim iso/bf/bfcar7.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim iso/bf/dead1.tim iso/bf/dead2.tim iso/bf/retry.tim
+
 # Mom
 iso/mom/main.arc: iso/mom/idle0.tim iso/mom/idle1.tim iso/mom/left.tim iso/mom/down.tim iso/mom/up.tim iso/mom/right.tim
 
@@ -148,7 +152,7 @@ iso/clucky/main.arc: iso/clucky/idle0.tim iso/clucky/idle1.tim iso/clucky/left.t
 iso/week1/week1.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
 
 # Week 2
-iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim iso/week2/back3.tim
+iso/week2/week2.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
 
 # Week 3
 iso/week3/week3.arc: iso/stage/hud0.tim iso/stage/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim

@@ -51,6 +51,7 @@ typedef struct Character
 	CharSpec spec;
 	u32 health_i, health_b; //hud1.tim
 	fixed_t focus_x, focus_y, focus_zoom;
+	boolean flip;
 	
 	//Animation state
 	Animatable animatable;
@@ -63,7 +64,6 @@ void Character_Free(Character *this);
 void Character_Init(Character *this, fixed_t x, fixed_t y);
 void Character_DrawParallax(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax);
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
-void Character_ReverseDraw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
 
 void Character_CheckStartSing(Character *this);
 void Character_CheckEndSing(Character *this);

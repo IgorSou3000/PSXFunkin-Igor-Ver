@@ -124,5 +124,22 @@ SECTIONS {
 			. = ALIGN(4);
 			__week6_end = .;
 		}
+		.week7
+		{
+			. = . + 2;
+			KEEP(src/week7/*.o(.text))
+			__week7_ctor = .;
+			KEEP(src/week7/*.o(.text.startup._GLOBAL__*))
+			KEEP(src/week7/*.o(.text.*))
+			KEEP(src/week7/*.o(.rodata*))
+			KEEP(src/week7/*.o(.sdata*))
+			KEEP(src/week7/*.o(.data*))
+			KEEP(src/week7/*.o(.sbss*))
+			KEEP(src/week7/*.o(.bss*))
+			KEEP(src/week7/*.o(.ctors))
+			
+			. = ALIGN(4);
+			__week7_end = .;
+		}
 	}
 }

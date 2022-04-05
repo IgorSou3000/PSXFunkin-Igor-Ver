@@ -168,6 +168,7 @@ typedef struct
 	Character *character;
 	
 	fixed_t arrow_hitan[4]; //Arrow hit animation for presses
+	u8 flip;
 	
 	s16 health;
 	u16 combo;
@@ -283,6 +284,9 @@ void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, con
 
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y);
+
+//Stage Fade Function
+void Stage_Fade(u8 color, u8 colorspd, u8 mode);
 
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);

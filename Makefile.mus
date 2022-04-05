@@ -21,7 +21,10 @@ all: \
 	iso/music/winter-horrorland/winter-horrorland.mus \
 	iso/music/senpai/senpai.mus \
 	iso/music/roses/roses.mus \
-	iso/music/thorns/thorns.mus
+	iso/music/thorns/thorns.mus \
+	iso/music/ugh/ugh.mus \
+	iso/music/guns/guns.mus \
+	iso/music/stress/stress.mus \
 
 iso/%.mus: iso/%.txt
 	tools/funkinmuspak/funkinmuspak $@ $<

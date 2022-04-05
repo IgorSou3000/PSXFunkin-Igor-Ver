@@ -86,6 +86,15 @@
 				<file name = "week6_3.mus" type = "data" source = "iso/music/thorns/thorns.mus"/>
 			</dir>
 
+			<!-- Week 7 assets -->
+			<dir name = "week7">
+				<!-- Overlay -->
+				<file name = "week7.exe" type = "data" source = "iso/week7/week7.exe"/>
+				<file name = "week7_1.mus" type = "data" source = "iso/music/ugh/ugh.mus"/>
+				<file name = "week7_2.mus" type = "data" source = "iso/music/guns/guns.mus"/>
+				<file name = "week7_3.mus" type = "data" source = "iso/music/stress/stress.mus"/>
+			</dir>
+
 			<!-- Str assets -->
 			<dir name = "str">
 				<!-- Movie -->

@@ -4,13 +4,17 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "tank.h"
+#include "boot/character.h"
+#include "boot/mem.h"
+#include "boot/archive.h"
+#include "boot/stage.h"
+#include "boot/random.h"
+#include "boot/main.h"
 
-#include "../mem.h"
-#include "../archive.h"
-#include "../stage.h"
-#include "../main.h"
-#include "../timer.h"
+//Tank character assets
+static u8 char_tank_arc_main[] = {
+	#include "iso/tank/main.arc.h"
+};
 
 //Tank character structure
 enum
@@ -48,36 +52,36 @@ typedef struct
 
 //Tank character definitions
 static const CharFrame char_tank_frame[] = {
-	{Tank_ArcMain_Idle0, {  0,   0, 128, 256}, { 51, 125}}, //0 idle 1
-	{Tank_ArcMain_Idle0, {128,   0, 128, 256}, { 59, 126}}, //1 idle 2
-	{Tank_ArcMain_Idle1, {  0,   0, 128, 256}, { 52, 130}}, //2 idle 3
-	{Tank_ArcMain_Idle1, {128,   0, 128, 256}, { 53, 129}}, //3 idle 4
+	{Tank_ArcMain_Idle0, {  0,   0, 128, 255}, { 51, 125}}, //0 idle 1
+	{Tank_ArcMain_Idle0, {127,   0, 128, 255}, { 59, 126}}, //1 idle 2
+	{Tank_ArcMain_Idle1, {  0,   0, 128, 255}, { 52, 130}}, //2 idle 3
+	{Tank_ArcMain_Idle1, {127,   0, 128, 255}, { 53, 129}}, //3 idle 4
 	
-	{Tank_ArcMain_Left, {  0,   0, 128, 256}, { 75, 126}}, //4 left 1
-	{Tank_ArcMain_Left, {128,   0, 128, 256}, { 72, 127}}, //5 left 1
+	{Tank_ArcMain_Left, {  0,   0, 128, 255}, { 75, 126}}, //4 left 1
+	{Tank_ArcMain_Left, {127,   0, 128, 255}, { 72, 127}}, //5 left 1
 	
-	{Tank_ArcMain_Down, {  0,   0, 256, 128}, { 68, 100}}, //6 down 1
-	{Tank_ArcMain_Down, {  0, 128, 256, 128}, { 68, 102}}, //7 down 2
+	{Tank_ArcMain_Down, {  0,   0, 255, 128}, { 68, 100}}, //6 down 1
+	{Tank_ArcMain_Down, {  0, 127, 255, 128}, { 68, 102}}, //7 down 2
 	
-	{Tank_ArcMain_Up, {  0,   0, 128, 256}, { 62, 144}}, //8 up 1
-	{Tank_ArcMain_Up, {128,   0, 128, 256}, { 66, 142}}, //9 up 2
+	{Tank_ArcMain_Up, {  0,   0, 128, 255}, { 62, 144}}, //8 up 1
+	{Tank_ArcMain_Up, {127,   0, 128, 255}, { 66, 142}}, //9 up 2
 	
-	{Tank_ArcMain_Right, {  0,   0, 128, 256}, { 48, 119}}, //10 right 1
-	{Tank_ArcMain_Right, {128,   0, 128, 256}, { 46, 123}}, //11 right 2
+	{Tank_ArcMain_Right, {  0,   0, 128, 255}, { 48, 119}}, //10 right 1
+	{Tank_ArcMain_Right, {127,   0, 128, 255}, { 46, 123}}, //11 right 2
 	
-	{Tank_ArcScene_0, {  0,   0, 128, 256}, { 48, 125}}, //12 ugh 0
-	{Tank_ArcScene_0, {128,   0, 128, 256}, { 50, 128}}, //13 ugh 1
-	{Tank_ArcScene_1, {  0,   0, 128, 256}, { 49, 128}}, //14 ugh 2
-	{Tank_ArcScene_1, {128,   0, 128, 256}, { 49, 128}}, //15 ugh 3
+	{Tank_ArcScene_0, {  0,   0, 128, 255}, { 48, 125}}, //12 ugh 0
+	{Tank_ArcScene_0, {127,   0, 128, 255}, { 50, 128}}, //13 ugh 1
+	{Tank_ArcScene_1, {  0,   0, 128, 255}, { 49, 128}}, //14 ugh 2
+	{Tank_ArcScene_1, {127,   0, 128, 255}, { 49, 128}}, //15 ugh 3
 	
 	
-	{Tank_ArcScene_0, {  0,   0, 128, 256}, { 53, 128}}, //16 good 0
-	{Tank_ArcScene_0, {128,   0, 128, 256}, { 53, 133}}, //17 good 1
-	{Tank_ArcScene_1, {  0,   0, 128, 256}, { 53, 131}}, //18 good 2
-	{Tank_ArcScene_1, {128,   0, 128, 256}, { 53, 131}}, //19 good 3
-	{Tank_ArcScene_2, {  0,   0, 128, 256}, { 53, 131}}, //20 good 4
-	{Tank_ArcScene_2, {128,   0, 128, 256}, { 52, 126}}, //21 good 5
-	{Tank_ArcScene_3, {  0,   0, 132, 256}, { 53, 127}}, //22 good 6
+	{Tank_ArcScene_0, {  0,   0, 128, 255}, { 53, 128}}, //16 good 0
+	{Tank_ArcScene_0, {127,   0, 128, 255}, { 53, 133}}, //17 good 1
+	{Tank_ArcScene_1, {  0,   0, 128, 255}, { 53, 131}}, //18 good 2
+	{Tank_ArcScene_1, {127,   0, 128, 255}, { 53, 131}}, //19 good 3
+	{Tank_ArcScene_2, {  0,   0, 128, 255}, { 53, 131}}, //20 good 4
+	{Tank_ArcScene_2, {127,   0, 128, 255}, { 52, 126}}, //21 good 5
+	{Tank_ArcScene_3, {  0,   0, 132, 255}, { 53, 127}}, //22 good 6
 };
 
 static const Animation char_tank_anim[CharAnim_Max] = {
@@ -207,15 +211,13 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 	//Set character information
 	this->character.spec = 0;
 	
-	this->character.health_i = 10;
+	this->character.health_i = 1;
 	
 	this->character.focus_x = FIXED_DEC(65,1);
 	this->character.focus_y = FIXED_DEC(-80,1);
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art
-	this->arc_main = IO_Read("\\CHAR\\TANK.ARC;1");
-	
 	const char **pathp = (const char *[]){
 		"idle0.tim", //Tank_ArcMain_Idle0
 		"idle1.tim", //Tank_ArcMain_Idle1
@@ -227,16 +229,17 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 	};
 	IO_Data *arc_ptr = this->arc_ptr;
 	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+		*arc_ptr++ = Archive_Find((IO_Data)char_tank_arc_main, *pathp);
 	
 	//Load scene art
 	switch (stage.stage_id)
 	{
 		case StageId_7_1: //Ugh
 		{
-			//Load "Ugh" art
-			this->arc_scene = IO_Read("\\CHAR\\TANKUGH.ARC;1");
-			
+			static u8 char_tank_arc_ugh[] = {
+	        #include "iso/tank/ugh.arc.h"
+            };
+			//Load "Ugh" art			
 			const char **pathp = (const char *[]){
 				"ugh0.tim", //Tank_ArcScene_0
 				"ugh1.tim", //Tank_ArcScene_1
@@ -244,14 +247,15 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 			};
 			IO_Data *arc_ptr = &this->arc_ptr[Tank_ArcScene_0];
 			for (; *pathp != NULL; pathp++)
-				*arc_ptr++ = Archive_Find(this->arc_scene, *pathp);
+				*arc_ptr++ = Archive_Find((IO_Data)char_tank_arc_ugh, *pathp);
 			break;
 		}
 		case StageId_7_3: //Stress
 		{
-			//Load "Heh, pretty good!" art
-			this->arc_scene = IO_Read("\\CHAR\\TANKGOOD.ARC;1");
-			
+			static u8 char_tank_arc_good[] = {
+	        #include "iso/tank/good.arc.h"
+            };
+			//Load "Heh, pretty good!" art		
 			const char **pathp = (const char *[]){
 				"good0.tim", //Tank_ArcScene_0
 				"good1.tim", //Tank_ArcScene_1
@@ -261,7 +265,7 @@ Character *Char_Tank_New(fixed_t x, fixed_t y)
 			};
 			IO_Data *arc_ptr = &this->arc_ptr[Tank_ArcScene_0];
 			for (; *pathp != NULL; pathp++)
-				*arc_ptr++ = Archive_Find(this->arc_scene, *pathp);
+				*arc_ptr++ = Archive_Find((IO_Data)char_tank_arc_good, *pathp);
 			
 			this->mouth_i = 0;
 			break;

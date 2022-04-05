@@ -195,6 +195,17 @@ static const Animation char_bfweebreverse_anim[PlayerAnim_Max] = {
 	{3, (const u8[]){58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, ASCR_BACK, 1}},
 };
 
+static void BFWeeb_ReverseDraw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
+{
+	//Draw character
+	fixed_t x = this->x - FIXED_MUL(stage.camera.x, FIXED_UNIT) - FIXED_DEC(-cframe->off[0]*2,1);
+	fixed_t y = this->y - FIXED_MUL(stage.camera.y, FIXED_UNIT) - FIXED_DEC(cframe->off[1]*2,1);
+	
+	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
+	RECT_FIXED dst = {x, y, (-src.w*2+12) << FIXED_SHIFT, (src.h*2-12) << FIXED_SHIFT};
+	Stage_DrawTex(tex, &src, &dst, stage.camera.bzoom);
+}
+
 //Boyfriend Weeb player functions
 static void Char_BFWeeb_SetFrame(void *user, u8 frame)
 {
@@ -249,7 +260,7 @@ static void Char_BFWeeb_Tick(Character *character)
 	//Animate and draw character
 	Animatable_Animate(&character->animatable, (void*)this, Char_BFWeeb_SetFrame);
 	if (stage.stage_id == StageId_4_4)
-	Character_ReverseDraw(character, &this->tex, &char_bfweeb_frame[this->frame]);
+	BFWeeb_ReverseDraw(character, &this->tex, &char_bfweeb_frame[this->frame]);
 	else
 	Character_Draw(character, &this->tex, &char_bfweeb_frame[this->frame]);
 }

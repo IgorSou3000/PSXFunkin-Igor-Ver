@@ -128,6 +128,10 @@ static struct
 		{
 			fixed_t back_r, back_g, back_b;
 		} freeplay;
+		struct
+		{
+			fixed_t back_r, back_g, back_b;
+		} credit;
 	#ifdef PSXF_NETWORK
 		struct
 		{
@@ -567,7 +571,7 @@ void Menu_Tick(void)
 			static const char *menu_options[] = {
 				"STORY MODE",
 				"FREEPLAY",
-				"MODS",
+				"CREDITS",
 				"OPTIONS",
 				#ifdef PSXF_NETWORK
 					"JOIN SERVER",
@@ -625,8 +629,8 @@ void Menu_Tick(void)
 						case 1: //Freeplay
 							menu.next_page = MenuPage_Freeplay;
 							break;
-						case 2: //Mods
-							menu.next_page = MenuPage_Mods;
+						case 2: //Credits
+							menu.next_page = MenuPage_Credits;
 							break;
 						case 3: //Options
 							menu.next_page = MenuPage_Options;
@@ -709,37 +713,37 @@ void Menu_Tick(void)
 		case MenuPage_Story:
 		{
                    
-			        //opponent stuff
-					if (pad_state.press & (PAD_DOWN | PAD_UP))
-					{
-					//shit code that fixes an opponent bug
-					s16 check = 0;
-					if (pad_state.press & PAD_UP)
-					check = -1;
+		//opponent stuff
+		if (pad_state.press & (PAD_DOWN | PAD_UP))
+			{
+			 //shit code that fixes an opponent bug
+			 s16 check = 0;
+			 if (pad_state.press & PAD_UP)
+			 check = -1;
 
-					if (pad_state.press & PAD_DOWN)
-					check = 1;
+			 if (pad_state.press & PAD_DOWN)
+			 check = 1;
 
-					switch (menu.select + check)
-					{
-						case 0: //Dad
-						case 1:
-						menu.opponent->set_anim(menu.opponent, CharAnim_Idle);
-							break;
-						case 2: //Spook
-						menu.opponent->set_anim(menu.opponent, CharAnim_Left);
-							break;
-						case 3: //Pico
-						menu.opponent->set_anim(menu.opponent, CharAnim_LeftAlt);
-							break;
-						case 4: //Mom
-						menu.opponent->set_anim(menu.opponent, CharAnim_Down);
-							break;
-						case 5: //Christimas Parents
-						menu.opponent->set_anim(menu.opponent, CharAnim_DownAlt);
-							break;
-					}
+			switch (menu.select + check)
+			 {
+				case 0: //Dad
+				case 1:
+				menu.opponent->set_anim(menu.opponent, CharAnim_Idle);
+					break;
+				case 2: //Spook
+				menu.opponent->set_anim(menu.opponent, CharAnim_Left);
+					break;
+				case 3: //Pico
+				menu.opponent->set_anim(menu.opponent, CharAnim_LeftAlt);
+					break;
+				case 4: //Mom
+				menu.opponent->set_anim(menu.opponent, CharAnim_Down);
+					break;
+				case 5: //Christimas Parents
+			    menu.opponent->set_anim(menu.opponent, CharAnim_DownAlt);
+					break;
 			}
+	}
 
 			static const struct
 			{
@@ -1019,18 +1023,28 @@ void Menu_Tick(void)
 			);
 			break;
 		}
-		case MenuPage_Mods:
+		case MenuPage_Credits:
 		{
 			static const struct
 			{
-				StageId stage;
+				u32 col;
 				const char *text;
-				boolean difficulty;
+				const char *text2;
+				s16 icon;
 			} menu_options[] = {
-				{StageId_Kapi_1, "VS KAPI", false},
-				{StageId_Clwn_1, "VS TRICKY", true},
-				{StageId_Clwn_4, "   EXPURGATION", false},
-				{StageId_2_4,    "CLUCKED", false},
+				{0xFF9271FD, "VERSION BY",NULL,-1},
+				{0xFF9271FD, "IGORSOU",  "MAKE MOSTLY OF THE PORY",0},
+				{0xFF9271FD, "UNSTOPABLE", "HELPED WITH OFFSETS",10},
+				{0xFF9271FD, "LORD SCOUT", "HELPED WITH OFFSETS",10},
+				{0xFF9271FD, "",NULL,-1},
+				{0xFF9271FD, "PLAYTESTERS",NULL,-1},
+				{0xFF9271FD, "JOHN PAUL",  "PLAYTESTER AND FRIEND",4},
+				{0xFF9271FD, "",NULL,-1},
+				{0xFF9271FD, "SPECIAL THANKS",NULL,-1},
+				{0xFF941653, "LUCKY","MISS AND ACCURATE CODE",7 },
+				{0xFF941653, "CUCKYDEV","MAKE THE PSXFUNKIN",2 },
+				{0xFF941653, "PSXFUNKIN DISCORD","DISCORD",-1},
+				{0xFF941653, "ZERIBEN","FRIEND",5},
 			};
 			
 			//Initialize page
@@ -1038,58 +1052,53 @@ void Menu_Tick(void)
 			{
 				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
+				menu.page_state.credit.back_r = FIXED_DEC(255,1);
+				menu.page_state.credit.back_g = FIXED_DEC(255,1);
+				menu.page_state.credit.back_b = FIXED_DEC(255,1);
 			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"MODS",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
-			
-			//Draw difficulty selector
-			if (menu_options[menu.select].difficulty)
-				Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
-				//Change option
+				
+				//Change option and skip if it ""
 				if (pad_state.press & PAD_UP)
 				{
-					if (menu.select > 0)
+					if (menu_options[menu.select - 1].text[0] == '\0' && menu.select > 0)
+                        menu.select -= 2;
+					else if (menu.select > 0)
 						menu.select--;
 					else
 						menu.select = COUNT_OF(menu_options) - 1;
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
-					if (menu.select < COUNT_OF(menu_options) - 1)
+					if (menu_options[menu.select + 1].text[0] == '\0')
+					    menu.select += 2;
+					else if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
 						menu.select = 0;
-				}
-				
-				//Select option if cross is pressed
-				if (pad_state.press & (PAD_START | PAD_CROSS))
-				{
-					menu.next_page = MenuPage_Stage;
-					menu.page_param.stage.id = menu_options[menu.select].stage;
-					menu.page_param.stage.story = true;
-					if (!menu_options[menu.select].difficulty)
-						menu.page_param.stage.diff = StageDiff_Hard;
-					Trans_Start();
 				}
 				
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					menu.next_page = MenuPage_Main;
-					menu.next_select = 2; //Mods
+					menu.next_select = 2; //Credits
 					Trans_Start();
 				}
 			}
+			      //Draw credits information
+			        menu.font_arial.draw_col(&menu.font_arial,
+					Menu_LowerIf(menu_options[menu.select].text2, false),
+					160,
+					SCREEN_HEIGHT2 - 110,
+					FontAlign_Center,
+					0,
+					0,
+					0
+			);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
@@ -1103,21 +1112,31 @@ void Menu_Tick(void)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
-				
+				//Draw credits image
 				//Draw text
 				menu.font_bold.draw(&menu.font_bold,
 					Menu_LowerIf(menu_options[i].text, menu.select != i),
-					48 + (y >> 2),
+					160,
 					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Left
+					FontAlign_Center
 				);
 			}
 			
 			//Draw background
+			fixed_t tgt_r = (fixed_t)((menu_options[menu.select].col >> 16) & 0xFF) << FIXED_SHIFT;
+			fixed_t tgt_g = (fixed_t)((menu_options[menu.select].col >>  8) & 0xFF) << FIXED_SHIFT;
+			fixed_t tgt_b = (fixed_t)((menu_options[menu.select].col >>  0) & 0xFF) << FIXED_SHIFT;
+			
+			menu.page_state.credit.back_r += (tgt_r - menu.page_state.credit.back_r) >> 4;
+			menu.page_state.credit.back_g += (tgt_g - menu.page_state.credit.back_g) >> 4;
+			menu.page_state.credit.back_b += (tgt_b - menu.page_state.credit.back_b) >> 4;
+			
 			Menu_DrawBack(
 				true,
 				8,
-				197 >> 1, 240 >> 1, 95 >> 1,
+				menu.page_state.credit.back_r >> (FIXED_SHIFT + 1),
+				menu.page_state.credit.back_g >> (FIXED_SHIFT + 1),
+				menu.page_state.credit.back_b >> (FIXED_SHIFT + 1),
 				0, 0, 0
 			);
 			break;
@@ -1247,12 +1266,6 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
-
-			  if (pad_state.press & PAD_L2)
-			  {
-					menu.next_page = MenuPage_SaveArea;
-					Trans_Start();
-				}
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
@@ -1322,24 +1335,6 @@ void Menu_Tick(void)
 			RECT square_src = {26, 33, 270, 180};
 			Gfx_BlendRect(&square_src,111,111,111, 0);
 
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				253 >> 1, 113 >> 1, 155 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-	case MenuPage_SaveArea:
-		{
-			//Return to main menu if circle is pressed
-				if (pad_state.press & PAD_CIRCLE)
-				{
-					menu.next_page = MenuPage_Main;
-					menu.next_select = 3; //Options
-					Trans_Start();
-				}
 			//Draw background
 			Menu_DrawBack(
 				true,

@@ -54,7 +54,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	
 	Stage_DrawTex(&this->tex_back0, &fg_src, &fg_dst, stage.camera.bzoom);
 	fg_dst.x += fg_dst.w;
-	fg_src.y += 128;
+	fg_src.y += 127;
 	Stage_DrawTex(&this->tex_back0, &fg_src, &fg_dst, stage.camera.bzoom);
 	
 	//Move tank
@@ -120,7 +120,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	fx = stage.camera.x >> 1;
 	fy = stage.camera.y >> 1;
 	
-	RECT snipe_src = {0, 0, 128, 256};
+	RECT snipe_src = {0, 0, 128, 255};
 	RECT_FIXED snipe_dst = {
 		FIXED_DEC(-190,1) - fx,
 		FIXED_DEC(-90,1) - fy,
@@ -145,7 +145,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	fx = stage.camera.x >> 2;
 	fy = stage.camera.y >> 2;
 	
-	RECT ruinsf_src = {0, 0, 256, 72};
+	RECT ruinsf_src = {0, 0, 255, 72};
 	RECT_FIXED ruinsf_dst = {
 		FIXED_DEC(-240,1) - fx,
 		FIXED_DEC(-70,1) - fy,
@@ -158,7 +158,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	fx = stage.camera.x / 6;
 	fy = stage.camera.y / 6;
 	
-	RECT ruinsb_src = {0, 72, 256, 44};
+	RECT ruinsb_src = {0, 72, 255, 44};
 	RECT_FIXED ruinsb_dst = {
 		FIXED_DEC(-240,1) - fx,
 		FIXED_DEC(-60,1) - fy,
@@ -201,7 +201,7 @@ void Back_Week7_DrawBG(StageBack *back)
 	
 	Stage_DrawTex(&this->tex_back3, &mountain_src, &mountain_dst, stage.camera.bzoom);
 	mountain_dst.x += mountain_dst.w;
-	mountain_src.y += 128;
+	mountain_src.y += 127;
 	Stage_DrawTex(&this->tex_back3, &mountain_src, &mountain_dst, stage.camera.bzoom);
 }
 

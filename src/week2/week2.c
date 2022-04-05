@@ -87,7 +87,6 @@ static fixed_t Char_GF_GetParallax(Char_GF *this)
 static Gfx_Tex week2_tex_back0; //Background
 static Gfx_Tex week2_tex_back1; //Window
 static Gfx_Tex week2_tex_back2; //Lightning window
-static Gfx_Tex week2_tex_back3; //Lightning window 2
 
 
 //Lightning Window Animation
@@ -106,8 +105,7 @@ static void Week2_Load(void)
 	
 	Gfx_LoadTex(&week2_tex_back0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back0.tim
 	Gfx_LoadTex(&week2_tex_back1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back1.tim
-	Gfx_LoadTex(&week2_tex_back2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back2.tim
-	Gfx_LoadTex(&week2_tex_back3, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back3.tim
+	Gfx_LoadTex(&week2_tex_back2, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back2.ti
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(56,1), FIXED_DEC(85,1));
@@ -176,55 +174,13 @@ static void Week2_DrawBG()
     
 	FntPrint("lightwin %d", week2_anims);
 	
-	if (week2_lightanim == true && week2_anims == 3)
+	if (week2_lightanim == true)
 	{
-	//Draw Lightning window 4
-	RECT lightning4_src = {0,128, 220, 127};
-	RECT_FIXED lightning4_dst = {
+	//Draw Lightning window 
+	RECT lightning_src = {0,0, 220, 127};
+	RECT_FIXED lightning_dst = {
 		FIXED_DEC(-172,1) - fx,
 		FIXED_DEC(-128,1) - fy,
-		FIXED_DEC(216,1),
-		FIXED_DEC(120,1)
-	};
-
-	Stage_DrawTex(&week2_tex_back3, &lightning4_src, &lightning4_dst, stage.camera.bzoom);
-}
-    
-	if (week2_lightanim == true && week2_anims == 2)
-	{
-	//Draw Lightning window 3
-	RECT lightning3_src = {0, 0, 220, 127};
-	RECT_FIXED lightning3_dst = {
-		FIXED_DEC(-170,1) - fx,
-		FIXED_DEC(-128,1) - fy,
-		FIXED_DEC(216,1),
-		FIXED_DEC(120,1)
-	};
-
-	Stage_DrawTex(&week2_tex_back3, &lightning3_src, &lightning3_dst, stage.camera.bzoom);
-}
-    
-	if (week2_lightanim == true && week2_anims == 1)
-	{
-	//Draw Lightning window 2
-	RECT lightning2_src = {0,128, 220, 127};
-	RECT_FIXED lightning2_dst = {
-		FIXED_DEC(-170,1) - fx,
-		FIXED_DEC(-125,1) - fy,
-		FIXED_DEC(216,1),
-		FIXED_DEC(120,1)
-	};
-
-	Stage_DrawTex(&week2_tex_back2, &lightning2_src, &lightning2_dst, stage.camera.bzoom);
-}
-	
-	if (week2_lightanim == true && week2_anims == 0)
-	{
-	//Draw Lightning window
-	RECT lightning_src = {0, 0, 220, 127};
-	RECT_FIXED lightning_dst = {
-		FIXED_DEC(-170,1) - fx,
-		FIXED_DEC(-125,1) - fy,
 		FIXED_DEC(216,1),
 		FIXED_DEC(120,1)
 	};

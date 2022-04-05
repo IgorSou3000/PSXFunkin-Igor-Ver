@@ -10,6 +10,7 @@ all: \
 	src/iso/spook/main.arc.h \
 	src/iso/monster/main.arc.h \
 	src/iso/pico/main.arc.h \
+	src/iso/bf/car.arc.h \
 	src/iso/mom/main.arc.h \
 	src/iso/mom/hair.tim.h \
 	src/iso/week4/hench.arc.h \
@@ -23,6 +24,9 @@ all: \
 	src/iso/senpai/main.arc.h \
 	src/iso/senpaim/main.arc.h \
 	src/iso/spirit/main.arc.h \
+	src/iso/tank/main.arc.h \
+	src/iso/tank/ugh.arc.h \
+	src/iso/tank/good.arc.h \
 	src/iso/chart/bopeebo-easy.json.cht.h \
 	src/iso/chart/bopeebo.json.cht.h \
 	src/iso/chart/bopeebo-hard.json.cht.h \
@@ -80,6 +84,15 @@ all: \
 	src/iso/chart/thorns-easy.json.cht.h \
 	src/iso/chart/thorns.json.cht.h \
 	src/iso/chart/thorns-hard.json.cht.h \
+	src/iso/chart/ugh-easy.json.cht.h \
+	src/iso/chart/ugh.json.cht.h \
+	src/iso/chart/ugh-hard.json.cht.h \
+	src/iso/chart/guns-easy.json.cht.h \
+	src/iso/chart/guns.json.cht.h \
+	src/iso/chart/guns-hard.json.cht.h \
+	src/iso/chart/stress-easy.json.cht.h \
+	src/iso/chart/stress.json.cht.h \
+	src/iso/chart/stress-hard.json.cht.h \
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)

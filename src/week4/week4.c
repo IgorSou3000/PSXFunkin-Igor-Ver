@@ -62,7 +62,7 @@ static IO_Data week4_cht[][3] = {
 
 //Characters
 //Boyfriend
-#include "character/bf.c"
+#include "character/bfcar.c"
 
 //Mommy Mearest
 #include "character/mom.c"
@@ -168,7 +168,7 @@ static void Week4_Load(void)
 	Gfx_LoadTex(&week4_tex_back4, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //back4.tim
 	
 	//Load characters
-	stage.player = Char_BF_New(FIXED_DEC(120,1), FIXED_DEC(40,1));
+	stage.player = Char_BFCar_New(FIXED_DEC(120,1), FIXED_DEC(40,1));
 	stage.opponent = Char_Mom_New(FIXED_DEC(-120,1), FIXED_DEC(100,1));
 	stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
 	
