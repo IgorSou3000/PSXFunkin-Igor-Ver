@@ -60,6 +60,8 @@ static const u8 note_anims[4][3] = {
 	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
 };
 
+
+//use that when flip character is true
 static const u8 note_revertanims[4][3] = {
 	{CharAnim_Right, CharAnim_RightAlt, PlayerAnim_RightMiss},
 	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
@@ -73,6 +75,7 @@ Stage stage;
 //Stage overlay state
 StageOverlay_Load stageoverlay_load;
 StageOverlay_Tick stageoverlay_tick;
+StageOverlay_NoteMoviment stageoverlay_notemoviment;
 StageOverlay_DrawBG stageoverlay_drawbg;
 StageOverlay_DrawMD stageoverlay_drawmd;
 StageOverlay_DrawFG stageoverlay_drawfg;
@@ -84,21 +87,6 @@ StageOverlay_NextStage stageoverlay_nextstage;
 //Stage definitions
 #include "stagedef_disc1.h"
 
-void Stage_Fade(u8 color, u8 colorspd, u8 mode)
-{
-	fixed_t fade = color;
-	fixed_t fadespd = colorspd;
-    //Start color
-    if (fade > 0)
-	{
-	static const RECT color_flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	u8 flash_col = fade >> FIXED_SHIFT;
-	Gfx_BlendRect(&color_flash, flash_col, flash_col, flash_col, mode);
-	fade -= FIXED_MUL(fadespd, timer_dt);
-	}
-
-	FntPrint("fade is %d", fade);
-}
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y)
 {
@@ -308,10 +296,6 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	//Restore vocals and health
 	Stage_StartVocal();
 	this->health += 230;
-
-	//instakill if the option "onlysick" is on
-		if (stage.onlysick && hit_type != 0)
-		this->health -= 0x7000;
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
@@ -344,7 +328,7 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 
 static void Stage_MissNote(PlayerState *this)
 {
-	this->max_accuracy += 12;
+	this->max_accuracy += 7;
 	this->refresh_accuracy = true;
 	this->miss += 1;
 	this->refresh_miss = true;
@@ -397,32 +381,7 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			u8 hit_type = Stage_HitNote(this, type, stage.note_scroll - note_fp);
 			this->arrow_hitan[type & 0x3] = stage.step_time;
 			
-			#ifdef PSXF_NETWORK
-				if (stage.mode >= StageMode_Net1)
-				{
-					//Send note hit packet
-					Packet note_hit;
-					note_hit[0] = PacketType_NoteHit;
-					
-					u16 note_i = note - stage.notes;
-					note_hit[1] = note_i >> 0;
-					note_hit[2] = note_i >> 8;
-					
-					note_hit[3] = this->score >> 0;
-					note_hit[4] = this->score >> 8;
-					note_hit[5] = this->score >> 16;
-					note_hit[6] = this->score >> 24;
-					
-					note_hit[7] = hit_type;
-					
-					note_hit[8] = this->combo >> 0;
-					note_hit[9] = this->combo >> 8;
-					
-					Network_Send(&note_hit);
-				}
-			#else
 				(void)hit_type;
-			#endif
 			return;
 		}
 		else
@@ -448,33 +407,6 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			else
 				this->character->set_anim(this->character, note_anims[type & 0x3][0]);
 			this->arrow_hitan[type & 0x3] = -1;
-			
-			#ifdef PSXF_NETWORK
-				if (stage.mode >= StageMode_Net1)
-				{
-					//Send note hit packet
-					Packet note_hit;
-					note_hit[0] = PacketType_NoteHit;
-					
-					u16 note_i = note - stage.notes;
-					note_hit[1] = note_i >> 0;
-					note_hit[2] = note_i >> 8;
-					
-					note_hit[3] = this->score >> 0;
-					note_hit[4] = this->score >> 8;
-					note_hit[5] = this->score >> 16;
-					note_hit[6] = this->score >> 24;
-					
-					/*
-					note_hit[7] = 0xFF;
-					
-					note_hit[8] = this->combo >> 0;
-					note_hit[9] = this->combo >> 8;
-					*/
-					
-					Network_Send(&note_hit);
-				}
-			#endif
 			return;
 		}
 	}
@@ -507,27 +439,9 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 		}
 		Stage_MissNote(this);
 		
-		//instakill if the option "instakill" is on
-		this->health -= ((stage.instakill)) ? 0x7000: 400*2;
+		this->health -= 400*2;
 		this->score -= 1;
 		this->refresh_score = true;
-		
-		#ifdef PSXF_NETWORK
-			if (stage.mode >= StageMode_Net1)
-			{
-				//Send note hit packet
-				Packet note_hit;
-				note_hit[0] = PacketType_NoteMiss;
-				note_hit[1] = type & 0x3;
-				
-				note_hit[2] = this->score >> 0;
-				note_hit[3] = this->score >> 8;
-				note_hit[4] = this->score >> 16;
-				note_hit[5] = this->score >> 24;
-				
-				Network_Send(&note_hit);
-			}
-		#endif
 	}
 }
 
@@ -558,33 +472,6 @@ static void Stage_SustainCheck(PlayerState *this, u8 type)
 		Stage_StartVocal();
 		this->health += 230;
 		this->arrow_hitan[type & 0x3] = stage.step_time;
-			
-		#ifdef PSXF_NETWORK
-			if (stage.mode >= StageMode_Net1)
-			{
-				//Send note hit packet
-				Packet note_hit;
-				note_hit[0] = PacketType_NoteHit;
-				
-				u16 note_i = note - stage.notes;
-				note_hit[1] = note_i >> 0;
-				note_hit[2] = note_i >> 8;
-				
-				note_hit[3] = this->score >> 0;
-				note_hit[4] = this->score >> 8;
-				note_hit[5] = this->score >> 16;
-				note_hit[6] = this->score >> 24;
-				
-				/*
-				note_hit[7] = 0xFF;
-				
-				note_hit[8] = this->combo >> 0;
-				note_hit[9] = this->combo >> 8;
-				*/
-				
-				Network_Send(&note_hit);
-			}
-		#endif
 	}
 }
 
@@ -783,11 +670,6 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 		dying = (health <= 2000) * 50;
 	
 	//Get src and dst
-	if (ox < 0 && stage.mode == StageMode_2P)
-	hx = (128 << FIXED_SHIFT) * (20000 + health/3) / 10000;
-	else if (ox > 0 && stage.mode == StageMode_2P)
-	hx = (128 << FIXED_SHIFT) * (8500 - health/4) / 10000;
-	else
 	hx = (128 << FIXED_SHIFT) * (10000 - health) / 10000;
 	RECT src = {
 		(i % 1) * 100 + dying,
@@ -908,33 +790,11 @@ static void Stage_DrawNotes(void)
 			//Miss note if player's note
 			if (!((note->type ^ stage.note_swap) & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE)))
 			{
-				if (stage.mode < StageMode_Net1 || i == ((stage.mode == StageMode_Net1) ? 0 : 1))
-				{
 					//Missed note
 					Stage_CutVocal();
 					Stage_MissNote(this);
-				    //instakill if the option "instakill" is on
-		            this->health -= ((stage.instakill)) ? 0x7000: 475;
-					
-					//Send miss packet
-					#ifdef PSXF_NETWORK
-						if (stage.mode >= StageMode_Net1)
-						{
-							//Send note hit packet
-							Packet note_hit;
-							note_hit[0] = PacketType_NoteMiss;
-							note_hit[1] = 0xFF;
-							
-							note_hit[2] = this->score >> 0;
-							note_hit[3] = this->score >> 8;
-							note_hit[4] = this->score >> 16;
-							note_hit[5] = this->score >> 24;
-							
-							Network_Send(&note_hit);
-						}
-					#endif
+		            this->health -= 475;
 				}
-			}
 			
 			//Update current note
 			stage.cur_note++;
@@ -1141,7 +1001,7 @@ static void Stage_LoadMusic(void)
 	stage.opponent->sing_end -= stage.note_scroll;
 	if (stage.gf != NULL)
 		stage.gf->sing_end -= stage.note_scroll;
-	
+
 	//Begin reading mus
 	Audio_LoadMus(stage.stage_def->mus_path);
 	
@@ -1262,19 +1122,6 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	//Test offset
 	stage.offset = 0;
 	
-	//Send ready packet to peer if net host
-	#ifdef PSXF_NETWORK
-		if (stage.mode >= StageMode_Net1 && Network_IsHost())
-		{
-			Packet ready;
-			ready[0] = PacketType_Ready;
-			ready[1] = id;
-			ready[2] = difficulty;
-			ready[3] = (stage.mode == StageMode_Net1) ? 1 : 0;
-			Network_Send(&ready);
-		}
-	#endif
-	
 	//Set game state
 	gameloop = GameLoop_Stage;
 }
@@ -1289,17 +1136,6 @@ void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story)
 
 void Stage_Unload(void)
 {
-	//Disable net mode to not break the game
-	#ifdef PSXF_NETWORK
-		if (stage.mode >= StageMode_Net1)
-			stage.mode = StageMode_Normal;
-	#endif
-	
-	#ifdef PSXF_PC
-		//Free stage data
-		Mem_Free(stage.chart_data);
-		stage.chart_data = NULL;
-	#endif
 	
 	//Free objects
 	ObjectList_Free(&stage.objlist_splash);
@@ -1324,26 +1160,12 @@ void Stage_Tick(void)
 	SeamLoad:;
 	
 	//Tick transition
-	#ifdef PSXF_NETWORK
-	if (stage.mode >= StageMode_Net1)
-	{
-		//Show disconnect screen when disconnected
-		if (!(Network_Connected() && Network_HasPeer()))
-		{
-			stage.trans = StageTrans_Disconnect;
-			Trans_Start();
-		}
-	}
-	else
-	#endif
-	{
 		//Return to menu when start is pressed
 		if (pad_state.press & PAD_START)
 		{
 			stage.trans = (stage.state == StageState_Play) ? StageTrans_Menu : StageTrans_Reload;
 			Trans_Start();
 		}
-	}
 	
 	if (Trans_Tick())
 	{
@@ -1367,18 +1189,7 @@ void Stage_Tick(void)
 				Stage_Unload();
 				
 				LoadScr_Start();
-				#ifdef PSXF_NETWORK
-				if (Network_Connected())
-				{
-					if (Network_IsHost())
-						Menu_Load(MenuPage_NetOp);
-					else
-						Menu_Load(MenuPage_NetLobby);
-				}
-				else
-				#endif
-				{
-					if (stage.stage_id <= StageId_LastVanilla)
+				if (stage.stage_id <= StageId_LastVanilla)
 					{
 						if (stage.story)
 							Menu_Load(MenuPage_Story);
@@ -1389,7 +1200,6 @@ void Stage_Tick(void)
 					{
 						Menu_Load(MenuPage_Credits);
 					}
-				}
 				LoadScr_End();
 				
 				gameloop = GameLoop_Menu;
@@ -1402,21 +1212,6 @@ void Stage_Tick(void)
 				Stage_Load(stage.stage_id, stage.stage_diff, stage.story);
 				LoadScr_End();
 				break;
-			case StageTrans_Disconnect:
-		#ifdef PSXF_NETWORK
-				//Disconnect screen
-				Stage_Unload();
-				
-				LoadScr_Start();
-				if (Network_Connected() && Network_IsHost())
-					Menu_Load(MenuPage_NetOpWait);
-				else
-					Menu_Load(MenuPage_NetFail);
-				LoadScr_End();
-				
-				gameloop = GameLoop_Menu;
-		#endif
-				return;
 		}
 	}
 	
@@ -1432,25 +1227,11 @@ void Stage_Tick(void)
 				{
 					u16 x = i*34;
 				//bf
-				note_x[i] = FIXED_DEC(x - 60,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+				note_x[i] = FIXED_DEC(x - 55,1) + FIXED_DEC(SCREEN_WIDEADD,4);
 				}
 
 				//opponent
 				note_x[4] = note_x[5] = note_x[6] = note_x[7] = FIXED_DEC(-256,1) - FIXED_DEC(SCREEN_WIDEADD,4);
-			}
-			else
-			{
-				  for (int i = 0; i <= 3; i++)
-				  {
-                 u16 xp = (i == 0) ? 26 : (i + 1)*34 - 8;
-				  //bf
-				  note_x[i] = FIXED_DEC(xp,1) + FIXED_DEC(SCREEN_WIDEADD,4);
-				  }
-				//opponent
-				note_x[4] = FIXED_DEC(-128,1) - FIXED_DEC(SCREEN_WIDEADD,4);
-				note_x[5] = FIXED_DEC(-94,1) - FIXED_DEC(SCREEN_WIDEADD,4); //+34
-				note_x[6] = FIXED_DEC(-60,1) - FIXED_DEC(SCREEN_WIDEADD,4);
-				note_x[7] = FIXED_DEC(-26,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 			}
 
 			//Clear per-frame flags
@@ -1460,22 +1241,6 @@ void Stage_Tick(void)
 			boolean playing;
 			fixed_t next_scroll;
 			
-			#ifdef PSXF_NETWORK
-			if (stage.mode >= StageMode_Net1 && !Network_IsReady())
-			{
-				if (!Network_IsHost())
-				{
-					//Send ready packet
-					Packet ready;
-					ready[0] = PacketType_Ready;
-					Network_Send(&ready);
-					Network_SetReady(true);
-				}
-				next_scroll = stage.note_scroll;
-			}
-			else
-			#endif
-			{
 				if (stage.note_scroll < 0)
 				{
 					//Play countdown sequence
@@ -1499,6 +1264,7 @@ void Stage_Tick(void)
 					else
 					{
 						//Still scrolling
+						//Play menu music
 						playing = false;
 					}
 					
@@ -1554,7 +1320,6 @@ void Stage_Tick(void)
 						}
 					}
 				}
-			}
 			
 			RecalcScroll:;
 			//Update song scroll and step
@@ -1589,6 +1354,18 @@ void Stage_Tick(void)
 					goto RecalcScroll;
 				}
 			}
+
+			//note moviment
+		    if (stageoverlay_notemoviment != NULL)
+			{
+			stageoverlay_notemoviment();
+			}
+
+			if (stageoverlay_notemoviment != NULL)
+			 {
+			  for (int i = 0; i <= 7; i++)
+			  note_y[i] = stage.note_y[i];
+		    }
 			
 			//Tick stage
 			if (stageoverlay_tick != NULL)
@@ -1673,20 +1450,6 @@ void Stage_Tick(void)
 					Stage_ProcessPlayer(&stage.player_state[1], &pad_state_2, playing);
 					break;
 				}
-			#ifdef PSXF_NETWORK
-				case StageMode_Net1:
-				{
-					//Handle player 1 inputs
-					Stage_ProcessPlayer(&stage.player_state[0], &pad_state, playing);
-					break;
-				}
-				case StageMode_Net2:
-				{
-					//Handle player 2 inputs
-					Stage_ProcessPlayer(&stage.player_state[1], &pad_state, playing);
-					break;
-				}
-			#endif
 			}
 			
 			//Tick note splashes
@@ -1900,7 +1663,6 @@ void Stage_Tick(void)
 			Stage_DrawTex(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump);
 			}
 
-
             
 			//make healthbar color player
 			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
@@ -1911,13 +1673,6 @@ void Stage_Tick(void)
 		    u8 baro_r = (stage.opponent->health_b >> 16) & 0xFF;
 			u8 baro_g = (stage.opponent->health_b >>  8) & 0xFF;
 		    u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
-
-			//use og bar color
-            if (stage.og_healthbar)
-			{
-			 stage.player->health_b = 0xFF66FF33;
-			 stage.opponent->health_b = 0xFFFF0000;
-			}
 
 			//health system for normal and swap mode
 			if (stage.mode != StageMode_2P)
@@ -1951,21 +1706,22 @@ void Stage_Tick(void)
 		        //draw healthbar and invert if it swap mode
 				if (stage.mode == StageMode_Swap)
 				{
-				Gfx_DrawRect(&health_fill, barp_r, barp_g, barp_b);
-				Gfx_DrawRect(&health_back, baro_r, baro_g, baro_b);
+				  Gfx_DrawRect(&health_fill, barp_r, barp_g, barp_b);
+				  Gfx_DrawRect(&health_back, baro_r, baro_g, baro_b);
 				}
 				else
 				{
-				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
-				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
+				  Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
+				  Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
 				}
 				Gfx_DrawRect(&health_border, 0,   0,  0);
 			}
 
+
+
 			//health system for multiplayer
 			else
 			{
-
 				//Perform health checks
 				if (stage.player_state[0].health <= 0)
 				{
@@ -2004,7 +1760,7 @@ void Stage_Tick(void)
 			     }
 
 		        //draw healthbar
-				//Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
+				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
 				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
 				Gfx_DrawRect(&health_border, 0,   0,  0);
 			}
@@ -2142,115 +1898,3 @@ void Stage_Tick(void)
 			break;
 	}
 }
-
-#ifdef PSXF_NETWORK
-void Stage_NetHit(Packet *packet)
-{
-	//Reject if not in stage
-	if (gameloop != GameLoop_Stage)
-		return;
-	
-	//Get packet info
-	u16 i = ((*packet)[1] << 0) | ((*packet)[2] << 8);
-	u32 hit_score = ((*packet)[3] << 0) | ((*packet)[4] << 8) | ((*packet)[5] << 16) | ((*packet)[6] << 24);
-	u8 hit_type = (*packet)[7];
-	u16 hit_combo = ((*packet)[8] << 0) | ((*packet)[9] << 8);
-	
-	//Get note pointer
-	if (i >= stage.num_notes)
-		return;
-	
-	Note *note = &stage.notes[i];
-	u8 type = note->type & 0x3;
-	
-	u8 opp_flag = (stage.mode == StageMode_Net1) ? NOTE_FLAG_OPPONENT : 0;
-	if ((note->type & NOTE_FLAG_OPPONENT) != opp_flag)
-		return;
-	
-	//Update game state
-	PlayerState *this = &stage.player_state[(stage.mode == StageMode_Net1) ? 1 : 0];
-	stage.notes[i].type |= NOTE_FLAG_HIT;
-	
-	this->score = hit_score;
-	this->refresh_score = true;
-	this->combo = hit_combo;
-	
-	if (note->type & NOTE_FLAG_SUSTAIN)
-	{
-		//Hit a sustain
-		Stage_StartVocal();
-		this->arrow_hitan[type] = stage.step_time;
-		this->character->set_anim(this->character, note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
-	}
-	else if (!(note->type & NOTE_FLAG_MINE))
-	{
-		//Hit a note
-		Stage_StartVocal();
-		this->arrow_hitan[type] = stage.step_time;
-		this->character->set_anim(this->character, note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
-		
-		//Create combo object
-		Obj_Combo *combo = Obj_Combo_New(
-			this->character->focus_x,
-			this->character->focus_y,
-			hit_type,
-			this->combo >= 10 ? this->combo : 0xFFFF
-		);
-		if (combo != NULL)
-			ObjectList_Add(&stage.objlist_fg, (Object*)combo);
-		
-		//Create note splashes if SICK
-		if (hit_type == 0)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				//Create splash object
-				Obj_Splash *splash = Obj_Splash_New(
-					note_x[note->type & 0x7],
-					note_y[note->type & 0x7] * (stage.downscroll ? -1 : 1),
-					type
-				);
-				if (splash != NULL)
-					ObjectList_Add(&stage.objlist_splash, (Object*)splash);
-			}
-		}
-	}
-	else
-	{
-		//Hit a mine
-		this->arrow_hitan[type & 0x3] = -1;
-		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type & 0x3][2]);
-		else
-			this->character->set_anim(this->character, note_anims[type & 0x3][0]);
-	}
-}
-
-void Stage_NetMiss(Packet *packet)
-{
-	//Reject if not in stage
-	if (gameloop != GameLoop_Stage)
-		return;
-	
-	//Get packet info
-	u8 type = (*packet)[1];
-	u32 hit_score = ((*packet)[2] << 0) | ((*packet)[3] << 8) | ((*packet)[4] << 16) | ((*packet)[5] << 24);
-	
-	//Update game state
-	PlayerState *this = &stage.player_state[(stage.mode == StageMode_Net1) ? 1 : 0];
-	
-	this->score = hit_score;
-	this->refresh_score = true;
-	
-	//Missed
-	if (!(type & ~0x3))
-	{
-		this->arrow_hitan[type] = -1;
-		if (this->character->spec & CHAR_SPEC_MISSANIM)
-			this->character->set_anim(this->character, note_anims[type][2]);
-		else
-			this->character->set_anim(this->character, note_anims[type][0]);
-	}
-	Stage_MissNote(this);
-}
-#endif

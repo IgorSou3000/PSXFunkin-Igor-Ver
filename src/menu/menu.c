@@ -163,7 +163,7 @@ static struct
 	} page_param;
 	
 	//Menu assets
-	Gfx_Tex tex_back, tex_ng, tex_story, tex_title;
+	Gfx_Tex tex_back, tex_ng, tex_story, tex_title, tex_credit0;
 	FontData font_bold, font_arial;
 	
 	Character *gf; //Title Girlfriend
@@ -235,6 +235,26 @@ static const char *Menu_LowerIf(const char *text, boolean lower)
 	*dstp++ = '\0';
 	return menu_text_buffer;
 }
+
+//Draw Credit image functions
+static void DrawCredit(u8 i, s16 x, s16 y)
+{
+	//Get src and dst
+	RECT src = {
+		(i % 4) * 64,
+	    (i / 4) * 64,
+	    64,
+		64
+	};
+	RECT dst = {
+		x,
+		y,
+		30,
+		30
+	};	
+	//Draw credit icon
+	Gfx_DrawTex(&menu.tex_credit0, &src, &dst);
+    }
 
 static void Menu_DrawBack(boolean flash, s32 scroll, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
 {
@@ -327,6 +347,7 @@ void Menu_Load2(MenuPage page)
 	Gfx_LoadTex(&menu.tex_ng,    overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //ng.tim
 	Gfx_LoadTex(&menu.tex_story, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //story.tim
 	Gfx_LoadTex(&menu.tex_title, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //title.tim
+	Gfx_LoadTex(&menu.tex_credit0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //credit0.tim
 	
 	FontData_Bold(&menu.font_bold, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //bold.tim
 	FontData_Arial(&menu.font_arial, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //arial.tim
@@ -1034,15 +1055,15 @@ void Menu_Tick(void)
 			} menu_options[] = {
 				{0xFF9271FD, "VERSION BY",NULL,-1},
 				{0xFF9271FD, "IGORSOU",  "MAKE MOSTLY OF THE PORY",0},
-				{0xFF9271FD, "UNSTOPABLE", "HELPED WITH OFFSETS",10},
-				{0xFF9271FD, "LORD SCOUT", "HELPED WITH OFFSETS",10},
+				{0xFF9271FD, "UNSTOPABLE", "HELPED WITH OFFSETS",1},
+				{0xFF9271FD, "LORD SCOUT", "HELPED WITH OFFSETS",2},
 				{0xFF9271FD, "",NULL,-1},
 				{0xFF9271FD, "PLAYTESTERS",NULL,-1},
-				{0xFF9271FD, "JOHN PAUL",  "PLAYTESTER AND FRIEND",4},
+				{0xFF9271FD, "JOHN PAUL",  "PLAYTESTER AND FRIEND",7},
 				{0xFF9271FD, "",NULL,-1},
 				{0xFF9271FD, "SPECIAL THANKS",NULL,-1},
-				{0xFF941653, "LUCKY","MISS AND ACCURATE CODE",7 },
-				{0xFF941653, "CUCKYDEV","MAKE THE PSXFUNKIN",2 },
+				{0xFF941653, "LUCKY","MISS AND ACCURATE CODE",4},
+				{0xFF941653, "CUCKYDEV","MAKE THE PSXFUNKIN",6},
 				{0xFF941653, "PSXFUNKIN DISCORD","DISCORD",-1},
 				{0xFF941653, "ZERIBEN","FRIEND",5},
 			};
@@ -1090,29 +1111,29 @@ void Menu_Tick(void)
 				}
 			}
 			      //Draw credits information
-			        menu.font_arial.draw_col(&menu.font_arial,
+			        menu.font_arial.draw(&menu.font_arial,
 					Menu_LowerIf(menu_options[menu.select].text2, false),
 					160,
-					SCREEN_HEIGHT2 - 110,
-					FontAlign_Center,
-					0,
-					0,
-					0
+					SCREEN_HEIGHT2 + 100,
+					FontAlign_Center
 			);
 			
 			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			s32 next_scroll = menu.select * FIXED_DEC(32,1);
 			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
+				s32 y = (i * 32) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
 				//Draw credits image
+				if (menu_options[i].icon != -1)
+				DrawCredit(menu_options[i].icon, 240, SCREEN_HEIGHT2 + y - 12);
+
 				//Draw text
 				menu.font_bold.draw(&menu.font_bold,
 					Menu_LowerIf(menu_options[i].text, menu.select != i),
@@ -1170,23 +1191,18 @@ void Menu_Tick(void)
 				{OptType_Enum,    "Gamemode", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
 				{OptType_Boolean, "Ghost Tap", &stage.ghost, {.spec_boolean = {0}}},
 				{OptType_Boolean, "BotPlay", &stage.botplay, {.spec_boolean = {0}}},
-				{OptType_Boolean, "OgHealthBar", &stage.og_healthbar, {.spec_boolean = {0}}},
 				//Note options
 				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
-				//Misc options
-				{OptType_Boolean, "Instakill", &stage.instakill, {.spec_boolean = {0}}},
-				{OptType_Boolean, "OnlySick", &stage.onlysick, {.spec_boolean = {0}}},
 			};
-			
-            //options
+
 			static const struct
 			{
-			const char *text;
-			}menu_options[] = {
-				{"General"},
-				{"Notes"},
-				{"Misc"},
+				const char *text;
+			} menu_options[] = {
+			{"General"},
+			{"Notes"},
+			{"Misc"},
 			};
 			
 			//Initialize page
@@ -1197,51 +1213,19 @@ void Menu_Tick(void)
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
 				//Change option
-				if (menu.swap == false)
-				{
 				if (pad_state.press & PAD_UP)
-				{
-					if (menu.select == 0)
-					menu.swap = true;
-					 
+				{		 
 					if (menu.select > 0)
 						menu.select--;
 				}
-			}
 				if (pad_state.press & PAD_DOWN)
 				{
 					if (menu.select < COUNT_OF(menu_mainoptions) - 1)
 						menu.select++;
-						
-					if (menu.swap == true)
-					menu.select = 0;
-
-					menu.swap = false;
-				}
-				//Change The Main options
-				if (menu.swap == true)
-				{
-				if (pad_state.press & PAD_LEFT)
-				{
-					if (menu.selectoptions > 0)
-						menu.selectoptions--;
-					else
-						menu.selectoptions = COUNT_OF(menu_options) - 1;
-				}
-				if (menu.swap == true)
-				{
-				if (pad_state.press & PAD_RIGHT)
-				{
-					if (menu.selectoptions < COUNT_OF(menu_options) - 1)
-						menu.selectoptions++;
-					else
-						menu.selectoptions = 0;
 				}
 			}
-		}
 				
 				//Handle option changing
-				if (menu.swap == false)
 				switch (menu_mainoptions[menu.select].type)
 				{
 					case OptType_Boolean:
@@ -1265,7 +1249,6 @@ void Menu_Tick(void)
 					menu.next_select = 3; //Options
 					Trans_Start();
 				}
-			}
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
@@ -1308,27 +1291,15 @@ void Menu_Tick(void)
 						break;
 				}
 				//draw a font with different color when u are with a option select
-				if (menu.select != i || menu.swap == true)
-				{
 				menu.font_arial.draw_col(&menu.font_arial,
 					text,
 					90,
 				    60 + y - 8,
 					FontAlign_Center,
-					111,
-					111,
-					111
+					(menu.select != i) ? 111 : 0x80,
+					(menu.select != i) ? 111 : 0x80,
+					(menu.select != i) ? 111 : 0x80
 				);
-				}
-				else
-				{
-				menu.font_arial.draw(&menu.font_arial,
-					text,
-					90,
-				    60 + y - 8,
-					FontAlign_Center
-				);
-				}
 			}
 			
 			//draw big square
@@ -1344,523 +1315,6 @@ void Menu_Tick(void)
 			);
 			break;
 		}
-	#ifdef PSXF_NETWORK
-		case MenuPage_NetHost:
-		{
-			const size_t menu_options = 3;
-			
-			//Initialize page
-			if (menu.page_swap)
-			{
-				menu.page_state.net_host.type = false;
-				menu.page_state.net_host.port[0] = '\0';
-				menu.page_state.net_host.pass[0] = '\0';
-			}
-			
-			//Handle option and selection
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (!menu.page_state.net_host.type)
-				{
-					//Change option
-					if (pad_state.press & PAD_UP)
-					{
-						if (menu.select > 0)
-							menu.select--;
-						else
-							menu.select = menu_options - 1;
-					}
-					if (pad_state.press & PAD_DOWN)
-					{
-						if (menu.select < menu_options - 1)
-							menu.select++;
-						else
-							menu.select = 0;
-					}
-					
-					//Handle selection when cross is pressed
-					if (pad_state.press & (PAD_START | PAD_CROSS))
-					{
-						switch (menu.select)
-						{
-							case 0: //Port
-							case 1: //Pass
-								menu.page_state.net_host.type = true;
-								break;
-							case 2: //Host
-								if (!Network_HostPort(menu.page_state.net_host.port, menu.page_state.net_host.pass))
-								{
-									menu.next_page = MenuPage_NetOpWait;
-									menu.next_select = 0;
-									Trans_Start();
-								}
-								break;
-						}
-					}
-					
-					//Return to main menu if circle is pressed
-					if (pad_state.press & PAD_CIRCLE)
-					{
-						menu.next_page = MenuPage_Main;
-						menu.next_select = 5; //Host Server
-						Trans_Start();
-					}
-				}
-				else
-				{
-					//Stop typing when start is pressed
-					if (pad_state.press & PAD_START)
-					{
-						switch (menu.select)
-						{
-							case 0: //Port
-							case 1: //Pass
-								menu.page_state.net_host.type = false;
-								break;
-						}
-					}
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"HOST SERVER",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
-			
-			//Draw options
-			MenuStr_Process(&menu.page_state.net_host.port, 64 + 3 * 0, 64 + 16 * 0, "Port: %s", menu.select == 0, menu.page_state.net_host.type);
-			MenuStr_Process(&menu.page_state.net_host.pass, 64 + 3 * 1, 64 + 16 * 1, "Pass: %s", menu.select == 1, menu.page_state.net_host.type);
-			menu.font_bold.draw(&menu.font_bold, Menu_LowerIf("HOST", menu.select != 2), 64 + 3 * 2, 64 + 16 * 2, FontAlign_Left);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				146 >> 1, 113 >> 1, 253 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetJoin:
-		{
-			const size_t menu_options = 4;
-			
-			//Initialize page
-			if (menu.page_swap)
-			{
-				menu.page_state.net_join.type = false;
-				menu.page_state.net_join.ip[0] = '\0';
-				menu.page_state.net_join.port[0] = '\0';
-				menu.page_state.net_join.pass[0] = '\0';
-			}
-			
-			//Handle option and selection
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (!menu.page_state.net_join.type)
-				{
-					//Change option
-					if (pad_state.press & PAD_UP)
-					{
-						if (menu.select > 0)
-							menu.select--;
-						else
-							menu.select = menu_options - 1;
-					}
-					if (pad_state.press & PAD_DOWN)
-					{
-						if (menu.select < menu_options - 1)
-							menu.select++;
-						else
-							menu.select = 0;
-					}
-					
-					//Handle selection when cross is pressed
-					if (pad_state.press & (PAD_START | PAD_CROSS))
-					{
-						switch (menu.select)
-						{
-							case 0: //Ip
-							case 1: //Port
-							case 2: //Pass
-								menu.page_state.net_join.type = true;
-								break;
-							case 3: //Join
-								if (!Network_Join(menu.page_state.net_join.ip, menu.page_state.net_join.port, menu.page_state.net_join.pass))
-								{
-									menu.next_page = MenuPage_NetConnect;
-									menu.next_select = 0;
-									Trans_Start();
-								}
-								break;
-						}
-					}
-					
-					//Return to main menu if circle is pressed
-					if (pad_state.press & PAD_CIRCLE)
-					{
-						menu.next_page = MenuPage_Main;
-						menu.next_select = 4; //Join Server
-						Trans_Start();
-					}
-				}
-				else
-				{
-					//Stop typing when start is pressed
-					if (pad_state.press & PAD_START)
-					{
-						switch (menu.select)
-						{
-							case 0: //Join
-							case 1: //Port
-							case 2: //Pass
-								menu.page_state.net_join.type = false;
-								break;
-						}
-					}
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"JOIN SERVER",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
-			
-			//Draw options
-			MenuStr_Process(&menu.page_state.net_join.ip, 64 + 3 * 0, 64 + 16 * 0, "Address: %s", menu.select == 0, menu.page_state.net_join.type);
-			MenuStr_Process(&menu.page_state.net_join.port, 64 + 3 * 1, 64 + 16 * 1, "Port: %s", menu.select == 1, menu.page_state.net_join.type);
-			MenuStr_Process(&menu.page_state.net_join.pass, 64 + 3 * 2, 64 + 16 * 2, "Pass: %s", menu.select == 2, menu.page_state.net_join.type);
-			menu.font_bold.draw(&menu.font_bold, Menu_LowerIf("JOIN", menu.select != 3), 64 + 3 * 3, 64 + 16 * 3, FontAlign_Left);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				146 >> 1, 113 >> 1, 253 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetConnect:
-		{
-			//Change state according to network state
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (!Network_Connected())
-				{
-					//Disconnected
-					menu.next_page = MenuPage_NetFail;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-				else if (Network_Allowed())
-				{
-					//Allowed to join
-					menu.next_page = MenuPage_NetLobby;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"CONNECTING",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				113 >> 1, 146 >> 1, 253 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetOpWait:
-		{
-			//Change state according to network state
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (!Network_Connected())
-				{
-					//Disconnected
-					menu.next_page = MenuPage_NetFail;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-				else if (Network_HasPeer())
-				{
-					//Peer has joined
-					menu.next_page = MenuPage_NetOp;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"WAITING FOR PEER",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				113 >> 1, 146 >> 1, 253 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetOp:
-		{
-			static const struct
-			{
-				boolean diff;
-				StageId stage;
-				const char *text;
-			} menu_options[] = {
-				//{StageId_4_4, "TEST"},
-				{true,  StageId_1_4, "TUTORIAL"},
-				{true,  StageId_1_1, "BOPEEBO"},
-				{true,  StageId_1_2, "FRESH"},
-				{true,  StageId_1_3, "DADBATTLE"},
-				{true,  StageId_2_1, "SPOOKEEZ"},
-				{true,  StageId_2_2, "SOUTH"},
-				{true,  StageId_2_3, "MONSTER"},
-				{true,  StageId_3_1, "PICO"},
-				{true,  StageId_3_2, "PHILLY NICE"},
-				{true,  StageId_3_3, "BLAMMED"},
-				{true,  StageId_4_1, "SATIN PANTIES"},
-				{true,  StageId_4_2, "HIGH"},
-				{true,  StageId_4_3, "MILF"},
-				{true,  StageId_5_1, "COCOA"},
-				{true,  StageId_5_2, "EGGNOG"},
-				{true,  StageId_5_3, "WINTER HORRORLAND"},
-				{true,  StageId_6_1, "SENPAI"},
-				{true,  StageId_6_2, "ROSES"},
-				{true,  StageId_6_3, "THORNS"},
-				{true,  StageId_7_1, "UGH"},
-				{true,  StageId_7_2, "GUNS"},
-				{true,  StageId_7_3, "STRESS"},
-				{false, StageId_Kapi_1, "WOCKY"},
-				{false, StageId_Kapi_2, "BEATHOVEN"},
-				{false, StageId_Kapi_3, "HAIRBALL"},
-				{false, StageId_Kapi_4, "NYAW"},
-				{true,  StageId_Clwn_1, "IMPROBABLE OUTSET"},
-				{true,  StageId_Clwn_2, "MADNESS"},
-				{true,  StageId_Clwn_3, "HELLCLOWN"},
-				{false, StageId_Clwn_4, "EXPURGATION"},
-				{false, StageId_2_4, "CLUCKED"},
-			};
-			
-			//Initialize page
-			if (menu.page_swap)
-			{
-				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
-				menu.page_param.stage.diff = StageDiff_Normal;
-				menu.page_state.net_op.swap = false;
-			}
-			
-			//Handle option and selection
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				//Check network state
-				if (!Network_Connected())
-				{
-					//Disconnected
-					menu.next_page = MenuPage_NetFail;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-				else if (!Network_HasPeer())
-				{
-					//Peer disconnected
-					menu.next_page = MenuPage_NetOpWait;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-				
-				//Change option
-				if (pad_state.press & PAD_UP)
-				{
-					if (menu.select > 0)
-						menu.select--;
-					else
-						menu.select = COUNT_OF(menu_options) - 1;
-				}
-				if (pad_state.press & PAD_DOWN)
-				{
-					if (menu.select < COUNT_OF(menu_options) - 1)
-						menu.select++;
-					else
-						menu.select = 0;
-				}
-				
-				//Select option if cross is pressed
-				if (pad_state.press & (PAD_START | PAD_CROSS))
-				{
-					//Load stage
-					Network_SetReady(false);
-					stage.mode = menu.page_state.net_op.swap ? StageMode_Net2 : StageMode_Net1;
-					menu.next_page = MenuPage_Stage;
-					menu.page_param.stage.id = menu_options[menu.select].stage;
-					if (!menu_options[menu.select].diff)
-						menu.page_param.stage.diff = StageDiff_Hard;
-					menu.page_param.stage.story = false;
-					Trans_Start();
-				}
-				
-				//Swap characters if triangle is pressed
-				if (pad_state.press & PAD_TRIANGLE)
-					menu.page_state.net_op.swap ^= true;
-			}
-			
-			//Draw op controls
-			const char *control_txt;
-			
-			control_txt = menu.page_state.net_op.swap ? "You will be Player 2. Press Triangle to swap." : "You will be Player 1. Press Triangle to swap.";
-			menu.font_arial.draw_col(&menu.font_arial, control_txt, 24, SCREEN_HEIGHT - 24 - 12, FontAlign_Left, 0x80, 0x80, 0x80);
-			menu.font_arial.draw_col(&menu.font_arial, control_txt, 24 + 1, SCREEN_HEIGHT - 24 - 12 + 1, FontAlign_Left, 0x00, 0x00, 0x00);
-			
-			//Draw difficulty selector
-			if (menu_options[menu.select].diff)
-				Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
-			
-			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(24,1);
-			menu.scroll += (next_scroll - menu.scroll) >> 4;
-			
-			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
-			{
-				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
-				if (y <= -SCREEN_HEIGHT2 - 8)
-					continue;
-				if (y >= SCREEN_HEIGHT2 + 8)
-					break;
-				
-				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i].text, menu.select != i),
-					48 + (y >> 2),
-					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Left
-				);
-			}
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				113 >> 1, 253 >> 1, 146 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetLobby:
-		{
-			//Check network state
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (!Network_Connected())
-				{
-					//Disconnected
-					menu.next_page = MenuPage_NetFail;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"WAITING FOR HOST",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				253 >> 1, 146 >> 1, 113 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetFail:
-		{
-			//Return to main menu if circle or start is pressed
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (pad_state.press & (PAD_CIRCLE | PAD_START))
-				{
-					menu.next_page = MenuPage_Main;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"DISCONNECTED",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				253 >> 1, 30 >> 1, 15 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-		case MenuPage_NetInitFail:
-		{
-			//Return to main menu if circle or start is pressed
-			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				if (pad_state.press & (PAD_CIRCLE | PAD_START))
-				{
-					menu.next_page = MenuPage_Main;
-					menu.next_select = 0;
-					Trans_Start();
-				}
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"WSA INIT FAILED",
-				SCREEN_WIDTH2,
-				SCREEN_HEIGHT2 - 8,
-				FontAlign_Center
-			);
-			
-			//Draw background
-			Menu_DrawBack(
-				true,
-				8,
-				253 >> 1, 30 >> 1, 15 >> 1,
-				0, 0, 0
-			);
-			break;
-		}
-	#endif
 		case MenuPage_Stage:
 		{
 			//Unload menu state and load stage

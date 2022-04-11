@@ -29,15 +29,10 @@
 //Gfx structures
 typedef struct
 {
-#ifdef PSXF_PC
-	u16 tpage_x;
-	u16 tpage_y;
-#else
 	u32 tim_mode;
 	RECT tim_prect, tim_crect;
 	u16 tpage, clut;
 	u8 pxshift;
-#endif
 } Gfx_Tex;
 
 //Gfx functions

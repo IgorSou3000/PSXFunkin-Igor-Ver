@@ -405,6 +405,7 @@ void Week6_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week6_Load;
 	stageoverlay_tick = NULL;
+	stageoverlay_notemoviment = NULL;
 	stageoverlay_drawbg = (stage.stage_id == StageId_6_3) ? Week6_DrawBG3 : Week6_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;

@@ -30,6 +30,11 @@
 				<file name = "over_1.mus" type = "data" source = "iso/music/gameover/gameover.mus"/>
 				<file name = "over_3.mus" type = "data" source = "iso/music/gameoverpixel/gameoverpixel.mus"/>
 			</dir>
+
+			<!-- Sound effect -->
+			<dir name = "sound">
+				<!-- Overlay -->
+			</dir>
 			
 			<!-- Week 1 assets -->
 			<dir name = "week1">

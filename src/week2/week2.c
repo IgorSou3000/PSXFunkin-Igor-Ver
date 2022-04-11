@@ -256,6 +256,7 @@ void Week2_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week2_Load;
 	stageoverlay_tick = Week2_Tick;
+	stageoverlay_notemoviment = NULL;
 	stageoverlay_drawbg = Week2_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = Week2_DrawFG;

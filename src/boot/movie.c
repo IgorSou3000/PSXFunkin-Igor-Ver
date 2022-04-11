@@ -24,7 +24,7 @@ Movie movie;
 
 STRFILE StrFile[] = {
 	// File name	Resolution		Frame count
-	"\\STR\\UGH.STR;1", 320, 240, 428
+	{"\\STR\\UGH.STR;1", 320, 240, 428,}
 };
 
 void PlayMovie() {
@@ -44,7 +44,9 @@ void Movie_Tick(void)
 {
     
     if (movie.playing == 0)
-        FntPrint("Press X to begin!");
+    FntPrint("Press X to begin!");
+
+
         Gfx_SetClear(0, 0, 0);
 
 

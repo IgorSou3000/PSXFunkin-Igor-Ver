@@ -96,8 +96,6 @@ typedef enum
 	StageMode_Normal,
 	StageMode_Swap,
 	StageMode_2P,
-	StageMode_Net1,
-	StageMode_Net2,
 } StageMode;
 
 typedef enum
@@ -105,7 +103,6 @@ typedef enum
 	StageTrans_Menu,
 	StageTrans_NextStage,
 	StageTrans_Reload,
-	StageTrans_Disconnect,
 } StageTrans;
 
 //Stage definitions
@@ -122,6 +119,7 @@ typedef struct
 //Stage overlay state
 typedef void (*StageOverlay_Load)(void);
 typedef void (*StageOverlay_Tick)(void);
+typedef void (*StageOverlay_NoteMoviment)(void);
 typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
@@ -132,6 +130,7 @@ typedef boolean (*StageOverlay_NextStage)(void);
 
 extern StageOverlay_Load stageoverlay_load;
 extern StageOverlay_Tick stageoverlay_tick;
+extern StageOverlay_NoteMoviment stageoverlay_notemoviment;
 extern StageOverlay_DrawBG stageoverlay_drawbg;
 extern StageOverlay_DrawMD stageoverlay_drawmd;
 extern StageOverlay_DrawFG stageoverlay_drawfg;
@@ -193,7 +192,7 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean ghost, downscroll, expsync,  middlescroll, instakill, botplay, og_healthbar, onlysick;
+	boolean ghost, downscroll, expsync, middlescroll, botplay;
 	s32 mode;
 	
 	u32 offset;
@@ -246,6 +245,10 @@ typedef struct
 	Section *section_base;
 	
 	s16 song_step;
+    
+	//notes
+    int note_x[8];
+    int note_y[8];
 	
 	u8 gf_speed; //Typically 4 steps, changes in Fresh
 	
@@ -285,18 +288,10 @@ void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, con
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y);
 
-//Stage Fade Function
-void Stage_Fade(u8 color, u8 colorspd, u8 mode);
-
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);
 void Stage_Unload(void);
 void Stage_Tick(void);
-
-#ifdef PSXF_NETWORK
-void Stage_NetHit(Packet *packet);
-void Stage_NetMiss(Packet *packet);
-#endif
 
 #endif

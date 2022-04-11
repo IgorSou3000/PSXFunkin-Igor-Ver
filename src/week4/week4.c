@@ -107,6 +107,8 @@ static Gfx_Tex week4_tex_back2; //Car
 static Gfx_Tex week4_tex_back3; //Sky left
 static Gfx_Tex week4_tex_back4; //Sky right
 
+s8 scroll, scrtog, timer, pos;
+
 //Car state
 #define CAR_START_X FIXED_DEC(-500,1)
 #define CAR_END_X    FIXED_DEC(500,1)
@@ -185,6 +187,49 @@ static void Week4_Load(void)
 	Animatable_SetAnim(&week4_hench_animatable, 0);
 	week4_hench_frame = week4_hench_tex_id = 0xFF; //Force art load
 }
+static void Week4_NoteMoviment()
+{
+			
+			stage.note_y[0] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[1] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[2] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[3] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[4] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[5] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[6] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[7] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			
+			if (scrtog == 0)
+			{
+				if (timer == 0)
+				{
+					scroll += 1;
+					timer = 5;
+				}
+				if (pos > 10)
+				{
+					scroll = 5;
+					scrtog = 1;
+				}
+			}
+			if (scrtog == 1)
+			{
+				if (timer == 0)
+				{
+					scroll -= 1;
+					timer = 5;
+				}
+				if (pos < -10)
+				{
+					scroll = -5;
+					scrtog = 0;
+				}
+			}
+			if (timer > 0)
+				timer -= 1;
+			
+			pos += scroll;
+}
 
 static void Week4_DrawBG()
 {
@@ -245,7 +290,7 @@ static void Week4_DrawBG()
 	Stage_DrawTex(&week4_tex_back4, &sunset_src, &sunset_dst, stage.camera.bzoom);
 }
 
-void Week4_DrawMD()
+static void Week4_DrawMD()
 {
 	fixed_t fx, fy;
 	
@@ -330,6 +375,7 @@ void Week4_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week4_Load;
 	stageoverlay_tick = NULL;
+	stageoverlay_notemoviment = NULL;
 	stageoverlay_drawbg = Week4_DrawBG;
 	stageoverlay_drawmd = Week4_DrawMD;
 	stageoverlay_drawfg = Week4_DrawFG;

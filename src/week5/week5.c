@@ -119,9 +119,6 @@ static void Week5_Load(void)
 	stage.gf = Char_XmasGF_New(FIXED_DEC(0,1), FIXED_DEC(-15,1));
 }
 
-static void Week5_Tick()
-{
-}
 static void Week5_DrawBG()
 {
 	
@@ -392,7 +389,8 @@ void Week5_SetPtr(void)
 {
 	//Set pointers
 	stageoverlay_load = Week5_Load;
-	stageoverlay_tick = Week5_Tick;
+	stageoverlay_tick = NULL;
+	stageoverlay_notemoviment = NULL;
 	stageoverlay_drawbg = (stage.stage_id == StageId_5_3) ? Week5_DrawBGEvil : Week5_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;

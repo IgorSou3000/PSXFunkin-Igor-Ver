@@ -153,8 +153,8 @@ static void Week3_Tick()
 }
 static void Week3_DrawFG()
 {
-	if ((stage.stage_id == StageId_3_3 && stage.song_step == 512) || (stage.stage_id == StageId_3_3 && stage.song_step == 768))
-	Stage_Fade(255,90,1);
+	//if ((stage.stage_id == StageId_3_3 && stage.song_step == 512) || (stage.stage_id == StageId_3_3 && stage.song_step == 768))
+	//Stage_Fade(255,1);
 
 	if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
 	{
@@ -381,6 +381,7 @@ void Week3_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week3_Load;
 	stageoverlay_tick = Week3_Tick;
+	stageoverlay_notemoviment = NULL;
 	stageoverlay_drawbg = Week3_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = Week3_DrawFG;
