@@ -22,10 +22,14 @@
 #include "object/combo.h"
 #include "object/splash.h"
 
+#include "stdlib.h"
+
 //Stage constants
 //#define STAGE_NOHUD //Disable the HUD
 
 //#define STAGE_FREECAM //Freecam
+
+//u32 Stage_Sounds[1];
 
 static int note_x[8] = {
 	//BF
@@ -1001,6 +1005,18 @@ static void Stage_LoadMusic(void)
 	stage.opponent->sing_end -= stage.note_scroll;
 	if (stage.gf != NULL)
 		stage.gf->sing_end -= stage.note_scroll;
+    /*
+	// Begin Read Sound effects
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\MISS.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Stage_Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	for (int i = 0; i < 1; i++)
+	printf("address = %08x\n", Stage_Sounds[i]);
+
+	free(data);
+	*/
 
 	//Begin reading mus
 	Audio_LoadMus(stage.stage_def->mus_path);

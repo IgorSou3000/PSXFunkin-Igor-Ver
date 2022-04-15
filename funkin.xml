@@ -33,7 +33,12 @@
 
 			<!-- Sound effect -->
 			<dir name = "sound">
-				<!-- Overlay -->
+				<!-- Menu Sounds -->
+				<file name = "scroll.vag" type = "data" source = "iso/sound/scroll.vag"/>
+				<file name = "confirm.vag" type = "data" source = "iso/sound/confirm.vag"/>
+				<file name = "cancel.vag" type = "data" source = "iso/sound/cancel.vag"/>
+				<!-- Stage Sounds -->
+				<file name = "miss.vag" type = "data" source = "iso/sound/miss.vag"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

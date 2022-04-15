@@ -3,4 +3,3 @@ all:
 	@ $(MAKE) -f Makefile.cht
 	@ $(MAKE) -f Makefile.toh
 	@ $(MAKE) -f Makefile.mus
-	@ $(MAKE) -f Makefile.sou

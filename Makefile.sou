@@ -1,5 +1,0 @@
-all: \
-	iso/sound/go/go.mus \
-
-iso/%.mus: iso/%.txt
-	tools/funkinmuspak/funkinmuspak $@ $<

@@ -25,6 +25,11 @@
 #include "boot/save.h"
 #include "boot/movie.h"
 
+#include "sound/scroll.h"
+#include "sound/confirm.h"
+#include "stdlib.h"
+
+
 //Characters
 //Menu BF
 #include "character/menup.c"
@@ -32,6 +37,8 @@
 #include "character/menuo.c"
 //Girlfriend
 #include "character/gf.c"
+
+u32 Sounds[3];
 
 static fixed_t Char_GF_GetParallax(Char_GF *this)
 {
@@ -102,7 +109,8 @@ static struct
 	//Menu state
 	u8 page, next_page;
 	boolean page_swap;
-	u8 select, next_select, selectoptions;
+	u8 select, next_select;
+	u8 switchop;
 	boolean swap;
 	
 	fixed_t scroll;
@@ -361,7 +369,7 @@ void Menu_Load2(MenuPage page)
 	stage.gf_speed = 4;
 	
 	//Initialize menu state
-	menu.select = menu.next_select = menu.selectoptions = 0;
+	menu.select = menu.next_select = 0;
 	
 	switch (menu.page = menu.next_page = page)
 	{
@@ -383,10 +391,29 @@ void Menu_Load2(MenuPage page)
 	Trans_Clear();
 	
 	stage.song_step = 0;
-	
+
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
-	
+    
+	// to load
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\CONFIRM.VAG;1");
+    data = IO_ReadFile(&file);
+    Sounds[1] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\CANCEL.VAG;1");
+    data = IO_ReadFile(&file);
+    Sounds[2] = Audio_LoadVAGData(data, file.size);
+    
+	for (int i = 0; i < 3; i++)
+	printf("address = %08x\n", Sounds[i]);
+
+	free(data);
+
 	//Play menu music
 	Audio_LoadMus("\\MENU\\MENU.MUS;1");
 	Audio_PlayMus(true);
@@ -527,6 +554,8 @@ void Menu_Tick(void)
 			
 			if ((pad_state.press & PAD_START) && menu.next_page == menu.page && Trans_Idle())
 			{
+				//play confirm sound
+				Audio_PlaySound(Sounds[1]);
 				menu.trans_time = FIXED_UNIT;
 				menu.page_state.title.fade = FIXED_DEC(255,1);
 				menu.page_state.title.fadespd = FIXED_DEC(300,1);
@@ -626,6 +655,8 @@ void Menu_Tick(void)
 				//Change option
 				if (pad_state.press & PAD_UP)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -633,6 +664,8 @@ void Menu_Tick(void)
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -642,6 +675,8 @@ void Menu_Tick(void)
 				//Select option if cross is pressed
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
+					//play confirm sound
+					Audio_PlaySound(Sounds[1]);
 					switch (menu.select)
 					{
 						case 0: //Story Mode
@@ -680,6 +715,8 @@ void Menu_Tick(void)
 				//Return to title screen if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
+					//play cancel sound
+					Audio_PlaySound(Sounds[2]);
 					menu.next_page = MenuPage_Title;
 					Trans_Start();
 				}
@@ -819,6 +856,8 @@ void Menu_Tick(void)
 				//Change option
 				if (pad_state.press & PAD_UP)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -826,6 +865,8 @@ void Menu_Tick(void)
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -835,6 +876,8 @@ void Menu_Tick(void)
 				//Select option if cross is pressed
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
+					//play confirm sound
+					Audio_PlaySound(Sounds[1]);
 					menu.bf->set_anim(menu.bf, CharAnim_Left); //Make peace when we press start
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
@@ -845,6 +888,8 @@ void Menu_Tick(void)
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
+					//play cancel sound
+					Audio_PlaySound(Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 0; //Story Mode
 					Trans_Start();
@@ -972,6 +1017,8 @@ void Menu_Tick(void)
 				//Change option
 				if (pad_state.press & PAD_UP)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -979,6 +1026,8 @@ void Menu_Tick(void)
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -988,6 +1037,8 @@ void Menu_Tick(void)
 				//Select option if cross is pressed
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
+					//play confirm sound
+					Audio_PlaySound(Sounds[1]);
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = false;
@@ -997,6 +1048,8 @@ void Menu_Tick(void)
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
+					//play cancel sound
+					Audio_PlaySound(Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 1; //Freeplay
 					Trans_Start();
@@ -1085,6 +1138,8 @@ void Menu_Tick(void)
 				//Change option and skip if it ""
 				if (pad_state.press & PAD_UP)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu_options[menu.select - 1].text[0] == '\0' && menu.select > 0)
                         menu.select -= 2;
 					else if (menu.select > 0)
@@ -1094,6 +1149,8 @@ void Menu_Tick(void)
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu_options[menu.select + 1].text[0] == '\0')
 					    menu.select += 2;
 					else if (menu.select < COUNT_OF(menu_options) - 1)
@@ -1105,6 +1162,8 @@ void Menu_Tick(void)
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
+					//play cancel sound
+					Audio_PlaySound(Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 2; //Credits
 					Trans_Start();
@@ -1212,14 +1271,34 @@ void Menu_Tick(void)
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
+				//switch options
+				if (pad_state.press & PAD_R1)
+				{
+				 if (menu.switchop < COUNT_OF(menu_options) - 1)
+				 menu.switchop++;
+
+				 else
+				 menu.switchop = 0;
+				}
+				if (pad_state.press & PAD_L1)
+				{		 
+					if (menu.switchop > 0)
+						menu.switchop--;
+					else
+					menu.switchop = COUNT_OF(menu_options) - 1;
+				}
 				//Change option
 				if (pad_state.press & PAD_UP)
-				{		 
+				{	
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);	 
 					if (menu.select > 0)
 						menu.select--;
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
+					//play scroll sound
+                    Audio_PlaySound(Sounds[0]);
 					if (menu.select < COUNT_OF(menu_mainoptions) - 1)
 						menu.select++;
 				}
@@ -1245,6 +1324,8 @@ void Menu_Tick(void)
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
+					//play cancel sound
+					Audio_PlaySound(Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 3; //Options
 					Trans_Start();
@@ -1268,7 +1349,7 @@ void Menu_Tick(void)
 				);
 				//draw square for general,notes and misc, and make a different color when u select
 				RECT square_src = {26 + x, 15, 90, 18};
-				if (menu.selectoptions != i)
+				if (menu.switchop != i)
 				Gfx_BlendRect(&square_src, 85, 82, 75, 0);
 				else
 				Gfx_BlendRect(&square_src, 136, 131, 120, 0);

@@ -20,13 +20,13 @@
 
 #define BUFFER_SIZE (13 << 11) //13 sectors
 #define CHUNK_SIZE (BUFFER_SIZE * audio_streamcontext.header.s.channels)
-#define CHUNK_SIZE_MAX (BUFFER_SIZE * 4) // there are never more than 4 channels
 
 #define BUFFER_TIME FIXED_DEC(((BUFFER_SIZE * 28) / 16), 44100)
 
 #define BUFFER_START_ADDR 0x1010
-#define DUMMY_ADDR (BUFFER_START_ADDR + (CHUNK_SIZE_MAX * 2))
-#define ALLOC_START_ADDR (BUFFER_START_ADDR + (CHUNK_SIZE_MAX * 2) + 64)
+
+#define MAX_SOUNDS_LOADED 10
+u8 spuAllocBuffer[SPU_MALLOC_RECSIZ * (MAX_SOUNDS_LOADED + 1)];
 
 //SPU registers
 typedef struct
@@ -89,7 +89,6 @@ typedef struct
 } Audio_StreamContext;
 
 static volatile Audio_StreamContext audio_streamcontext;
-static volatile u32 audio_alloc_ptr = 0;
 
 void Audio_StreamIRQ_SPU(void)
 {
@@ -224,7 +223,7 @@ void Audio_Init(void)
 {
 	//Initialize SPU
 	SpuInit();
-	Audio_ClearAlloc();
+	SpuInitMalloc(MAX_SOUNDS_LOADED, &spuAllocBuffer);
 	
 	//Set SPU common attributes
 	SpuCommonAttr spu_attr;
@@ -239,7 +238,7 @@ void Audio_Init(void)
 
 void Audio_Quit(void)
 {
-	//Audio_ClearAlloc();
+	
 }
 
 void Audio_Reset(void)
@@ -249,19 +248,21 @@ void Audio_Reset(void)
 	SpuSetIRQ(SPU_OFF);
 	
 	//Upload dummy block at end of stream
+	u32 dummy_addr = BUFFER_START_ADDR + (CHUNK_SIZE * 2);
 	static u8 dummy[64] = {0, 5};
 	
 	SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
-	SpuSetTransferStartAddr(DUMMY_ADDR);
+	SpuSetTransferStartAddr(dummy_addr);
 	SpuWrite(dummy, sizeof(dummy));
+	
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
-
+	
 	//Reset keys
 	for (int i = 0; i < 24; i++)
 	{
 		SPU_CHANNELS[i].vol_left   = 0x0000;
 		SPU_CHANNELS[i].vol_right  = 0x0000;
-		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(DUMMY_ADDR);
+		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(dummy_addr);
 		SPU_CHANNELS[i].freq       = 0;
 		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
 	}
@@ -342,7 +343,7 @@ void Audio_PlayMus(boolean loops)
 		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(BUFFER_START_ADDR + BUFFER_SIZE * i);
 		SPU_CHANNELS[i].loop_addr  = SPU_CHANNELS[i].addr + SPU_RAM_ADDR(CHUNK_SIZE);
 		SPU_CHANNELS[i].freq       = SAMPLE_RATE;
-		SPU_CHANNELS[i].adsr_param = 0x1fc080ff;
+		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
 		key_or |= (1 << i);
 	}
 	SPU_KEY_ON |= key_or;
@@ -352,14 +353,17 @@ void Audio_StopMus(void)
 {
 	//Reset context
 	audio_streamcontext.state = Audio_StreamState_Stopped;
-
+	
+	//Reset keys
+	u32 dummy_addr = BUFFER_START_ADDR + (CHUNK_SIZE * 2);
+	
 	for (int i = 0; i < 24; i++)
 	{
 		SPU_CHANNELS[i].vol_left   = 0x0000;
 		SPU_CHANNELS[i].vol_right  = 0x0000;
-		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(DUMMY_ADDR);
+		SPU_CHANNELS[i].addr       = SPU_RAM_ADDR(dummy_addr);
 		SPU_CHANNELS[i].freq       = 0;
-		SPU_CHANNELS[i].adsr_param = 0x1fc080ff;
+		SPU_CHANNELS[i].adsr_param = 0x9FC080FF;
 	}
 	SPU_KEY_OFF |= 0x00FFFFFF;
 	SPU_KEY_ON |= 0x00FFFFFF;
@@ -394,68 +398,37 @@ boolean Audio_IsPlaying(void)
 	return audio_streamcontext.state != Audio_StreamState_Stopped;
 }
 
-/*
-  The bulk of this code was written by spicyjpeg, really this guy is pog
-*/
+void findFreeChannel(void) {
+    u32 status = SPU_CHANNEL_STATUS;
 
-/* .VAG file loader */
-
-#define VAG_HEADER_SIZE 48
-
-void Audio_ClearAlloc(void) {
-	audio_alloc_ptr = ALLOC_START_ADDR;
+    for (int i = 0; i < 24; i++) {
+        if (status & (1 << i))
+            FntPrint("free channel %d",i);
+    }
 }
 
-u32 Audio_LoadVAGData(u32 *sound, u32 sound_size) {
-	// subtract size of .vag header (48 bytes), round to 64 bytes
-	u32 xfer_size = ((sound_size - VAG_HEADER_SIZE) + 63) & 0xffffffc0;
-	u8  *data = (u8 *) sound;
+u_long audioTransferVagToSPU(u32* sound, int sound_size)
+{
+	u32 vag1_spu_addr;
 
-	// modify sound data to ensure sound "loops" to dummy sample
-	// https://psx-spx.consoledev.net/soundprocessingunitspu/#flag-bits-in-2nd-byte-of-adpcm-header
-	data[sound_size - 15] = 1; // end + mute
-
-	// allocate SPU memory for sound
-	u32 addr = audio_alloc_ptr;
-	audio_alloc_ptr += xfer_size;
-
-	if (audio_alloc_ptr > 0x80000) {
-		// TODO: add proper error handling code
-		printf("FATAL: SPU RAM overflow! (%d bytes overflowing)\n", audio_alloc_ptr - 0x80000);
-		while (1);
-	}
-
-	SpuSetTransferStartAddr(addr); // set transfer starting address to malloced area
-	SpuSetTransferMode(SPU_TRANSFER_BY_DMA); // set transfer mode to DMA
-	SpuWrite((u32 *) (data + VAG_HEADER_SIZE), xfer_size); // perform actual transfer
+    SpuSetTransferMode(SPU_TRANSFER_BY_DMA); // set transfer mode to DMA
+	vag1_spu_addr = SpuMallocWithStartAddr(BUFFER_START_ADDR + (CHUNK_SIZE * 2) + 64, sound_size); // allocate SPU memory for sound 1
+	SpuSetTransferStartAddr(vag1_spu_addr); // set transfer starting address to malloced area
+	SpuWrite (sound + 0x30, sound_size); // perform actual transfer
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT); // wait for DMA to complete
 
-	printf("Allocated new sound (addr=%08x, size=%d)\n", addr, xfer_size);
-	return addr;
+	return vag1_spu_addr;
+
 }
+void AudioPlayVAG(int channel, u32 addr) {
+    SPU_KEY_OFF |= (1 << channel);
 
-void Audio_PlaySoundOnChannel(u32 addr, u32 channel) {
-	SPU_KEY_OFF |= (1 << channel);
+    SPU_CHANNELS[channel].vol_left   = 0x3fff;
+    SPU_CHANNELS[channel].vol_right  = 0x3fff;
+    SPU_CHANNELS[channel].addr       = SPU_RAM_ADDR(addr);
+    SPU_CHANNELS[channel].loop_addr  = SPU_RAM_ADDR(BUFFER_START_ADDR + (CHUNK_SIZE * 2));
+    SPU_CHANNELS[channel].freq       = 0x1000; // 44100 Hz
+    SPU_CHANNELS[channel].adsr_param = 0x1fc080ff;
 
-	SPU_CHANNELS[channel].vol_left   = 0x3fff;
-	SPU_CHANNELS[channel].vol_right  = 0x3fff;
-	SPU_CHANNELS[channel].addr       = SPU_RAM_ADDR(addr);
-	SPU_CHANNELS[channel].loop_addr  = SPU_RAM_ADDR(DUMMY_ADDR);
-	SPU_CHANNELS[channel].freq       = 0x1000; // 44100 Hz
-	SPU_CHANNELS[channel].adsr_param = 0x1fc080ff;
-
-	SPU_KEY_ON |= (1 << channel);
-}
-
-void Audio_PlaySound(u32 addr) {
-	for (u32 ch = 4; ch < 24; ch++) { // channels 0-3 are reserved for streaming
-		if (SPU_CHANNELS[ch].loop_addr != SPU_RAM_ADDR(DUMMY_ADDR))
-			continue;
-
-		//printf("Playing sound on channel %d (addr=%08x)\n", ch, addr);
-		Audio_PlaySoundOnChannel(addr, ch);
-		return;
-	}
-
-	printf("Could not find free channel to play sound (addr=%08x)\n", addr);
+    SPU_KEY_ON |= (1 << channel);
 }

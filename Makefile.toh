@@ -93,6 +93,11 @@ all: \
 	src/iso/chart/stress-easy.json.cht.h \
 	src/iso/chart/stress.json.cht.h \
 	src/iso/chart/stress-hard.json.cht.h \
+	src/sound/scroll.vag.h \
+
+src/sound/%.h: iso/sound/%
+	mkdir -p $(dir $@)
+	tools/bin2h/bin2h $< $@
 
 src/iso/%.h: iso/%
 	mkdir -p $(dir $@)
