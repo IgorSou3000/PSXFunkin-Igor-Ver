@@ -172,7 +172,6 @@ static Character *Char_Dad_New(fixed_t x, fixed_t y)
 		"down.tim",  //Dad_ArcMain_Down
 		"up.tim",    //Dad_ArcMain_Up
 		"right.tim", //Dad_ArcMain_Right
-
 		"missl.tim",  //Dad_ArcMain_MissLeft
 		"missd.tim",  //Dad_ArcMain_MissDown
 		"missu.tim",    //Dad_ArcMain_MissUp

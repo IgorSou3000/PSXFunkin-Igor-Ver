@@ -402,9 +402,6 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			//Hit the mine
 			note->type |= NOTE_FLAG_HIT;
 			
-			if (stage.stage_id == StageId_Clwn_4)
-				this->health = -0x7000;
-			else
 				this->health -= 2000;
 			if (this->character->spec & CHAR_SPEC_MISSANIM)
 				this->character->set_anim(this->character, note_anims[type & 0x3][2]);
@@ -688,7 +685,7 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 		src.h << FIXED_SHIFT
 	};
 	if (stage.downscroll)
-		dst.y = -dst.y - dst.h;
+		dst.y = FIXED_DEC(-122,1);
 
 	//invert icon image
 	if (stage.mode == StageMode_Swap)
@@ -897,21 +894,6 @@ static void Stage_DrawNotes(void)
 					note_dst.y = -note_dst.y - note_dst.h;
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 				
-				if (stage.stage_id == StageId_Clwn_4)
-				{
-					//Draw note halo
-					note_src.x = 160;
-					note_src.y = 128 + ((animf_count & 0x3) << 3);
-					note_src.w = 32;
-					note_src.h = 8;
-					
-					note_dst.y -= FIXED_DEC(6,1);
-					note_dst.h >>= 2;
-					
-					Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-				}
-				else
-				{
 					//Draw note fire
 					note_src.x = 192 + ((animf_count & 0x1) << 5);
 					note_src.y = 64 + ((animf_count & 0x2) * 24);
@@ -928,7 +910,6 @@ static void Stage_DrawNotes(void)
 						note_dst.h = note_dst.h * 3 / 2;
 					}
 					Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-				}
 			}
 			else
 			{
@@ -1516,7 +1497,7 @@ void Stage_Tick(void)
 				RECT score_src = {80, 224, 40, 10};
 				RECT_FIXED score_dst = {(i ^ (stage.mode == StageMode_Swap)) ? FIXED_DEC(-100,1) : FIXED_DEC(-150,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
 				if (stage.downscroll)
-					score_dst.y = -score_dst.y - score_dst.h;
+					score_dst.y = FIXED_DEC(-87,1);
 				
 				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
 				
@@ -1565,7 +1546,7 @@ void Stage_Tick(void)
 				RECT miss_src = {163, 155, 36, 9};
 				RECT_FIXED miss_dst = {FIXED_DEC(-60,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(36,1), FIXED_DEC(9,1)};
 				if (stage.downscroll)
-					miss_dst.y = -miss_dst.y - miss_dst.h;
+					miss_dst.y = FIXED_DEC(-87,1);
 				
 				RECT slash_src = {163, 224, 3, 13};
 				RECT_FIXED slash_dst = {FIXED_DEC(-64,1), miss_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
@@ -1619,7 +1600,7 @@ void Stage_Tick(void)
 				RECT accuracy_src = {199, 155, 51, 9};
 				RECT_FIXED accuracy_dst = {FIXED_DEC(14,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(51,1), FIXED_DEC(9,1)};
 				if (stage.downscroll)
-					accuracy_dst.y = -accuracy_dst.y - accuracy_dst.h;
+					accuracy_dst.y = FIXED_DEC(-87,1);
 				
 				RECT slash_src = {163, 224, 3, 13};
 				RECT_FIXED slash_dst = {FIXED_DEC(10,1), accuracy_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
@@ -1715,8 +1696,8 @@ void Stage_Tick(void)
 				//draw downscroll healthbar
 			    if (stage.downscroll)
                  {
-			      health_fill.y = health_back.y = 20;
-                  health_border.y = 19;
+			      health_fill.y = health_back.y = 25;
+                  health_border.y = 24;
 			      }
 
 		        //draw healthbar and invert if it swap mode
@@ -1822,10 +1803,6 @@ void Stage_Tick(void)
 			}
 			else
 			Audio_StopMus();
-
-		    //Free stage data
-		    Mem_Free(stage.chart_data);
-		    stage.chart_data = NULL;
 	
 	        //Free objects
 	        ObjectList_Free(&stage.objlist_splash);
@@ -1837,6 +1814,10 @@ void Stage_Tick(void)
 			stage.opponent = NULL;
 			Character_Free(stage.gf);
 			stage.gf = NULL;
+
+			//Free stage
+	        if (stageoverlay_free != NULL)
+		    stageoverlay_free();
 	
 			
 			//Reset stage state

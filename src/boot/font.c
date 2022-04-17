@@ -77,6 +77,7 @@ s32 Font_Arial_GetWidth(struct FontData *this, const char *text)
 
 void Font_Arial_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, FontAlign align, u8 r, u8 g, u8 b)
 {
+	s32 skip = x;
 	//Offset position based off alignment
 	switch (align)
 	{
@@ -92,8 +93,14 @@ void Font_Arial_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, F
 	
 	//Draw string character by character
 	u8 c;
+
 	while ((c = *text++) != '\0')
-	{
+	{	
+		if (c == '\n')
+		{
+		x = skip;
+		y += 11;
+		}
 		//Shift and validate character
 		if ((c -= 0x20) >= 0x60)
 			continue;

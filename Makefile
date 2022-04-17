@@ -78,7 +78,7 @@ all: \
 iso/%.exe:
 	tools/funkinexepak/funkinexepak $@ $^
 
-iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/credit0.tim iso/font/bold.tim iso/font/arial.tim
+iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/extra.tim iso/menu/credit0.tim iso/font/bold.tim iso/font/arial.tim
 iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/huds.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
 iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/stage/huds.tim iso/week2/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
 iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/stage/huds.tim iso/week3/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim

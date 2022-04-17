@@ -257,6 +257,43 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 	nextpri += sizeof(POLY_FT4);
 }
 
+void Gfx_BlendTex(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 mode)
+{
+	//Manipulate rects to comply with GPU restrictions
+	RECT csrc, cdst;
+	csrc = *src;
+	cdst = *dst;
+	
+	if (dst->w < 0)
+		csrc.x--;
+	if (dst->h < 0)
+		csrc.y--;
+	
+	if ((csrc.x + csrc.w) >= 0x100)
+	{
+		csrc.w = 0xFF - csrc.x;
+		cdst.w = cdst.w * csrc.w / src->w;
+	}
+	if ((csrc.y + csrc.h) >= 0x100)
+	{
+		csrc.h = 0xFF - csrc.y;
+		cdst.h = cdst.h * csrc.h / src->h;
+	}
+	
+	//Add quad
+	POLY_FT4 *quad = (POLY_FT4*)nextpri;
+	setPolyFT4(quad);
+	setUVWH(quad, src->x, src->y, csrc.w, csrc.h);
+	setXYWH(quad, cdst.x, cdst.y, cdst.w, cdst.h);
+	setRGB0(quad, 0x80, 0x80, 0x80);
+	setSemiTrans(quad, mode);
+	quad->tpage = tex->tpage;
+	quad->clut = tex->clut;
+	
+	addPrim(ot[db], quad);
+	nextpri += sizeof(POLY_FT4);
+}
+
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 {
 	Gfx_DrawTexCol(tex, src, dst, 0x80, 0x80, 0x80);

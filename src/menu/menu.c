@@ -24,9 +24,6 @@
 #include "boot/stage.h"
 #include "boot/save.h"
 #include "boot/movie.h"
-
-#include "sound/scroll.h"
-#include "sound/confirm.h"
 #include "stdlib.h"
 
 
@@ -38,7 +35,7 @@
 //Girlfriend
 #include "character/gf.c"
 
-u32 Sounds[3];
+u32 Menu_Sounds[3];
 
 static fixed_t Char_GF_GetParallax(Char_GF *this)
 {
@@ -171,7 +168,7 @@ static struct
 	} page_param;
 	
 	//Menu assets
-	Gfx_Tex tex_back, tex_ng, tex_story, tex_title, tex_credit0;
+	Gfx_Tex tex_back, tex_ng, tex_story, tex_title, tex_extra, tex_credit0;
 	FontData font_bold, font_arial;
 	
 	Character *gf; //Title Girlfriend
@@ -245,8 +242,13 @@ static const char *Menu_LowerIf(const char *text, boolean lower)
 }
 
 //Draw Credit image functions
-static void DrawCredit(u8 i, s16 x, s16 y)
+static void DrawCredit(u8 i, s16 x, s16 y, boolean select)
 {
+	while (x > 128)
+	{
+	x -= 192;
+	y += 64;
+	}
 	//Get src and dst
 	RECT src = {
 		(i % 4) * 64,
@@ -257,11 +259,14 @@ static void DrawCredit(u8 i, s16 x, s16 y)
 	RECT dst = {
 		x,
 		y,
-		30,
-		30
+		64,
+		64
 	};	
 	//Draw credit icon
+	if (select == false)
 	Gfx_DrawTex(&menu.tex_credit0, &src, &dst);
+	else
+	Gfx_BlendTex(&menu.tex_credit0, &src, &dst, 1);
     }
 
 static void Menu_DrawBack(boolean flash, s32 scroll, u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
@@ -355,6 +360,7 @@ void Menu_Load2(MenuPage page)
 	Gfx_LoadTex(&menu.tex_ng,    overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //ng.tim
 	Gfx_LoadTex(&menu.tex_story, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //story.tim
 	Gfx_LoadTex(&menu.tex_title, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //title.tim
+	Gfx_LoadTex(&menu.tex_extra, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //extra.tim
 	Gfx_LoadTex(&menu.tex_credit0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //credit0.tim
 	
 	FontData_Bold(&menu.font_bold, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //bold.tim
@@ -399,18 +405,18 @@ void Menu_Load2(MenuPage page)
 	CdlFILE file;
     IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
     u32 *data = IO_ReadFile(&file);
-    Sounds[0] = Audio_LoadVAGData(data, file.size);
+    Menu_Sounds[0] = Audio_LoadVAGData(data, file.size);
 
 	IO_FindFile(&file, "\\SOUND\\CONFIRM.VAG;1");
     data = IO_ReadFile(&file);
-    Sounds[1] = Audio_LoadVAGData(data, file.size);
+    Menu_Sounds[1] = Audio_LoadVAGData(data, file.size);
 
 	IO_FindFile(&file, "\\SOUND\\CANCEL.VAG;1");
     data = IO_ReadFile(&file);
-    Sounds[2] = Audio_LoadVAGData(data, file.size);
+    Menu_Sounds[2] = Audio_LoadVAGData(data, file.size);
     
 	for (int i = 0; i < 3; i++)
-	printf("address = %08x\n", Sounds[i]);
+	printf("address = %08x\n", Menu_Sounds[i]);
 
 	free(data);
 
@@ -555,7 +561,7 @@ void Menu_Tick(void)
 			if ((pad_state.press & PAD_START) && menu.next_page == menu.page && Trans_Idle())
 			{
 				//play confirm sound
-				Audio_PlaySound(Sounds[1]);
+				Audio_PlaySound(Menu_Sounds[1]);
 				menu.trans_time = FIXED_UNIT;
 				menu.page_state.title.fade = FIXED_DEC(255,1);
 				menu.page_state.title.fadespd = FIXED_DEC(300,1);
@@ -656,7 +662,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_UP)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -665,7 +671,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -676,7 +682,7 @@ void Menu_Tick(void)
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					//play confirm sound
-					Audio_PlaySound(Sounds[1]);
+					Audio_PlaySound(Menu_Sounds[1]);
 					switch (menu.select)
 					{
 						case 0: //Story Mode
@@ -716,7 +722,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//play cancel sound
-					Audio_PlaySound(Sounds[2]);
+					Audio_PlaySound(Menu_Sounds[2]);
 					menu.next_page = MenuPage_Title;
 					Trans_Start();
 				}
@@ -769,8 +775,7 @@ void Menu_Tick(void)
 			break;
 		}
 		case MenuPage_Story:
-		{
-                   
+		{         
 		//opponent stuff
 		if (pad_state.press & (PAD_DOWN | PAD_UP))
 			{
@@ -857,7 +862,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_UP)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -866,7 +871,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -877,7 +882,7 @@ void Menu_Tick(void)
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					//play confirm sound
-					Audio_PlaySound(Sounds[1]);
+					Audio_PlaySound(Menu_Sounds[1]);
 					menu.bf->set_anim(menu.bf, CharAnim_Left); //Make peace when we press start
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
@@ -889,7 +894,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//play cancel sound
-					Audio_PlaySound(Sounds[2]);
+					Audio_PlaySound(Menu_Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 0; //Story Mode
 					Trans_Start();
@@ -1018,7 +1023,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_UP)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select > 0)
 						menu.select--;
 					else
@@ -1027,7 +1032,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -1038,7 +1043,7 @@ void Menu_Tick(void)
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					//play confirm sound
-					Audio_PlaySound(Sounds[1]);
+					Audio_PlaySound(Menu_Sounds[1]);
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = false;
@@ -1049,7 +1054,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//play cancel sound
-					Audio_PlaySound(Sounds[2]);
+					Audio_PlaySound(Menu_Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 1; //Freeplay
 					Trans_Start();
@@ -1101,24 +1106,18 @@ void Menu_Tick(void)
 		{
 			static const struct
 			{
-				u32 col;
 				const char *text;
 				const char *text2;
 				s16 icon;
 			} menu_options[] = {
-				{0xFF9271FD, "VERSION BY",NULL,-1},
-				{0xFF9271FD, "IGORSOU",  "MAKE MOSTLY OF THE PORY",0},
-				{0xFF9271FD, "UNSTOPABLE", "HELPED WITH OFFSETS",1},
-				{0xFF9271FD, "LORD SCOUT", "HELPED WITH OFFSETS",2},
-				{0xFF9271FD, "",NULL,-1},
-				{0xFF9271FD, "PLAYTESTERS",NULL,-1},
-				{0xFF9271FD, "JOHN PAUL",  "PLAYTESTER AND FRIEND",7},
-				{0xFF9271FD, "",NULL,-1},
-				{0xFF9271FD, "SPECIAL THANKS",NULL,-1},
-				{0xFF941653, "LUCKY","MISS AND ACCURATE CODE",4},
-				{0xFF941653, "CUCKYDEV","MAKE THE PSXFUNKIN",6},
-				{0xFF941653, "PSXFUNKIN DISCORD","DISCORD",-1},
-				{0xFF941653, "ZERIBEN","FRIEND",5},
+				{"IGORSOU",  "MAKE MOSTLY\nOF THE PORT",0},
+				{"UNSTOPABLE", "HELPED WITH\nOFFSETS",1},
+				{"LORD SCOUT", "HELPED WITH\nOFFSETS",2},
+				{"JOHN PAUL",  "PLAYTESTER\nAND FRIEND",7},
+				{"LUCKY","MISS AND\nACCURATE CODE",4},
+				{"CUCKYDEV","MAKE THE\nPSXFUNKIN",6},
+				{"PSXFUNKIN DISCORD","DISCORD", 3},
+				{"ZERIBEN","FRIEND",5},
 			};
 			
 			//Initialize page
@@ -1135,88 +1134,119 @@ void Menu_Tick(void)
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
 				
-				//Change option and skip if it ""
-				if (pad_state.press & PAD_UP)
+				//Change option
+				if (pad_state.press & PAD_LEFT)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
-					if (menu_options[menu.select - 1].text[0] == '\0' && menu.select > 0)
-                        menu.select -= 2;
-					else if (menu.select > 0)
+                    Audio_PlaySound(Menu_Sounds[0]);
+			        if (menu.select > 0)
 						menu.select--;
 					else
 						menu.select = COUNT_OF(menu_options) - 1;
 				}
-				if (pad_state.press & PAD_DOWN)
+				if (pad_state.press & PAD_RIGHT)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
-					if (menu_options[menu.select + 1].text[0] == '\0')
-					    menu.select += 2;
-					else if (menu.select < COUNT_OF(menu_options) - 1)
+                    Audio_PlaySound(Menu_Sounds[0]);
+				    if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
 						menu.select = 0;
+				}
+				if (pad_state.press & PAD_DOWN)
+				{
+					//play scroll sound
+                    Audio_PlaySound(Menu_Sounds[0]);
+				    if (menu.select < COUNT_OF(menu_options) - 3)
+						menu.select += 3;
+				}
+				if (pad_state.press & PAD_UP)
+				{
+					//play scroll sound
+                    Audio_PlaySound(Menu_Sounds[0]);
+			        if (menu.select > 2)
+						menu.select -= 3;
 				}
 				
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//play cancel sound
-					Audio_PlaySound(Sounds[2]);
+					Audio_PlaySound(Menu_Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 2; //Credits
 					Trans_Start();
 				}
 			}
-			      //Draw credits information
-			        menu.font_arial.draw(&menu.font_arial,
-					Menu_LowerIf(menu_options[menu.select].text2, false),
+
+			   //Get l1 and r1 src and dst
+				RECT l1_src = {14, 8, 30, 19};
+
+				RECT r1_src = {15,32, 30, 18};
+	
+				Gfx_BlitTex(&menu.tex_extra, &l1_src, 0, 10);
+				Gfx_BlitTex(&menu.tex_extra, &r1_src, 290, 10);
+                  
+				    menu.font_bold.draw(&menu.font_bold,
+					"FORK MADE BY",
 					160,
-					SCREEN_HEIGHT2 + 100,
+					10,
 					FontAlign_Center
-			);
+					);
+					 menu.font_bold.draw(&menu.font_bold,
+					"NAME",
+					260,
+					33,
+					FontAlign_Center
+					);
+					menu.font_bold.draw(&menu.font_bold,
+					"INFO",
+					260,
+					123,
+					FontAlign_Center
+					);
+
+			      		//Draw credits information
+			       		 menu.font_arial.draw(&menu.font_arial,
+						Menu_LowerIf(menu_options[menu.select].text2, false),
+						200,
+						150,
+						FontAlign_Left
+						);
+
+			       			//Draw text
+							menu.font_arial.draw(&menu.font_arial,
+							Menu_LowerIf(menu_options[menu.select].text, false),
+							260,
+							70,
+							FontAlign_Center
+							);
+
+							RECT rectangle_src = {195, 30, 140, 20};
+							Gfx_BlendRect(&rectangle_src, 6, 6, 6, 0);
+
+							RECT rectangle2_src = {195, 120, 140, 20};
+							Gfx_BlendRect(&rectangle2_src, 6, 6, 6, 0);
+
+							//draw big square
+							RECT square_src = {195, 30, 140, 220};
+							Gfx_BlendRect(&square_src,111,111,111, 0);
 			
-			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(32,1);
-			menu.scroll += (next_scroll - menu.scroll) >> 4;
-			
+			//Draw options		
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
-				//Get position on screen
-				s32 y = (i * 32) - 8 - (menu.scroll >> FIXED_SHIFT);
-				if (y <= -SCREEN_HEIGHT2 - 8)
-					continue;
-				if (y >= SCREEN_HEIGHT2 + 8)
-					break;
 				//Draw credits image
 				if (menu_options[i].icon != -1)
-				DrawCredit(menu_options[i].icon, 240, SCREEN_HEIGHT2 + y - 12);
-
-				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i].text, menu.select != i),
-					160,
-					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Center
-				);
+				DrawCredit(menu_options[i].icon, (i*64), 30, menu.select != i);
 			}
 			
-			//Draw background
-			fixed_t tgt_r = (fixed_t)((menu_options[menu.select].col >> 16) & 0xFF) << FIXED_SHIFT;
-			fixed_t tgt_g = (fixed_t)((menu_options[menu.select].col >>  8) & 0xFF) << FIXED_SHIFT;
-			fixed_t tgt_b = (fixed_t)((menu_options[menu.select].col >>  0) & 0xFF) << FIXED_SHIFT;
-			
-			menu.page_state.credit.back_r += (tgt_r - menu.page_state.credit.back_r) >> 4;
-			menu.page_state.credit.back_g += (tgt_g - menu.page_state.credit.back_g) >> 4;
-			menu.page_state.credit.back_b += (tgt_b - menu.page_state.credit.back_b) >> 4;
-			
+			//Draw background	
 			Menu_DrawBack(
 				true,
-				8,
-				menu.page_state.credit.back_r >> (FIXED_SHIFT + 1),
-				menu.page_state.credit.back_g >> (FIXED_SHIFT + 1),
-				menu.page_state.credit.back_b >> (FIXED_SHIFT + 1),
+				0,
+			    65 >> 1,
+				67 >> 1,
+				65 >> 1,
 				0, 0, 0
 			);
 			break;
@@ -1291,14 +1321,14 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_UP)
 				{	
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);	 
+                    Audio_PlaySound(Menu_Sounds[0]);	 
 					if (menu.select > 0)
 						menu.select--;
 				}
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Sounds[0]);
+                    Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select < COUNT_OF(menu_mainoptions) - 1)
 						menu.select++;
 				}
@@ -1325,11 +1355,19 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//play cancel sound
-					Audio_PlaySound(Sounds[2]);
+					Audio_PlaySound(Menu_Sounds[2]);
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 3; //Options
 					Trans_Start();
 				}
+
+				//Get l1 and r1 src and dst
+				RECT l1_src = {14, 8, 30, 19};
+
+				RECT r1_src = {15,32, 30, 18};
+	
+				Gfx_BlitTex(&menu.tex_extra, &l1_src, 0, 10);
+				Gfx_BlitTex(&menu.tex_extra, &r1_src, 290, 10);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
