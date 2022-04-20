@@ -5,6 +5,7 @@ all: \
 	iso/menu/title.tim \
 	iso/menu/extra.tim \
 	iso/menu/credit0.tim \
+	iso/menu/note.tim \
 	iso/menu/loading.tim \
 	iso/font/bold.tim \
 	iso/font/arial.tim \
@@ -86,7 +87,7 @@ iso/%.arc:
 	tools/funkinarcpak/funkinarcpak $@ $^
 
 # Menu
-iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/extra.tim iso/menu/credit0.tim iso/font/bold.tim iso/font/arial.tim
+iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/extra.tim iso/menu/credit0.tim iso/menu/note.tim iso/font/bold.tim iso/font/arial.tim
 
 # Menu Player
 iso/menup/main.arc: iso/menup/bf0.tim iso/menup/bf1.tim

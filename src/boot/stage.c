@@ -930,6 +930,7 @@ static void Stage_DrawNotes(void)
 				
 				if (stage.downscroll)
 					note_dst.y = -note_dst.y - note_dst.h;
+
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 		}
@@ -1425,6 +1426,7 @@ void Stage_Tick(void)
 		                    stage.player_state[1].flip = note_anims[note->type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0];
 
 							//Opponent hits note
+							stage.player_state[1].arrow_hitan[note->type & 0x3] = stage.step_time;
 							Stage_StartVocal();
 							if (note->type & NOTE_FLAG_SUSTAIN)
 								opponent_snote = stage.player_state[1].flip;
@@ -1576,9 +1578,7 @@ void Stage_Tick(void)
 					miss_dst.x += FIXED_DEC(7,1);
 				}
 			}
-			
-			
-			
+				
 			//Draw Accuracy
 			for (int i = 0; i < ((stage.mode >= StageMode_2P) ? 2 : 1); i++)
 			{
@@ -1637,8 +1637,6 @@ void Stage_Tick(void)
 				   //Draw character
 					if (c == '-')
 						accuracy_src.x = 160;
-					else if (c == '.')
-						accuracy_src.x = 160;
 					else //Should be a number
 						accuracy_src.x = 80 + ((c - '0') << 3);
 					
@@ -1646,6 +1644,20 @@ void Stage_Tick(void)
 					
 					//Move character right
 					accuracy_dst.x += FIXED_DEC(7,1);
+				}
+
+				if (this->miss == 0)
+				{		
+				//Draw fc
+				accuracy_src.x = 149;
+				accuracy_src.y = 226;
+				accuracy_src.w = 13;
+				accuracy_src.h =  9;
+				accuracy_dst.x += FIXED_DEC(16,1);
+				accuracy_dst.w = FIXED_DEC(13,1);
+				accuracy_dst.h = FIXED_DEC(9,1);
+
+				Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, stage.bump);
 				}
 			}
 			
@@ -1659,8 +1671,6 @@ void Stage_Tick(void)
 			if (animf_count & 20)
 			Stage_DrawTex(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump);
 			}
-
-            
 			//make healthbar color player
 			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
 			u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
@@ -1713,8 +1723,6 @@ void Stage_Tick(void)
 				}
 				Gfx_DrawRect(&health_border, 0,   0,  0);
 			}
-
-
 
 			//health system for multiplayer
 			else

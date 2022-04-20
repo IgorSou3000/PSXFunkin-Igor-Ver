@@ -107,6 +107,7 @@ static struct
 	u8 page, next_page;
 	boolean page_swap;
 	u8 select, next_select;
+	u8 sects, sectf;
 	u8 switchop;
 	boolean swap;
 	
@@ -133,10 +134,6 @@ static struct
 		{
 			fixed_t back_r, back_g, back_b;
 		} freeplay;
-		struct
-		{
-			fixed_t back_r, back_g, back_b;
-		} credit;
 	#ifdef PSXF_NETWORK
 		struct
 		{
@@ -168,7 +165,7 @@ static struct
 	} page_param;
 	
 	//Menu assets
-	Gfx_Tex tex_back, tex_ng, tex_story, tex_title, tex_extra, tex_credit0;
+	Gfx_Tex tex_back, tex_ng, tex_story, tex_title, tex_extra, tex_credit0, tex_note;
 	FontData font_bold, font_arial;
 	
 	Character *gf; //Title Girlfriend
@@ -362,6 +359,7 @@ void Menu_Load2(MenuPage page)
 	Gfx_LoadTex(&menu.tex_title, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //title.tim
 	Gfx_LoadTex(&menu.tex_extra, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //extra.tim
 	Gfx_LoadTex(&menu.tex_credit0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //credit0.tim
+	Gfx_LoadTex(&menu.tex_note, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //note.tim
 	
 	FontData_Bold(&menu.font_bold, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //bold.tim
 	FontData_Arial(&menu.font_arial, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //arial.tim
@@ -697,14 +695,6 @@ void Menu_Tick(void)
 						case 3: //Options
 							menu.next_page = MenuPage_Options;
 							break;
-					#ifdef PSXF_NETWORK
-						case 4: //Join Server
-							menu.next_page = Network_Inited() ? MenuPage_NetJoin : MenuPage_NetInitFail;
-							break;
-						case 5: //Host Server
-							menu.next_page = Network_Inited() ? MenuPage_NetHost : MenuPage_NetInitFail;
-							break;
-					#endif
 					}
 					menu.next_select = 0;
 					menu.trans_time = FIXED_UNIT;
@@ -1083,6 +1073,7 @@ void Menu_Tick(void)
 				);
 			}
 			
+			
 			//Draw background
 			fixed_t tgt_r = (fixed_t)((menu_options[menu.select].col >> 16) & 0xFF) << FIXED_SHIFT;
 			fixed_t tgt_g = (fixed_t)((menu_options[menu.select].col >>  8) & 0xFF) << FIXED_SHIFT;
@@ -1102,22 +1093,50 @@ void Menu_Tick(void)
 			);
 			break;
 		}
+
 		case MenuPage_Credits:
-		{
+		{        
+			 //switch section
+			switch(menu.switchop)
+			{
+			//"fork made by"
+			case 0:
+			menu.sects = 0;
+			menu.sectf = 5;
+			break;
+			//"special thanks"
+			case 1:
+			menu.sects = 6;
+			menu.sectf = 9;
+			break;
+			}
 			static const struct
 			{
 				const char *text;
 				const char *text2;
 				s16 icon;
 			} menu_options[] = {
+				//fork made by
 				{"IGORSOU",  "MAKE MOSTLY\nOF THE PORT",0},
-				{"UNSTOPABLE", "HELPED WITH\nOFFSETS",1},
+				{"SPICYJPEG",  "MAKE SOUND\nEFFECTS",9},
+				{"UNSTOPABLE", "ROTATE CODE\n AND OFFSETS",1},
 				{"LORD SCOUT", "HELPED WITH\nOFFSETS",2},
 				{"JOHN PAUL",  "PLAYTESTER\nAND FRIEND",7},
-				{"LUCKY","MISS AND\nACCURATE CODE",4},
+				{"LUCKY","MISS\nACCURATE CODE",4},
+				//special thanks
 				{"CUCKYDEV","MAKE THE\nPSXFUNKIN",6},
 				{"PSXFUNKIN DISCORD","DISCORD", 3},
 				{"ZERIBEN","FRIEND",5},
+				{"BILIOUS","FRIEND",8},
+			};
+
+			//section
+			static const struct
+			{
+				const char *text;
+			} menu_section[] = {
+				{"FORK MADE BY"},
+				{"SPECIAL CREDITS"},
 			};
 			
 			//Initialize page
@@ -1125,15 +1144,34 @@ void Menu_Tick(void)
 			{
 				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
-				menu.page_state.credit.back_r = FIXED_DEC(255,1);
-				menu.page_state.credit.back_g = FIXED_DEC(255,1);
-				menu.page_state.credit.back_b = FIXED_DEC(255,1);
 			}
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
-			{
-				
+			{	
+				//switch section
+				if (pad_state.press & PAD_R1)
+				{
+				//reset menu select to avoid bugs
+				 menu.select = 0;
+				 if (menu.switchop < COUNT_OF(menu_section) - 1)
+				 menu.switchop++;
+
+				 else
+				 menu.switchop = 0;
+				}
+
+				if (pad_state.press & PAD_L1)
+				{	
+					//reset menu select to avoid bugs
+					menu.select = 0;
+					if (menu.switchop > 0)
+						menu.switchop--;
+					else
+					menu.switchop = COUNT_OF(menu_section) - 1;
+				}
+
+
 				//Change option
 				if (pad_state.press & PAD_LEFT)
 				{
@@ -1142,24 +1180,30 @@ void Menu_Tick(void)
 			        if (menu.select > 0)
 						menu.select--;
 					else
-						menu.select = COUNT_OF(menu_options) - 1;
+					menu.select = menu.sectf - menu.sects;
 				}
+		   }
+
 				if (pad_state.press & PAD_RIGHT)
 				{
 					//play scroll sound
                     Audio_PlaySound(Menu_Sounds[0]);
-				    if (menu.select < COUNT_OF(menu_options) - 1)
+					{
+				    if (menu.select < menu.sectf - menu.sects)
 						menu.select++;
 					else
 						menu.select = 0;
+					}
 				}
+
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
                     Audio_PlaySound(Menu_Sounds[0]);
-				    if (menu.select < COUNT_OF(menu_options) - 3)
+				    if (menu.select < 3)
 						menu.select += 3;
 				}
+
 				if (pad_state.press & PAD_UP)
 				{
 					//play scroll sound
@@ -1177,68 +1221,73 @@ void Menu_Tick(void)
 					menu.next_select = 2; //Credits
 					Trans_Start();
 				}
-			}
+
 
 			   //Get l1 and r1 src and dst
 				RECT l1_src = {14, 8, 30, 19};
-
 				RECT r1_src = {15,32, 30, 18};
-	
+	            
+				//draw l1 and r1
 				Gfx_BlitTex(&menu.tex_extra, &l1_src, 0, 10);
 				Gfx_BlitTex(&menu.tex_extra, &r1_src, 290, 10);
                   
-				    menu.font_bold.draw(&menu.font_bold,
-					"FORK MADE BY",
-					160,
-					10,
-					FontAlign_Center
-					);
+			    //draw section
+				menu.font_bold.draw(&menu.font_bold,
+			    menu_section[menu.switchop].text,
+				160,
+			    10,
+				FontAlign_Center
+			 );
+
+
+			   //Draw information
+			   menu.font_arial.draw(&menu.font_arial,
+			   Menu_LowerIf(menu_options[menu.select + menu.sects].text2, false),
+			   200,
+			   150,
+			   FontAlign_Left
+			  );
+
+		      //Draw name
+			  menu.font_arial.draw(&menu.font_arial,
+			  Menu_LowerIf(menu_options[menu.select + menu.sects].text, false),
+			  260,
+			  70,
+			  FontAlign_Center
+			  );
+				for (u8 i = menu.sects; i <= menu.sectf; i++)
+				{
+					//Draw credits image
+					if (menu_options[i].icon != -1)
+					//stupid math
+					DrawCredit(menu_options[i].icon, ((i - menu.sects)*64), 30, menu.select != (i - menu.sects));
+			    }
+
+			 		//draw "name"
 					 menu.font_bold.draw(&menu.font_bold,
 					"NAME",
 					260,
 					33,
 					FontAlign_Center
+				);      
+						//draw "info"
+						menu.font_bold.draw(&menu.font_bold,
+						"INFO",
+						260,
+						123,
+						FontAlign_Center
 					);
-					menu.font_bold.draw(&menu.font_bold,
-					"INFO",
-					260,
-					123,
-					FontAlign_Center
-					);
+                        //draw rectangle for "name"
+						RECT rectangle_src = {195, 30, 140, 20};
+						Gfx_BlendRect(&rectangle_src, 6, 6, 6, 0);
+                        
+						//draw rectangle for "info"
+						RECT rectangle2_src = {195, 120, 140, 20};
+						Gfx_BlendRect(&rectangle2_src, 6, 6, 6, 0);
 
-			      		//Draw credits information
-			       		 menu.font_arial.draw(&menu.font_arial,
-						Menu_LowerIf(menu_options[menu.select].text2, false),
-						200,
-						150,
-						FontAlign_Left
-						);
-
-			       			//Draw text
-							menu.font_arial.draw(&menu.font_arial,
-							Menu_LowerIf(menu_options[menu.select].text, false),
-							260,
-							70,
-							FontAlign_Center
-							);
-
-							RECT rectangle_src = {195, 30, 140, 20};
-							Gfx_BlendRect(&rectangle_src, 6, 6, 6, 0);
-
-							RECT rectangle2_src = {195, 120, 140, 20};
-							Gfx_BlendRect(&rectangle2_src, 6, 6, 6, 0);
-
-							//draw big square
-							RECT square_src = {195, 30, 140, 220};
-							Gfx_BlendRect(&square_src,111,111,111, 0);
-			
-			//Draw options		
-			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
-			{
-				//Draw credits image
-				if (menu_options[i].icon != -1)
-				DrawCredit(menu_options[i].icon, (i*64), 30, menu.select != i);
-			}
+						//draw big square
+					    RECT square_src = {195, 30, 140, 220};
+						Gfx_BlendRect(&square_src,111,111,111, 0);
 			
 			//Draw background	
 			Menu_DrawBack(
@@ -1253,6 +1302,21 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Options:
 		{
+			//switch section
+			switch(menu.switchop)
+			{
+			//"general"
+			case 0:
+			menu.sects = 0;
+			menu.sectf = 2;
+			break;
+			//"notes"
+			case 1:
+			menu.sects = 3;
+			menu.sectf = 4;
+			break;
+			}
+
 			static const char *gamemode_strs[] = {"Normal", "Swap", "Two Player"};
 			static const struct
 			{
@@ -1304,6 +1368,7 @@ void Menu_Tick(void)
 				//switch options
 				if (pad_state.press & PAD_R1)
 				{
+				 menu.select = 0;
 				 if (menu.switchop < COUNT_OF(menu_options) - 1)
 				 menu.switchop++;
 
@@ -1311,7 +1376,8 @@ void Menu_Tick(void)
 				 menu.switchop = 0;
 				}
 				if (pad_state.press & PAD_L1)
-				{		 
+				{	
+					menu.select = 0; 
 					if (menu.switchop > 0)
 						menu.switchop--;
 					else
@@ -1329,25 +1395,25 @@ void Menu_Tick(void)
 				{
 					//play scroll sound
                     Audio_PlaySound(Menu_Sounds[0]);
-					if (menu.select < COUNT_OF(menu_mainoptions) - 1)
+					if (menu.select < menu.sectf - menu.sects)
 						menu.select++;
 				}
 			}
 				
 				//Handle option changing
-				switch (menu_mainoptions[menu.select].type)
+				switch (menu_mainoptions[menu.select + menu.sects].type)
 				{
 					case OptType_Boolean:
 						if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
-							*((boolean*)menu_mainoptions[menu.select].value) ^= 1;
+							*((boolean*)menu_mainoptions[menu.select + menu.sects].value) ^= 1;
 						break;
 					case OptType_Enum:
 						if (pad_state.press & PAD_LEFT)
-							if (--*((s32*)menu_mainoptions[menu.select].value) < 0)
-								*((s32*)menu_mainoptions[menu.select].value) = menu_mainoptions[menu.select].spec.spec_enum.max - 1;
+							if (--*((s32*)menu_mainoptions[menu.select + menu.sects].value) < 0)
+								*((s32*)menu_mainoptions[menu.select + menu.sects].value) = menu_mainoptions[menu.select + menu.sects].spec.spec_enum.max - 1;
 						if (pad_state.press & PAD_RIGHT)
-							if (++*((s32*)menu_mainoptions[menu.select].value) >= menu_mainoptions[menu.select].spec.spec_enum.max)
-								*((s32*)menu_mainoptions[menu.select].value) = 0;
+							if (++*((s32*)menu_mainoptions[menu.select + menu.sects].value) >= menu_mainoptions[menu.select + menu.sects].spec.spec_enum.max)
+								*((s32*)menu_mainoptions[menu.select + menu.sects].value) = 0;
 						break;
 				}
 				
@@ -1393,10 +1459,10 @@ void Menu_Tick(void)
 				Gfx_BlendRect(&square_src, 136, 131, 120, 0);
 			}
 			
-			for (u8 i = 0; i < COUNT_OF(menu_mainoptions); i++)
+			for (u8 i = menu.sects; i <= menu.sectf; i++)
 			{
 				//Get position on screen
-				s32 y = (i * 15) - 8;
+				s32 y = ((i - menu.sects) * 15) - 8;
 				
 				//Draw text
 				char text[0x80];
@@ -1415,15 +1481,38 @@ void Menu_Tick(void)
 					90,
 				    60 + y - 8,
 					FontAlign_Center,
-					(menu.select != i) ? 111 : 0x80,
-					(menu.select != i) ? 111 : 0x80,
-					(menu.select != i) ? 111 : 0x80
+					(menu.select != i - menu.sects) ? 111 : 0x80,
+					(menu.select != i - menu.sects) ? 111 : 0x80,
+					(menu.select != i - menu.sects) ? 111 : 0x80
 				);
 			}
 			
 			//draw big square
 			RECT square_src = {26, 33, 270, 180};
 			Gfx_BlendRect(&square_src,111,111,111, 0);
+
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 >> 1, 113 >> 1, 155 >> 1,
+				0, 0, 0
+			);
+			break;
+		}
+
+		case MenuPage_Custom:
+		{
+
+			//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					//play cancel sound
+					Audio_PlaySound(Menu_Sounds[2]);
+					menu.next_page = MenuPage_Main;
+					menu.next_select = 3; //Options
+					Trans_Start();
+				}
 
 			//Draw background
 			Menu_DrawBack(
