@@ -22,7 +22,7 @@ static const u8 loading_tim[] = {
 void LoadScr_Start(void)
 {
 	//Stop music, free all sounds it loaded before and make sure frame has been drawn
-	Audio_ClearAlloc()
+	Audio_ClearAlloc();
 	Network_Process();
 	Gfx_Flip();
 	

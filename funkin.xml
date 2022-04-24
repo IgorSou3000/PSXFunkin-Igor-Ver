@@ -39,6 +39,9 @@
 				<file name = "cancel.vag" type = "data" source = "iso/sound/cancel.vag"/>
 				<!-- Stage Sounds -->
 				<file name = "miss.vag" type = "data" source = "iso/sound/miss.vag"/>
+				<!-- Week 2 Sounds -->
+				<file name = "thunder1.vag" type = "data" source = "iso/sound/thunder1.vag"/>
+				<file name = "thunder2.vag" type = "data" source = "iso/sound/thunder2.vag"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

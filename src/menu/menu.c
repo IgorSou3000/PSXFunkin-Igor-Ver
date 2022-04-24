@@ -87,6 +87,8 @@ static const char *funny_messages[][2] = {
 
 #ifdef PSXF_NETWORK
 
+//Movie state
+Movie movie;
 //Menu string type
 #define MENUSTR_CHARS 0x20
 typedef char MenuStr[MENUSTR_CHARS + 1];
@@ -699,14 +701,6 @@ void Menu_Tick(void)
 					menu.next_select = 0;
 					menu.trans_time = FIXED_UNIT;
 				}
-
-				if (pad_state.press & PAD_SELECT)
-			{
-				menu.next_page = MenuPage_Movie;
-				menu.trans_time = FIXED_UNIT;
-				menu.page_state.title.fade = FIXED_DEC(255,1);
-				menu.page_state.title.fadespd = FIXED_DEC(300,1);
-			}
 				
 				//Return to title screen if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
@@ -874,10 +868,11 @@ void Menu_Tick(void)
 					//play confirm sound
 					Audio_PlaySound(Menu_Sounds[1]);
 					menu.bf->set_anim(menu.bf, CharAnim_Left); //Make peace when we press start
-					menu.next_page = MenuPage_Stage;
+
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = true;
 					menu.trans_time = FIXED_UNIT;
+					menu.next_page = (menu.page_param.stage.id == StageId_7_1) ? MenuPage_Movie : MenuPage_Stage; //start movie if you select week 7
 				}
 				
 				//Return to main menu if circle is pressed
@@ -1532,13 +1527,15 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Movie:
 		{
+			movie.startmovie = true;
+			movie.id = menu.page_param.stage.id;
+			movie.diff = menu.page_param.stage.diff;
+			movie.story = menu.page_param.stage.story;
 			//Unload
 			Menu_Unload();
 			//Play movie
-			LoadScr_Start();
 			gameloop = GameLoop_Movie;
-			LoadScr_End();
-			break;
+			return;
 		}
 		default:
 			break;

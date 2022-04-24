@@ -20,8 +20,14 @@ typedef struct
 {
   u8 select;
   u8 playing;
+  u8 id;
+  u8 diff;
+  boolean story;
+  boolean startmovie;
+
 } Movie;
 
+extern Movie movie;
 void Movie_Tick();
 
 #endif

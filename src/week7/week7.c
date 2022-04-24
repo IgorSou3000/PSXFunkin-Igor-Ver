@@ -300,13 +300,14 @@ static boolean Week7_NextStage(void)
 {
 	switch (stage.stage_id)
 	{
-		case StageId_7_1: //Senpai
+		case StageId_7_1: //Ugh
 			stage.stage_id = StageId_7_2;
+			printf("test 2 OK");
 			return true;
-		case StageId_7_2: //Roses
+		case StageId_7_2: //Guns
 			stage.stage_id = StageId_7_3;
 			return true;
-		case StageId_7_3: //Thorns
+		case StageId_7_3: //Stress
 			return false;
 		default:
 			return false;

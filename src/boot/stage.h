@@ -201,11 +201,11 @@ typedef struct
 	Section *sections;
 	Note *notes;
 	size_t num_notes;
-	
+
 	fixed_t speed;
 	fixed_t step_crochet, step_time;
 	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
-	
+
 	//Stage state
 	boolean story;
 	u8 flag;
@@ -283,5 +283,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);
 void Stage_Unload(void);
 void Stage_Tick(void);
+//Note functions
+void Note_Init(void);
 
 #endif

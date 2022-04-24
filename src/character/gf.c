@@ -169,11 +169,8 @@ static void Char_GF_Tick(Character *character)
 	//Animate and draw
 	fixed_t parallax = Char_GF_GetParallax(this);
 	Animatable_Animate(&character->animatable, (void*)this, Char_GF_SetFrame);
-	if (((stage.song_step <= 512 || stage.song_step >= 768) && stage.stage_id == StageId_3_3) || stage.stage_id != StageId_3_3)
-	{
 	Character_DrawParallax(character, &this->tex, &char_gf_frame[this->frame], parallax);
 	Speaker_Tick(&this->speaker, character->x, character->y, parallax);
-	}
 }
 
 static void Char_GF_SetAnim(Character *character, u8 anim)

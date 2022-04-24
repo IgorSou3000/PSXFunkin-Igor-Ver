@@ -146,7 +146,7 @@ static const Animation char_bf_anim[PlayerAnim_Max] = {
 	{1, (const u8[]){11, 26, 26, 27, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
 	
 	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //PlayerAnim_Peace
-	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //PlayerAnim_Sweat
+	{2, (const u8[]){16, 17, 18, 19, ASCR_CHGANI, CharAnim_Idle}},      //PlayerAnim_Sweat
 
 	{3, (const u8[]){28, 29, 30, 31, 31, 31, 31, 31, 31, 31, ASCR_CHGANI, PlayerAnim_Dead1}}, //PlayerAnim_Dead0
 	{3, (const u8[]){31, ASCR_REPEAT}},                                                       //PlayerAnim_Dead1

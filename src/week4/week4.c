@@ -375,7 +375,7 @@ void Week4_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week4_Load;
 	stageoverlay_tick = NULL;
-	stageoverlay_notemoviment = NULL;
+	stageoverlay_notemoviment = Week4_NoteMoviment;
 	stageoverlay_drawbg = Week4_DrawBG;
 	stageoverlay_drawmd = Week4_DrawMD;
 	stageoverlay_drawfg = Week4_DrawFG;

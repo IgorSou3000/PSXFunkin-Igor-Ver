@@ -51,7 +51,7 @@ typedef struct Character
 	CharSpec spec;
 	u32 health_i, health_b; //hud1.tim
 	fixed_t focus_x, focus_y, focus_zoom;
-	boolean flip;
+	boolean flip, ignoreanim;
 	
 	//Animation state
 	Animatable animatable;

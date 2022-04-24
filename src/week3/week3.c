@@ -142,9 +142,15 @@ static void Week3_Tick()
 			case StageId_3_3:
 				//Change zoom
 				if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
+				{
 					stage.player->focus_zoom = stage.opponent->focus_zoom = FIXED_DEC(14,10);
+					stage.gf->x = FIXED_DEC(500,1);
+				}
 				else 
+				{
 				   stage.player->focus_zoom = stage.opponent->focus_zoom = FIXED_DEC(1,1);
+				   stage.gf->x = FIXED_DEC(0,1);
+				}
 				break;
 			default:
 				break;
@@ -153,8 +159,17 @@ static void Week3_Tick()
 }
 static void Week3_DrawFG()
 {
-	//if ((stage.stage_id == StageId_3_3 && stage.song_step == 512) || (stage.stage_id == StageId_3_3 && stage.song_step == 768))
-	//Stage_Fade(255,1);
+	//Draw white week 3 fade
+    if (week3_fade > 0)
+	{
+	static const RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	u8 flash_col = week3_fade >> FIXED_SHIFT;
+	Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 1);
+	week3_fade -= FIXED_MUL(week3_fadespd, timer_dt);
+	}
+
+	if ((stage.song_step == 512 || stage.song_step == 768) && stage.stage_id == StageId_3_3)
+	week3_fade = FIXED_DEC(255,1);
 
 	if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
 	{

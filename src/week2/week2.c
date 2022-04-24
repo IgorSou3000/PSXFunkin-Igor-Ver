@@ -10,10 +10,16 @@
 #include "boot/archive.h"
 #include "boot/main.h"
 #include "boot/mem.h"
+#include "boot/audio.h"
+
+#include "stdlib.h"
 
 //thunder stuff
 fixed_t week2_thunder;
 fixed_t week2_thunderspd = FIXED_DEC(290,1);
+
+//thunder sound
+u32 Week2_Sounds[2];
 
 //Charts
 static u8 week2_cht_spookeez_easy[] = {
@@ -116,14 +122,30 @@ static void Week2_Load(void)
 	stage.opponent = Char_Spook_New(FIXED_DEC(-90,1), FIXED_DEC(85,1));
 
 	stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-15,1));
+
+	//load thunder sound
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\THUNDER1.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Week2_Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\THUNDER2.VAG;1");
+    data = IO_ReadFile(&file);
+    Week2_Sounds[1] = Audio_LoadVAGData(data, file.size);
+    
+	for (int i = 0; i < 2; i++)
+	printf("address = %08x\n", Week2_Sounds[i]);
+
+	free(data);
 }
 
 static void Week2_Tick()
 {
-	for (Note *note = stage.cur_note;; note++)
-			{
-				if (note->pos > (stage.note_scroll >> FIXED_SHIFT))
-				break;
+	if (stage.player->animatable.anim == PlayerAnim_Sweat)
+	stage.player->ignoreanim = true;
+	else 
+	stage.player->ignoreanim = false;
+
 	//Stage specific events
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
@@ -134,25 +156,25 @@ static void Week2_Tick()
 			case StageId_2_3:
             //make sure the thunder and the stuffs just be on when opponent hit da notes
 				//BF sweat
-				if ((stage.song_step >= 0 && (stage.song_step % 0x8) == 7) && RandomRange(0,50)== 45 &&  (note->type & NOTE_FLAG_OPPONENT))
+				if (RandomRange(0,280) == 200)
 				{
 					week2_lightanim = true;
 					stage.player->set_anim(stage.player, PlayerAnim_Sweat);
 					week2_thunder = FIXED_DEC(255,1);
+					Audio_PlaySound(Week2_Sounds[RandomRange(0,1)]);
 				}
 				break;
 			default:
 				break;
 			}
 		}
-	}
 	//windows anim
 	if (week2_lightanim == true)
-		week2_anims = (stage.song_step >> 1) % 0x5;
+		week2_anims = (stage.song_step >> 1) % 0x3;
     
 	//stop windows anim
-			if (week2_anims == 4)
-			week2_lightanim = false;
+	if (week2_anims == 2)
+	week2_lightanim = false;
 }
 
 static void Week2_DrawFG()
