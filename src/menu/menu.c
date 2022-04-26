@@ -24,7 +24,6 @@
 #include "boot/stage.h"
 #include "boot/save.h"
 #include "boot/movie.h"
-#include "stdlib.h"
 
 
 //Characters
@@ -418,7 +417,7 @@ void Menu_Load2(MenuPage page)
 	for (int i = 0; i < 3; i++)
 	printf("address = %08x\n", Menu_Sounds[i]);
 
-	free(data);
+	Mem_Free(data);
 
 	//Play menu music
 	Audio_LoadMus("\\MENU\\MENU.MUS;1");
@@ -671,7 +670,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_DOWN)
 				{
 					//play scroll sound
-                    Audio_PlaySound(Menu_Sounds[0]);
+                   Audio_PlaySound(Menu_Sounds[0]);
 					if (menu.select < COUNT_OF(menu_options) - 1)
 						menu.select++;
 					else
@@ -1295,6 +1294,7 @@ void Menu_Tick(void)
 			);
 			break;
 		}
+
 		case MenuPage_Options:
 		{
 			//switch section
@@ -1308,11 +1308,12 @@ void Menu_Tick(void)
 			//"notes"
 			case 1:
 			menu.sects = 3;
-			menu.sectf = 4;
+			menu.sectf = 5;
 			break;
 			}
 
 			static const char *gamemode_strs[] = {"Normal", "Swap", "Two Player"};
+			static const char *arrow_strs[] = {"Normal", "Circle"};
 			static const struct
 			{
 				enum
@@ -1340,6 +1341,7 @@ void Menu_Tick(void)
 				{OptType_Boolean, "Ghost Tap", &stage.ghost, {.spec_boolean = {0}}},
 				{OptType_Boolean, "BotPlay", &stage.botplay, {.spec_boolean = {0}}},
 				//Note options
+				{OptType_Enum,    "Arrow", &stage.arrow, {.spec_enum = {COUNT_OF(arrow_strs), arrow_strs}}},
 				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
 			};

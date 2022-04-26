@@ -90,6 +90,12 @@ typedef enum
 
 typedef enum
 {
+	StageArrow_Normal,
+	StageArrow_Circle,
+} StageArrow;
+
+typedef enum
+{
 	StageTrans_Menu,
 	StageTrans_NextStage,
 	StageTrans_Reload,
@@ -184,6 +190,8 @@ typedef struct
 	//Stage settings
 	boolean ghost, downscroll, expsync, middlescroll, botplay;
 	s32 mode;
+
+	s32 arrow;
 	
 	u32 offset;
 

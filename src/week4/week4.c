@@ -159,7 +159,6 @@ static void Week4_Load(void)
 	//Load assets
 	IO_Data overlay_data;
 	
-	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
 	Gfx_LoadTex(&stage.tex_huds, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //huds.tim
 	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
@@ -189,15 +188,12 @@ static void Week4_Load(void)
 }
 static void Week4_NoteMoviment()
 {
-			
-			stage.note_y[0] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[1] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[2] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[3] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[4] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[5] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[6] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
-			stage.note_y[7] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			for (int i = 1; i <= 7; i += 2)
+			{
+			u8 even_number = i - 1;
+			stage.note_y[even_number] = FIXED_DEC(40 + (pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[i] = FIXED_DEC(40 + (-pos / 4) - SCREEN_HEIGHT2, 1);
+			}
 			
 			if (scrtog == 0)
 			{

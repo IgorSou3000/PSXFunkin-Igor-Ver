@@ -59,12 +59,12 @@ static const CharFrame char_menuo_frame[] = {
 	{MenuO_ArcMain_Spook, {  0,  87,  76,  82}, { 22 + 45, 80 + 65}}, //10 idle 5
 	{MenuO_ArcMain_Spook, { 78,  86,  73,  80}, { 20 + 45, 79 + 65}}, //11 idle 6
 
-	{MenuO_ArcMain_Pico, {  0,   0,  67,  72}, { 63, 66}}, //12 idle 1
-	{MenuO_ArcMain_Pico, { 67,   0,  68,  73}, { 63, 67}}, //13 idle 2
-	{MenuO_ArcMain_Pico, {135,   0,  69,  73}, { 62, 67}}, //14 idle 3
-	{MenuO_ArcMain_Pico, {  0,  72,  68,  73}, { 61, 67}}, //15 idle 4
-	{MenuO_ArcMain_Pico, { 68,  73,  68,  74}, { 61, 67}}, //16 idle 5
-	{MenuO_ArcMain_Pico, {136,  73,  68,  74}, { 61, 67}}, //17 idle 6
+	{MenuO_ArcMain_Pico, {  0,   0,  67,  72}, { 63, 66 + 72}}, //12 idle 1
+	{MenuO_ArcMain_Pico, { 67,   0,  68,  73}, { 63, 67 + 72}}, //13 idle 2
+	{MenuO_ArcMain_Pico, {135,   0,  69,  73}, { 62, 67 + 72}}, //14 idle 3
+	{MenuO_ArcMain_Pico, {  0,  72,  68,  73}, { 61, 67 + 72}}, //15 idle 4
+	{MenuO_ArcMain_Pico, { 68,  73,  68,  74}, { 61, 67 + 72}}, //16 idle 5
+	{MenuO_ArcMain_Pico, {136,  73,  68,  74}, { 61, 67 + 72}}, //17 idle 6
 
 	{MenuO_ArcMain_Mom, {  0,   0,  58, 125}, { 21, 116}}, //18 idle 1
 	{MenuO_ArcMain_Mom, { 58,   0,  58, 123}, { 20, 115}}, //19 idle 2

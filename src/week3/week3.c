@@ -6,6 +6,7 @@
 
 #include "week3.h"
 
+#include "boot/audio.h"
 #include "boot/stage.h"
 #include "boot/archive.h"
 #include "boot/main.h"
@@ -13,6 +14,8 @@
 
 fixed_t week3_fade;
 fixed_t week3_fadespd = FIXED_DEC(150,1);
+
+u32 Week3_Sounds[1];
 
 //Charts
 static u8 week3_cht_pico_easy[] = {
@@ -106,7 +109,6 @@ static void Week3_Load(void)
 	//Load assets
 	IO_Data overlay_data;
 	
-	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
 	Gfx_LoadTex(&stage.tex_huds, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //huds.tim
 	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
@@ -130,6 +132,17 @@ static void Week3_Load(void)
 	week3_train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B);
 
 	Gfx_SetClear(0, 0, 0);
+
+	//load train sound
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\TRAIN.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Week3_Sounds[0] = Audio_LoadVAGData(data, file.size);
+    
+	for (int i = 0; i < 1; i++)
+	printf("address = %08x\n", Week3_Sounds[i]);
+
+	Mem_Free(data);
 }
 
 static void Week3_Tick()
@@ -140,7 +153,7 @@ static void Week3_Tick()
 		switch (stage.stage_id)
 		{
 			case StageId_3_3:
-				//Change zoom
+				//Change zoom and put gf far away of the screen
 				if (stage.stage_id == StageId_3_3 && stage.song_step >= 513 && stage.song_step <= 768)
 				{
 					stage.player->focus_zoom = stage.opponent->focus_zoom = FIXED_DEC(14,10);
@@ -241,10 +254,11 @@ static void Week3_DrawBG()
 	RECT roof_fillsrc = {0, 254, 1, 0};
 	RECT roof_fill = {0, SCREEN_HEIGHT * 2 / 3, SCREEN_WIDTH, SCREEN_HEIGHT * 1 / 3};
 	Gfx_DrawTex(&week3_tex_back2, &roof_fillsrc, &roof_fill);
-	
+
 	//Move train
 	if (week3_train_x <= TRAIN_END_X)
 	{
+		Audio_PlaySound(Week3_Sounds[0]);
 		//Reset train
 		if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
 		{

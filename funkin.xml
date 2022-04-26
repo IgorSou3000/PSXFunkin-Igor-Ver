@@ -31,6 +31,13 @@
 				<file name = "over_3.mus" type = "data" source = "iso/music/gameoverpixel/gameoverpixel.mus"/>
 			</dir>
 
+			<!-- Stage assets -->
+			<dir name = "stage">
+				<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
+				<file name = "hud0weeb.tim" type = "data" source = "iso/stage/hud0weeb.tim"/>
+				<file name = "hud0cir.tim" type = "data" source = "iso/stage/hud0cir.tim"/>
+			</dir>
+
 			<!-- Sound effect -->
 			<dir name = "sound">
 				<!-- Menu Sounds -->
@@ -38,10 +45,15 @@
 				<file name = "confirm.vag" type = "data" source = "iso/sound/confirm.vag"/>
 				<file name = "cancel.vag" type = "data" source = "iso/sound/cancel.vag"/>
 				<!-- Stage Sounds -->
-				<file name = "miss.vag" type = "data" source = "iso/sound/miss.vag"/>
+				<file name = "intro3.vag" type = "data" source = "iso/sound/intro3.vag"/>
+				<file name = "intro2.vag" type = "data" source = "iso/sound/intro2.vag"/>
+				<file name = "intro1.vag" type = "data" source = "iso/sound/intro1.vag"/>
+				<file name = "introgo.vag" type = "data" source = "iso/sound/introgo.vag"/>
 				<!-- Week 2 Sounds -->
 				<file name = "thunder1.vag" type = "data" source = "iso/sound/thunder1.vag"/>
 				<file name = "thunder2.vag" type = "data" source = "iso/sound/thunder2.vag"/>
+				<!-- Week 3 Sounds -->
+				<file name = "train.vag" type = "data" source = "iso/sound/train.vag"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

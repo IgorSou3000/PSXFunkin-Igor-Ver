@@ -105,7 +105,6 @@ static void Week2_Load(void)
 	//Load assets
 	IO_Data overlay_data;
 	
-	Gfx_LoadTex(&stage.tex_hud0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud0.tim
 	Gfx_LoadTex(&stage.tex_huds, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //huds.tim
 	Gfx_LoadTex(&stage.tex_hud1, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //hud1.tim
 	
@@ -136,7 +135,7 @@ static void Week2_Load(void)
 	for (int i = 0; i < 2; i++)
 	printf("address = %08x\n", Week2_Sounds[i]);
 
-	free(data);
+	Mem_Free(data);
 }
 
 static void Week2_Tick()
@@ -156,7 +155,7 @@ static void Week2_Tick()
 			case StageId_2_3:
             //make sure the thunder and the stuffs just be on when opponent hit da notes
 				//BF sweat
-				if (RandomRange(0,280) == 200)
+				if ((stage.song_step > 35 && RandomRange(0,180) == 90) || (stage.stage_id == StageId_2_3 && stage.song_step == -17))
 				{
 					week2_lightanim = true;
 					stage.player->set_anim(stage.player, PlayerAnim_Sweat);

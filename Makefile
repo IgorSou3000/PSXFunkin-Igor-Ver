@@ -79,10 +79,10 @@ iso/%.exe:
 	tools/funkinexepak/funkinexepak $@ $^
 
 iso/menu/menu.exe: Overlay.menu iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/extra.tim iso/menu/credit0.tim iso/menu/note.tim iso/font/bold.tim iso/font/arial.tim
-iso/week1/week1.exe: Overlay.week1 iso/stage/hud0.tim iso/stage/huds.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
-iso/week2/week2.exe: Overlay.week2 iso/stage/hud0.tim iso/stage/huds.tim iso/week2/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
-iso/week3/week3.exe: Overlay.week3 iso/stage/hud0.tim iso/stage/huds.tim iso/week3/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
-iso/week4/week4.exe: Overlay.week4 iso/stage/hud0.tim iso/stage/huds.tim iso/week4/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
-iso/week5/week5.exe: Overlay.week5 iso/stage/hud0.tim iso/stage/huds.tim iso/week5/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back4.tim iso/week5/back5.tim iso/week5/back0a2.tim iso/week5/back1a2.tim
-iso/week6/week6.exe: Overlay.week6 iso/week6/hud0.tim iso/stage/huds.tim iso/week6/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim iso/week6/back3.tim
-iso/week7/week7.exe: Overlay.week7 iso/stage/hud0.tim iso/stage/huds.tim iso/week7/hud1.tim iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim
+iso/week1/week1.exe: Overlay.week1 iso/stage/huds.tim iso/week1/hud1.tim iso/week1/back0.tim iso/week1/back1.tim
+iso/week2/week2.exe: Overlay.week2 iso/stage/huds.tim iso/week2/hud1.tim iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
+iso/week3/week3.exe: Overlay.week3 iso/stage/huds.tim iso/week3/hud1.tim iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
+iso/week4/week4.exe: Overlay.week4 iso/stage/huds.tim iso/week4/hud1.tim iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
+iso/week5/week5.exe: Overlay.week5 iso/stage/huds.tim iso/week5/hud1.tim iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back4.tim iso/week5/back5.tim iso/week5/back0a2.tim iso/week5/back1a2.tim
+iso/week6/week6.exe: Overlay.week6 iso/stage/huds.tim iso/week6/hud1.tim iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim iso/week6/back3.tim
+iso/week7/week7.exe: Overlay.week7 iso/stage/huds.tim iso/week7/hud1.tim iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim

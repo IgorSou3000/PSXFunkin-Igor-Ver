@@ -22,14 +22,12 @@
 #include "object/combo.h"
 #include "object/splash.h"
 
-#include "stdlib.h"
-
 //Stage constants
 //#define STAGE_NOHUD //Disable the HUD
 
 //#define STAGE_FREECAM //Freecam
 
-//u32 Stage_Sounds[1];
+u32 Stage_Sounds[4];
 
 //notes initialization
 void Note_Init(void)
@@ -296,17 +294,7 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	this->min_accuracy += 4;
 	this->refresh_score = true;
 
-	if (hit_type == 3) //SHIT
-	this->max_accuracy += 10;
-
-	else if (hit_type == 2) //BAD
-	this->max_accuracy += 8;
-
-	else if (hit_type == 1) //GOOD
-	this->max_accuracy += 6;
-
-	else //SICK
-	this->max_accuracy += 4;
+	this->max_accuracy += 4 + (hit_type*2 >> 1);
 	this->refresh_accuracy = true;
 	
 	//Restore vocals and health
@@ -673,7 +661,7 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 		38
 	};
 	RECT_FIXED dst = {
-		hx + ox * FIXED_DEC(21,1) - FIXED_DEC(19,1),
+		hx + ox * FIXED_DEC(18,1) - FIXED_DEC(19,1),
 		FIXED_DEC(SCREEN_HEIGHT2 - 38 + 4 - 18, 1),
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
@@ -973,6 +961,31 @@ static void Stage_LoadChart(void)
 	stage.section_base = stage.cur_section;
 	Stage_ChangeBPM(stage.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 }
+static void Stage_LoadSFX(void)
+{
+	// Begin Read Sound effects
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Stage_Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\CANCEL.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[1] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[2] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\CONFIRM.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[3] = Audio_LoadVAGData(data, file.size);
+
+	for (int i = 0; i < 4; i++)
+	printf("address = %08x\n", Stage_Sounds[i]);
+
+	Mem_Free(data);
+}
 
 static void Stage_LoadMusic(void)
 {
@@ -981,18 +994,6 @@ static void Stage_LoadMusic(void)
 	stage.opponent->sing_end -= stage.note_scroll;
 	if (stage.gf != NULL)
 		stage.gf->sing_end -= stage.note_scroll;
-    /*
-	// Begin Read Sound effects
-	CdlFILE file;
-    IO_FindFile(&file, "\\SOUND\\MISS.VAG;1");
-    u32 *data = IO_ReadFile(&file);
-    Stage_Sounds[0] = Audio_LoadVAGData(data, file.size);
-
-	for (int i = 0; i < 1; i++)
-	printf("address = %08x\n", Stage_Sounds[i]);
-
-	free(data);
-	*/
 
 	//Begin reading mus
 	Audio_LoadMus(stage.stage_def->mus_path);
@@ -1092,7 +1093,15 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	//Load overlay
 	Overlay_Load(stage.stage_def->overlay_path);
 	stage.stage_def->overlay_setptr();
-	
+
+	//Load HUD textures
+	if (id >= StageId_6_1 && id <= StageId_6_3)
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
+	else if (stage.arrow == StageArrow_Circle)
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0CIR.TIM;1"), GFX_LOADTEX_FREE);
+	else
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
+
 	//Load stage and chart
 	stageoverlay_load();
 	Stage_LoadChart();
@@ -1110,6 +1119,8 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	//Initialize stage according to mode
 	stage.note_swap = (stage.mode == StageMode_Swap) ? NOTE_FLAG_OPPONENT : 0;
 	
+	//Load sound effects
+	Stage_LoadSFX();
 	//Load music
 	stage.note_scroll = 0;
 	Stage_LoadMusic();
@@ -1149,6 +1160,40 @@ void Stage_Unload(void)
 		stageoverlay_free();
 }
 
+//play 3 2 1 go
+static void Stage_PlayIntro(void)
+{
+	if (stage.song_step == -20)
+    Audio_PlaySound(Stage_Sounds[0]);
+	if (stage.song_step == -15)
+	Audio_PlaySound(Stage_Sounds[1]);
+	if (stage.song_step == -10)
+	Audio_PlaySound(Stage_Sounds[2]);
+	if (stage.song_step == -5)
+	Audio_PlaySound(Stage_Sounds[3]);
+
+		RECT ready_src = {11, 38, 95, 46};
+		RECT_FIXED ready_dst = {FIXED_DEC(-90,1), FIXED_DEC(-10,1), FIXED_DEC(ready_src.w *2,1), FIXED_DEC(ready_src.h *2,1)};
+
+		RECT set_src = {125, 40, 88, 41};
+		RECT_FIXED set_dst = {FIXED_DEC(-90,1), FIXED_DEC(-10,1), FIXED_DEC(set_src.w *2,1), FIXED_DEC(set_src.h *2,1)};
+
+		RECT go_src = {27,102, 38, 30};
+		RECT_FIXED go_dst = {FIXED_DEC(-50,1), FIXED_DEC(-5,1), FIXED_DEC(go_src.w *2,1), FIXED_DEC(go_src.h *2,1)};
+			//Stage specific events
+			//Draw "Ready?"
+			if (stage.song_step >= -15 && stage.song_step <= -10)
+			Stage_DrawTex(&stage.tex_huds, &ready_src, &ready_dst, stage.bump);
+
+			//Draw "Set?"
+			if (stage.song_step >= -9 && stage.song_step <=  -6)
+			Stage_DrawTex(&stage.tex_huds, &set_src, &set_dst, stage.bump);
+
+			//Draw "Go!?"
+			if (stage.song_step >= -5 && stage.song_step <= -1)
+			Stage_DrawTex(&stage.tex_huds, &go_src, &go_dst, stage.bump);
+}
+
 void Stage_Tick(void)
 {
 	SeamLoad:;
@@ -1173,6 +1218,7 @@ void Stage_Tick(void)
 					Stage_LoadChart();
 					Stage_LoadState();
 					Stage_InitCamera();
+					Stage_LoadSFX();
 					Stage_LoadMusic();
 					Timer_Reset();
 					break;
@@ -1214,6 +1260,7 @@ void Stage_Tick(void)
 		case StageState_Play:
 		{
 
+			 Stage_PlayIntro();
 			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
 			
@@ -1287,12 +1334,11 @@ void Stage_Tick(void)
 					{
 						if (stageoverlay_nextstage())
 						{
-							printf("test 0 OK");
 							stage.stage_def = &stage_defs[stage.stage_id];
 							Stage_LoadChart();
 							Stage_LoadState();
+							Stage_LoadSFX();
 							Stage_LoadMusic();
-							printf("test 1 OK");
 							goto SeamLoad;
 						}
 						else
@@ -1429,9 +1475,6 @@ void Stage_Tick(void)
 			
 			//Tick note splashes
 			ObjectList_Tick(&stage.objlist_splash);
-			
-			//Draw stage notes
-			Stage_DrawNotes();
 			
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
@@ -1582,18 +1625,6 @@ void Stage_Tick(void)
 				RECT_FIXED slash_dst = {FIXED_DEC(10,1), accuracy_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
 
 				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, stage.bump);
-				
-				RECT accur_src = {138, 223, 9, 11};
-				u8 accura;
-				if (this->accuracy == 100)
-					accura = 92;
-				else if (this->accuracy > 10)
-					accura = 85;
-				else
-					accura = 77;
-				
-				RECT_FIXED accur_dst = {FIXED_DEC(accura,1), accuracy_dst.y - FIXED_DEC(1,1), FIXED_DEC(9,1), FIXED_DEC(11,1)};
-				Stage_DrawTex(&stage.tex_huds, &accur_src, &accur_dst, stage.bump);
 
 				Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, stage.bump);
 				
@@ -1621,6 +1652,10 @@ void Stage_Tick(void)
 					//Move character right
 					accuracy_dst.x += FIXED_DEC(7,1);
 				}
+                
+				RECT accur_src = {138, 223, 9, 11};
+				RECT_FIXED accur_dst = {accuracy_dst.x, accuracy_dst.y - FIXED_DEC(1,1), FIXED_DEC(9,1), FIXED_DEC(11,1)};
+				Stage_DrawTex(&stage.tex_huds, &accur_src, &accur_dst, stage.bump);
 
 				if (this->miss == 0)
 				{		
@@ -1648,19 +1683,20 @@ void Stage_Tick(void)
 			Stage_DrawTex(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump);
 			}
 
-			//make healthbar color player
-			u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
-			u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
-			u8 barp_b = (stage.player->health_b >>  0) & 0xFF;
-			
-			//make healthbar color opponent
-		    u8 baro_r = (stage.opponent->health_b >> 16) & 0xFF;
-			u8 baro_g = (stage.opponent->health_b >>  8) & 0xFF;
-		    u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
-
 			//health system for normal and swap mode
-			if (stage.mode != StageMode_2P)
+			if (stage.mode < StageMode_2P)
 			{
+				//make healthbar color player
+				u8 barp_r = (stage.player->health_b >> 16) & 0xFF;
+				u8 barp_g = (stage.player->health_b >>  8) & 0xFF;
+				u8 barp_b = (stage.player->health_b >>  0) & 0xFF;
+			
+				//make healthbar color opponent
+		    	u8 baro_r = (stage.opponent->health_b >> 16) & 0xFF;
+				u8 baro_g = (stage.opponent->health_b >>  8) & 0xFF;
+		    	u8 baro_b = (stage.opponent->health_b >>  0) & 0xFF;
+
+				
 				//Perform health checks
 				if (stage.player_state[0].health <= 0)
 				{
@@ -1689,51 +1725,8 @@ void Stage_Tick(void)
 				Stage_DrawTexCol(&stage.tex_huds, &health_back, &health_dst, stage.bump, barp_r >> 1, barp_g >> 1, barp_b >> 1);
 			}
 
-			//health system for multiplayer
-			else
-			{
-				//Perform health checks
-				if (stage.player_state[0].health <= 0)
-				{
-					//Player has died
-					stage.player_state[0].health = 0;
-					stage.state = StageState_Dead;
-				}
-				if (stage.player_state[0].health > 10000)
-					stage.player_state[0].health = 10000;
-
-				//Perform health checks
-				if (stage.player_state[1].health <= 0)
-				{
-					//Opponent has died
-					stage.player_state[1].health = 0;
-					stage.state = StageState_Dead;
-				}
-				if (stage.player_state[1].health > 10000)
-					stage.player_state[1].health = 10000;
-				
-				//Draw health heads
-				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[0].character->health_i,  1);
-				Stage_DrawHealth(stage.player_state[1].health, stage.player_state[1].character->health_i, -1);
-
-				
-				//Draw health bar
-				RECT health_fill = {33, 210, 128 - (128 * stage.player_state[1].health / 20000), 4};
-				RECT health_back = {225, 210, 128 - (128 *  stage.player_state[0].health / 20000), 4};
-				RECT health_border = {32, 209, 258, 6};
-
-				//draw downscroll healthbar
-			    if (stage.downscroll)
-                 {
-			      health_fill.y = health_back.y = 20;
-                  health_border.y = 19;
-			     }
-
-		        //draw healthbar
-				Gfx_DrawRect(&health_fill, baro_r, baro_g, baro_b);
-				Gfx_DrawRect(&health_back, barp_r, barp_g, barp_b);
-				Gfx_DrawRect(&health_border, 0,   0,  0);
-			}
+			//Draw stage notes
+			Stage_DrawNotes();
 
 			FntPrint("step: %d", stage.song_step);
 			

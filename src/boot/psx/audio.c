@@ -452,7 +452,7 @@ void Audio_PlaySound(u32 addr) {
 		if (SPU_CHANNELS[ch].loop_addr != SPU_RAM_ADDR(DUMMY_ADDR))
 			continue;
 
-		//printf("Playing sound on channel %d (addr=%08x)\n", ch, addr);
+		printf("Playing sound on channel %d (addr=%08x)\n", ch, addr);
 		Audio_PlaySoundOnChannel(addr, ch);
 		return;
 	}
