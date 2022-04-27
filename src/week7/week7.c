@@ -295,13 +295,17 @@ static IO_Data Week7_GetChart(void)
 	return week7_cht[stage.stage_id - StageId_7_1][stage.stage_diff];
 }
 
+static boolean Week7_LoadScreen(void)
+{
+	return stage.stage_id == StageId_7_1; //Going to Guns
+}
+
 static boolean Week7_NextStage(void)
 {
 	switch (stage.stage_id)
 	{
 		case StageId_7_1: //Ugh
 			stage.stage_id = StageId_7_2;
-			printf("test 2 OK");
 			return true;
 		case StageId_7_2: //Guns
 			stage.stage_id = StageId_7_3;
@@ -324,6 +328,6 @@ void Week7_SetPtr(void)
 	stageoverlay_drawfg = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week7_GetChart;
-	stageoverlay_loadscreen = NULL;
+	stageoverlay_loadscreen = Week7_LoadScreen;
 	stageoverlay_nextstage = Week7_NextStage;
 }

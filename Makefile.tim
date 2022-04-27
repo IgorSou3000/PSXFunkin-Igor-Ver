@@ -5,7 +5,6 @@ all: \
 	iso/menu/title.tim \
 	iso/menu/extra.tim \
 	iso/menu/credit0.tim \
-	iso/menu/note.tim \
 	iso/menu/loading.tim \
 	iso/font/bold.tim \
 	iso/font/arial.tim \
@@ -53,6 +52,7 @@ all: \
 	iso/week7/back3.tim \
 	iso/week7/hud1.tim \
 	iso/menup/main.arc \
+	iso/menugf/main.arc \
 	iso/menuo/main.arc \
 	iso/bf/main.arc \
 	iso/bf/dead.arc \
@@ -91,10 +91,13 @@ iso/%.arc:
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/extra.tim iso/menu/credit0.tim iso/menu/note.tim iso/font/bold.tim iso/font/arial.tim
 
 # Menu Player
-iso/menup/main.arc: iso/menup/bf0.tim iso/menup/bf1.tim
+iso/menup/main.arc: iso/menup/bf.tim
 
 # Menu Opponent
-iso/menuo/main.arc: iso/menuo/dad.tim iso/menuo/spook.tim iso/menuo/pico.tim iso/menuo/mom.tim iso/menuo/xmasp0.tim iso/menuo/xmasp1.tim iso/menuo/xmasp2.tim iso/menuo/senpai.tim
+iso/menuo/main.arc: iso/menuo/dad.tim iso/menuo/spook.tim iso/menuo/pico.tim iso/menuo/mom.tim iso/menuo/xmasp.tim iso/menuo/senpai.tim
+
+# Menu Girlfriend
+iso/menugf/main.arc: iso/menugf/gf0.tim iso/menugf/gf1.tim
 
 # BF
 iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim iso/bf/dead1.tim iso/bf/dead2.tim iso/bf/retry.tim

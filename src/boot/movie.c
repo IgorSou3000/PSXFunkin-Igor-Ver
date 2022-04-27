@@ -18,13 +18,11 @@
 
 #include "strplay.c"
 
-#define DEBUG 1
-
 Movie movie;
 
 STRFILE StrFile[] = {
 	// File name	Resolution		Frame count
-	{"\\STR\\UGH.STR;1", 320, 240, 428,}
+	{"\\STR\\UGH.STR;1", 320, 240, 180,}
 };
 
 void PlayMovie() {
@@ -32,7 +30,6 @@ void PlayMovie() {
 	Audio_StopMus();
 	ResetCallback();
 	CdInit();
-	PadInit(0);
 	ResetGraph(0);
 	SetGraphDebug(0);
 
@@ -43,15 +40,8 @@ void PlayMovie() {
 void Movie_Tick(void) 
 {
     
-    if (movie.playing == 0)
-    FntPrint("Press X to begin!");
+    Gfx_SetClear(0, 0, 0);
 
-
-        Gfx_SetClear(0, 0, 0);
-
-
-    if (pad_state.press & PAD_CROSS)
-    {
         switch (movie.select)
         {
             case 0:
@@ -59,6 +49,10 @@ void Movie_Tick(void)
             PlayStr(320, 240, 0, 0, &StrFile[0]);
             break;
         }
-    }
 
+    if(strPlayDone == 1) 
+    {
+    Stage_LoadScr(movie.id, movie.diff, movie.story);
+    }
 }
+

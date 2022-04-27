@@ -161,11 +161,11 @@ int main(int argc, char **argv)
 			case GameLoop_Menu:
 				Menu_Tick();
 				break;
-			case GameLoop_Movie:
-			    Movie_Tick();
-				break;
 			case GameLoop_Stage:
 				Stage_Tick();
+				break;
+			case GameLoop_Movie:
+			    Movie_Tick();
 				break;
 		}
 		

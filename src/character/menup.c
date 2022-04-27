@@ -4,6 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+//menu bf sprites and offsets by bilious
+
 #include "boot/character.h"
 #include "boot/mem.h"
 #include "boot/archive.h"
@@ -19,8 +21,7 @@ static u8 char_menubf_arc_main[] = {
 //Menu BF player types
 enum
 {
-	BF_ArcMain_BF0,
-	BF_ArcMain_BF1,
+	BFMenu_ArcMain_BF,
 	
 	BF_ArcMain_Max,
 };
@@ -40,34 +41,27 @@ typedef struct
 
 //Menu BF player definitions
 static const CharFrame char_menubf_frame[] = {
-	{BF_ArcMain_BF0, {  0,   0, 100,  97}, { 54,  92}}, //0 idle 1
-	{BF_ArcMain_BF0, {101,   0, 101,  97}, { 54,  92}}, //1 idle 2
-	{BF_ArcMain_BF0, {  0, 98, 100, 98}, { 53,  93}}, //2 idle 3
-	{BF_ArcMain_BF0, {101, 98, 100, 101}, { 53,  96}}, //3 idle 4
-	
-	{BF_ArcMain_BF1, {  0,   0,  98, 104}, { 55,  99}}, //13 peace 1
-	{BF_ArcMain_BF1, { 99,   0, 103, 103}, { 55,  97}}, //14 peace 2
-	{BF_ArcMain_BF1, {  0, 105, 104, 103}, { 55,  97}}, //15 peace 3
+	{BFMenu_ArcMain_BF, {  0,   0,  83,  80}, { 53,  92}}, //idle0 0
+	{BFMenu_ArcMain_BF, { 83,   0,  83,  79}, { 53,  91}}, //idle1 1
+	{BFMenu_ArcMain_BF, {166,   0,  82,  81}, { 52,  93}}, //idle2 2
+	{BFMenu_ArcMain_BF, {  0,  81,  84,  84}, { 52,  96}}, //idle3 3
+	{BFMenu_ArcMain_BF, { 84,  81,  83,  84}, { 52,  96}}, //idle4 4
+
+	{BFMenu_ArcMain_BF, {167,  81,  80,  84}, { 52,  96}}, //peace0 5
+	{BFMenu_ArcMain_BF, {  0, 165,  84,  84}, { 53,  95}}, //peace1 6
+	{BFMenu_ArcMain_BF, { 84, 165,  85,  84}, { 53,  95}}, //peace2 7
 };
 
 static const Animation char_menubf_anim[PlayerAnim_Max] = {
-	{1, (const u8[]){ 0, 0,  1, 1,  2, 2,  3, 3, 3, 3, 3, 3, 3, 3, ASCR_CHGANI, CharAnim_Idle}}, //CharAnim_Idle
-	{1, (const u8[]){ 4, 4, 4, 5, 5,  6,  6,  6,  6,  6,  6,  6,  6,  ASCR_BACK, 1}},             //CharAnim_Left
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
-	{2, (const u8[]){ 7,  8, ASCR_BACK, 1}},             //CharAnim_Down
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_DownAlt
-	{2, (const u8[]){ 9, 10, ASCR_BACK, 1}},             //CharAnim_Up
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_UpAlt
-	{2, (const u8[]){11, 12, ASCR_BACK, 1}},             //CharAnim_Right
-	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_RightAlt
-	
-	{1, (const u8[]){ 5, 20, 20, 21, ASCR_BACK, 1}},     //PlayerAnim_LeftMiss
-	{1, (const u8[]){ 7, 22, 22, 23, ASCR_BACK, 1}},     //PlayerAnim_DownMiss
-	{1, (const u8[]){ 9, 24, 24, 25, ASCR_BACK, 1}},     //PlayerAnim_UpMiss
-	{1, (const u8[]){11, 26, 26, 27, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
-	
-	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //PlayerAnim_Peace
-	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //PlayerAnim_Sweat
+	{2, (const u8[]){ 0, 1, 2, 3, 4, ASCR_BACK, 1}}, //CharAnim_Idle
+	{2, (const u8[]){ 5, 6, 6, 7, 7, 7,  ASCR_BACK, 1}},         //CharAnim_Left
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_LeftAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},         //CharAnim_Down
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_DownAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},         //CharAnim_Up
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_UpAlt
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},         //CharAnim_Right
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},   //CharAnim_RightAlt
 };
 
 //Menu BF player functions
@@ -169,8 +163,7 @@ static Character *Char_BF_New(fixed_t x, fixed_t y)
 	
 	//Load art
 	const char **pathp = (const char *[]){
-		"bf0.tim",   //BF_ArcMain_BF0
-		"bf1.tim",   //BF_ArcMain_BF1
+		"bf.tim",   //BF_ArcMain_BF0
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

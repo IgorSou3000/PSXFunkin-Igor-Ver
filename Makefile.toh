@@ -2,6 +2,7 @@ all: \
 	src/iso/menu/loading.tim.h \
 	src/iso/menup/main.arc.h \
 	src/iso/menuo/main.arc.h \
+	src/iso/menugf/main.arc.h \
 	src/iso/bf/main.arc.h \
 	src/iso/gf/main.arc.h \
 	src/iso/gf/tut.arc.h \

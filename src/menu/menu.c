@@ -31,10 +31,19 @@
 #include "character/menup.c"
 //Menu Opponent
 #include "character/menuo.c"
+//Menu Girlfriend
+#include "character/menugf.c"
+
 //Girlfriend
 #include "character/gf.c"
 
 u32 Menu_Sounds[3];
+
+static fixed_t Char_MenuGF_GetParallax(Char_MenuGF *this)
+{
+	(void)this;
+	return FIXED_UNIT;
+}
 
 static fixed_t Char_GF_GetParallax(Char_GF *this)
 {
@@ -172,6 +181,7 @@ static struct
 	Character *gf; //Title Girlfriend
 	Character *bf; //Menu BF
 	Character *opponent; //Menu Opponents
+	Character *menugf; //Menu Girlfriend
 } menu;
 
 #ifdef PSXF_NETWORK
@@ -360,15 +370,15 @@ void Menu_Load2(MenuPage page)
 	Gfx_LoadTex(&menu.tex_title, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //title.tim
 	Gfx_LoadTex(&menu.tex_extra, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //extra.tim
 	Gfx_LoadTex(&menu.tex_credit0, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //credit0.tim
-	Gfx_LoadTex(&menu.tex_note, overlay_data = Overlay_DataRead(), 0); Mem_Free(overlay_data); //note.tim
 	
 	FontData_Bold(&menu.font_bold, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //bold.tim
 	FontData_Arial(&menu.font_arial, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //arial.tim
 	
 	//Initialize Girlfriend, Menu BF, Menu Opponents and stage
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
-	menu.bf = Char_BF_New(FIXED_DEC(0,1), FIXED_DEC( 17,1));
-	menu.opponent = Char_MenuO_New(FIXED_DEC(-90,1), FIXED_DEC(84,1));
+	menu.bf = Char_BF_New(FIXED_DEC(0,1), FIXED_DEC( 37,1));
+	menu.opponent = Char_MenuO_New(FIXED_DEC(-90,1), FIXED_DEC(114,1));
+	menu.menugf = Char_MenuGF_New(FIXED_DEC(90,1), FIXED_DEC(-15,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;
 	stage.gf_speed = 4;
@@ -428,8 +438,11 @@ void Menu_Load2(MenuPage page)
 
 void Menu_Unload(void)
 {
-	//Free title Girlfriend
+	//Free characters
 	Character_Free(menu.gf);
+	Character_Free(menu.bf);
+	Character_Free(menu.opponent);
+	Character_Free(menu.menugf);
 }
 
 void Menu_ToStage(StageId id, StageDiff diff, boolean story)
@@ -916,6 +929,9 @@ void Menu_Tick(void)
 
 			//Draw Menu Opponent
 			menu.opponent->tick(menu.opponent);
+
+			//Draw Menu Girlfriend
+			menu.menugf->tick(menu.menugf);
 			
 			//Draw upper strip
 			RECT name_bar = {0, 16, SCREEN_WIDTH, 128};

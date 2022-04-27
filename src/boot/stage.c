@@ -1172,6 +1172,33 @@ static void Stage_PlayIntro(void)
 	if (stage.song_step == -5)
 	Audio_PlaySound(Stage_Sounds[3]);
 
+    //intro week 6
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	{
+		RECT ready_src = {3,144, 87, 41};
+		RECT_FIXED ready_dst = {FIXED_DEC(-90,1), FIXED_DEC(-10,1), FIXED_DEC(ready_src.w *2,1), FIXED_DEC(ready_src.h *2,1)};
+
+		RECT set_src = {3,187, 79, 37};
+		RECT_FIXED set_dst = {FIXED_DEC(-90,1), FIXED_DEC(-10,1), FIXED_DEC(set_src.w *2,1), FIXED_DEC(set_src.h *2,1)};
+
+		RECT date_src = {100,171, 93, 38};
+		RECT_FIXED date_dst = {FIXED_DEC(-100,1), FIXED_DEC(-5,1), FIXED_DEC(date_src.w *2,1), FIXED_DEC(date_src.h *2,1)};
+			//Stage specific events
+			//Draw "Ready?"
+			if (stage.song_step >= -15 && stage.song_step <= -10)
+			Stage_DrawTex(&stage.tex_huds, &ready_src, &ready_dst, stage.bump);
+
+			//Draw "Set?"
+			if (stage.song_step >= -9 && stage.song_step <=  -6)
+			Stage_DrawTex(&stage.tex_huds, &set_src, &set_dst, stage.bump);
+
+			//Draw "Date!"
+			if (stage.song_step >= -5 && stage.song_step <= -1)
+			Stage_DrawTex(&stage.tex_huds, &date_src, &date_dst, stage.bump);
+	}
+	//normal intro
+	else
+	{
 		RECT ready_src = {11, 38, 95, 46};
 		RECT_FIXED ready_dst = {FIXED_DEC(-90,1), FIXED_DEC(-10,1), FIXED_DEC(ready_src.w *2,1), FIXED_DEC(ready_src.h *2,1)};
 
@@ -1185,13 +1212,14 @@ static void Stage_PlayIntro(void)
 			if (stage.song_step >= -15 && stage.song_step <= -10)
 			Stage_DrawTex(&stage.tex_huds, &ready_src, &ready_dst, stage.bump);
 
-			//Draw "Set?"
+			//Draw "Set!?"
 			if (stage.song_step >= -9 && stage.song_step <=  -6)
 			Stage_DrawTex(&stage.tex_huds, &set_src, &set_dst, stage.bump);
 
-			//Draw "Go!?"
+			//Draw "Go!"
 			if (stage.song_step >= -5 && stage.song_step <= -1)
 			Stage_DrawTex(&stage.tex_huds, &go_src, &go_dst, stage.bump);
+		}
 }
 
 void Stage_Tick(void)
@@ -1218,6 +1246,7 @@ void Stage_Tick(void)
 					Stage_LoadChart();
 					Stage_LoadState();
 					Stage_InitCamera();
+					Audio_ClearAlloc();
 					Stage_LoadSFX();
 					Stage_LoadMusic();
 					Timer_Reset();
@@ -1337,6 +1366,7 @@ void Stage_Tick(void)
 							stage.stage_def = &stage_defs[stage.stage_id];
 							Stage_LoadChart();
 							Stage_LoadState();
+							Audio_ClearAlloc();
 							Stage_LoadSFX();
 							Stage_LoadMusic();
 							goto SeamLoad;
@@ -1471,32 +1501,6 @@ void Stage_Tick(void)
 					Stage_ProcessPlayer(&stage.player_state[1], &pad_state_2, playing);
 					break;
 				}
-			}
-			
-			//Tick note splashes
-			ObjectList_Tick(&stage.objlist_splash);
-			
-			//Draw note HUD
-			RECT note_src = {0, 0, 32, 32};
-			RECT_FIXED note_dst = {0, 0, FIXED_DEC(32,1), FIXED_DEC(32,1)};
-			
-			for (u8 i = 0; i < 4; i++)
-			{
-				//BF
-				note_dst.x = stage.note_x[i] - FIXED_DEC(16,1);
-				note_dst.y = stage.note_y[i] - FIXED_DEC(16,1);
-				if (stage.downscroll)
-				note_dst.y = -note_dst.y - note_dst.h;
-				Stage_DrawStrum(i, &note_src, &note_dst);
-				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
-				
-				//Opponent
-				note_dst.x = stage.note_x[i | NOTE_FLAG_OPPONENT] - FIXED_DEC(16,1);
-				note_dst.y = stage.note_y[i | NOTE_FLAG_OPPONENT] - FIXED_DEC(16,1);
-				if (stage.downscroll)
-				note_dst.y = -note_dst.y - note_dst.h;
-				Stage_DrawStrum(i | 4, &note_src, &note_dst);
-				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
 			
 			//Draw score
@@ -1727,6 +1731,32 @@ void Stage_Tick(void)
 
 			//Draw stage notes
 			Stage_DrawNotes();
+
+			//Tick note splashes
+			ObjectList_Tick(&stage.objlist_splash);
+			
+			//Draw note HUD
+			RECT note_src = {0, 0, 32, 32};
+			RECT_FIXED note_dst = {0, 0, FIXED_DEC(32,1), FIXED_DEC(32,1)};
+			
+			for (u8 i = 0; i < 4; i++)
+			{
+				//BF
+				note_dst.x = stage.note_x[i] - FIXED_DEC(16,1);
+				note_dst.y = stage.note_y[i] - FIXED_DEC(16,1);
+				if (stage.downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
+				Stage_DrawStrum(i, &note_src, &note_dst);
+				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+				
+				//Opponent
+				note_dst.x = stage.note_x[i | NOTE_FLAG_OPPONENT] - FIXED_DEC(16,1);
+				note_dst.y = stage.note_y[i | NOTE_FLAG_OPPONENT] - FIXED_DEC(16,1);
+				if (stage.downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
+				Stage_DrawStrum(i | 4, &note_src, &note_dst);
+				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
+			}
 
 			FntPrint("step: %d", stage.song_step);
 			
