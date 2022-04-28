@@ -10,7 +10,8 @@ all: \
 	iso/font/arial.tim \
 	iso/stage/hud0.tim \
 	iso/stage/hud0cir.tim \
-	iso/stage/hud0weeb.tim \
+	iso/stage/hud0w.tim \
+	iso/stage/hud0wcir.tim \
 	iso/stage/huds.tim \
 	iso/week1/back0.tim \
 	iso/week1/back1.tim \

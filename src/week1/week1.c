@@ -104,6 +104,8 @@ static fixed_t Char_GF_GetParallax(Char_GF *this)
 static Gfx_Tex week1_tex_back0; //Stage and back
 static Gfx_Tex week1_tex_back1; //Curtains
 
+s8 week1_scroll, week1_scrtog, week1_timer, week1_pos;
+
 //Week 1 background functions
 static void Week1_Load(void)
 {
@@ -118,25 +120,72 @@ static void Week1_Load(void)
 	
 	//Load characters
 	stage.player = Char_BF_New(FIXED_DEC(60,1), FIXED_DEC(100,1));
-	if (stage.stage_id == StageId_1_4)
+	switch(stage.stage_id)
 	{
+	case StageId_1_4:
 		//GF as opponent
 		stage.opponent = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
 		stage.gf = NULL;
-	}
+		break;
 
-	else if (stage.stage_id == StageId_4_4) //BFWeeb as opponent
-	{
+	case StageId_4_4:
+    	//BFWeeb as opponent
 		stage.opponent = Char_BFWeeb_New(FIXED_DEC(-120,1), FIXED_DEC(110,1));
 		stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
-	}
-	else
-	{
+		break;
+
+	default:
 		//Dad as opponent
 		stage.opponent = Char_Dad_New(FIXED_DEC(-120,1), FIXED_DEC(100,1));
 		stage.gf = Char_GF_New(FIXED_DEC(0,1), FIXED_DEC(-10,1));
-	}
+		break;
+		}
 }
+
+static void Week1_NoteMoviment()
+{
+	//play that only in test song
+	if (stage.stage_id == StageId_4_4 && stage.song_step > 0)
+	{
+			for (int i = 1; i <= 7; i += 2)
+			{
+			u8 even_number = i - 1;
+			stage.note_y[even_number] = FIXED_DEC(32 + (week1_pos / 4) - SCREEN_HEIGHT2, 1);
+			stage.note_y[i] = FIXED_DEC(32 + (-week1_pos / 4) - SCREEN_HEIGHT2, 1);
+			}
+			
+			if (week1_scrtog == 0)
+			{
+				if (week1_timer == 0)
+				{
+					week1_scroll += 1;
+					week1_timer = 5;
+				}
+				if (week1_pos > 10)
+				{
+					week1_scroll = 5;
+					week1_scrtog = 1;
+				}
+			}
+			if (week1_scrtog == 1)
+			{
+				if (week1_timer == 0)
+				{
+					week1_scroll -= 1;
+					week1_timer = 5;
+				}
+				if (week1_pos < -10)
+				{
+					week1_scroll = -5;
+					week1_scrtog = 0;
+				}
+			}
+			if (week1_timer > 0)
+				week1_timer -= 1;
+			
+			week1_pos += week1_scroll;
+		}	
+}	
 
 static void Week1_Tick()
 {
@@ -295,7 +344,7 @@ void Week1_SetPtr(void)
 	//Set pointers
 	stageoverlay_load = Week1_Load;
 	stageoverlay_tick = Week1_Tick;
-	stageoverlay_notemoviment = NULL;
+	stageoverlay_notemoviment = Week1_NoteMoviment;
 	stageoverlay_drawbg = Week1_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;

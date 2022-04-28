@@ -1095,10 +1095,19 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.stage_def->overlay_setptr();
 
 	//Load HUD textures
-	if (id >= StageId_6_1 && id <= StageId_6_3)
-	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
+	//circle notes week 6
+	if (id >= StageId_6_1 && id <= StageId_6_3 && stage.arrow == StageArrow_Circle)
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WCIR.TIM;1"), GFX_LOADTEX_FREE);
+
+	//normal notes week 6
+	else if (id >= StageId_6_1 && id <= StageId_6_3)
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0W.TIM;1"), GFX_LOADTEX_FREE);
+
+	//circle notes
 	else if (stage.arrow == StageArrow_Circle)
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0CIR.TIM;1"), GFX_LOADTEX_FREE);
+	
+	//normal notes
 	else
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
 

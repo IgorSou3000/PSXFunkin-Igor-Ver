@@ -34,7 +34,8 @@
 			<!-- Stage assets -->
 			<dir name = "stage">
 				<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
-				<file name = "hud0weeb.tim" type = "data" source = "iso/stage/hud0weeb.tim"/>
+				<file name = "hud0w.tim" type = "data" source = "iso/stage/hud0w.tim"/>
+				<file name = "hud0wcir.tim" type = "data" source = "iso/stage/hud0wcir.tim"/>
 				<file name = "hud0cir.tim" type = "data" source = "iso/stage/hud0cir.tim"/>
 			</dir>
 
