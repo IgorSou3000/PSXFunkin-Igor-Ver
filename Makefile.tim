@@ -56,7 +56,6 @@ all: \
 	iso/menugf/main.arc \
 	iso/menuo/main.arc \
 	iso/bf/main.arc \
-	iso/bf/dead.arc \
 	iso/bf/weeb.arc \
 	iso/gf/main.arc \
 	iso/gf/tut.arc \
