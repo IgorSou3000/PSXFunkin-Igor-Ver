@@ -1023,7 +1023,7 @@ static void Stage_LoadState(void)
 	
 	stage.gf_speed = 1 << 2;
 	
-	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3 && stage.story == true)
 	stage.state = StageState_Dialog;
 	else
 	stage.state = StageState_Play;
