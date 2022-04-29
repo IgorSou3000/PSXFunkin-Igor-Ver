@@ -94,6 +94,7 @@ StageOverlay_NoteMoviment stageoverlay_notemoviment;
 StageOverlay_DrawBG stageoverlay_drawbg;
 StageOverlay_DrawMD stageoverlay_drawmd;
 StageOverlay_DrawFG stageoverlay_drawfg;
+StageOverlay_Dialog stageoverlay_dialog;
 StageOverlay_Free stageoverlay_free;
 StageOverlay_GetChart stageoverlay_getchart;
 StageOverlay_LoadScreen stageoverlay_loadscreen;
@@ -922,6 +923,9 @@ static void Stage_DrawNotes(void)
 //Stage loads
 static void Stage_LoadChart(void)
 {
+	//reset dialog
+	stage.dialog = false;
+	
 	//Get chart data
 	stage.chart_data = stageoverlay_getchart();
 	u8 *chart_byte = (u8*)stage.chart_data;
@@ -1019,6 +1023,9 @@ static void Stage_LoadState(void)
 	
 	stage.gf_speed = 1 << 2;
 	
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	stage.state = StageState_Dialog;
+	else
 	stage.state = StageState_Play;
 	
 	if (stage.mode == StageMode_Swap)
@@ -1237,6 +1244,7 @@ void Stage_Tick(void)
 	
 	//Tick transition
 		//Return to menu when start is pressed
+		if (stage.state != StageState_Dialog)
 		if (pad_state.press & PAD_START)
 		{
 			stage.trans = (stage.state == StageState_Play) ? StageTrans_Menu : StageTrans_Reload;
@@ -1295,6 +1303,47 @@ void Stage_Tick(void)
 	
 	switch (stage.state)
 	{
+		//og dialog made by bilious
+		case StageState_Dialog:
+		{
+
+			//Dialogs
+			if (stageoverlay_dialog != NULL)
+				stageoverlay_dialog();
+
+			//after dialog over or skip da dialog,start song
+			if ((stage.dialog == true) || (pad_state.press & PAD_START))
+			stage.state = StageState_Play;
+
+			//Tick foreground objects
+			ObjectList_Tick(&stage.objlist_fg);
+			
+			//Draw stage foreground
+			if (stageoverlay_drawfg != NULL)
+				stageoverlay_drawfg();
+			
+			//Tick characters
+			stage.player->tick(stage.player);
+			stage.opponent->tick(stage.opponent);
+			
+			//Draw stage middle
+			if (stageoverlay_drawmd != NULL)
+				stageoverlay_drawmd();
+			
+			//Tick girlfriend
+			if (stage.gf != NULL)
+				stage.gf->tick(stage.gf);
+			
+			//Tick background objects
+			ObjectList_Tick(&stage.objlist_bg);
+			
+			//Draw stage background
+			if (stageoverlay_drawbg != NULL)
+				stageoverlay_drawbg();
+
+			Stage_ScrollCamera();
+			break;
+		}
 		case StageState_Play:
 		{
 
@@ -1427,7 +1476,7 @@ void Stage_Tick(void)
 			{
 			stageoverlay_notemoviment();
 			}
-			
+
 			//Tick stage
 			if (stageoverlay_tick != NULL)
 				stageoverlay_tick();

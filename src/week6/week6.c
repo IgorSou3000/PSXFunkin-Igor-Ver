@@ -12,6 +12,8 @@
 #include "boot/mutil.h"
 #include "boot/timer.h"
 
+#include "boot/font.h"
+
 //Charts
 static u8 week6_cht_senpai_easy[] = {
 	#include "iso/chart/senpai-easy.json.cht.h"
@@ -96,10 +98,47 @@ static Gfx_Tex week6_tex_back0; //Background
 static Gfx_Tex week6_tex_back1; //Trees
 static Gfx_Tex week6_tex_back2; //Freaks
 static Gfx_Tex week6_tex_back3; //Thorns background
+static FontData week6_font_arial; //Arial font weeb
+static u8 week6_select;
 
 //Freaks state
 static Animatable week6_freaks_animatable;
 static u8 week6_freaks_frame;
+
+//week 6 dialogs
+
+//senpai dialog
+	static const struct
+	{
+		const char *text;
+		u8 icon;
+	}week6_dialog1[] = {
+	{"Ah, a new fair maiden has come\nin search of true love!",1},
+	{"A serenade between gentlemen\nshall decide where her beautiful\nheart shall reside.",1},
+	{"Beep bo bop",0},
+};
+
+//roses dialog
+	static const struct
+	{
+		const char *text;
+		u8 icon;
+	}week6_dialog2[] = {
+	{"Not bad for an ugly worm.",1},
+	{"But this time I'll rip your nuts off\nright after your girlfriend\nfinishes gargling mine.",1},
+	{"Bop beep be be skdoo bep",0},
+};
+//Thorns dialog
+	static const struct
+	{
+		const char *text;
+	}week6_dialog3[] = {
+	{"Direct contact with real humans,\nafter being trapped in here for\nso long..."},
+	{"and HER of all people."},
+	{"I'll make her father pay for what\nhe's done to me and all the\nothers...."},
+	{"I'll beat you and make you take\nmy place."},
+	{"You don't mind your bodies\nbeing borrowed right? It's only\nfair..."},
+};
 
 //Freaks functions
 void Week6_Freaks_SetFrame(void *user, u8 frame)
@@ -160,6 +199,8 @@ static void Week6_Load(void)
 			break;
 	}
 	stage.gf = Char_GFWeeb_New(FIXED_DEC(0,1), FIXED_DEC(45,1));
+
+	FontData_Arial(&week6_font_arial, overlay_data = Overlay_DataRead()); Mem_Free(overlay_data); //arialw.tim
 	
 	//Initialize freaks state
 	Animatable_Init(&week6_freaks_animatable, freaks_anim);
@@ -230,6 +271,179 @@ static void Week6_DrawBG3(void)
 	}
 }
 
+static void Week6_Dialog(void)
+{
+	if (pad_state.press & PAD_CROSS)
+	{
+		switch (stage.stage_id)
+		{
+			//senpai
+			case StageId_6_1:
+			if (week6_select < COUNT_OF(week6_dialog1) - 1)
+			week6_select++;
+
+			else
+			stage.dialog = true;
+			break;
+
+			//roses
+			case StageId_6_2:
+			if (week6_select < COUNT_OF(week6_dialog2) - 1)
+			week6_select++;
+
+			else
+			stage.dialog = true;
+			break;
+			//thorns
+			case StageId_6_3:
+			if (week6_select < COUNT_OF(week6_dialog3) - 1)
+			week6_select++;
+
+			else
+			stage.dialog = true;
+			break;
+			default:
+			if (week6_select < COUNT_OF(week6_dialog1) - 1)
+			week6_select++;
+
+			else
+			stage.dialog = true;
+			break;
+			}
+}
+		//Draw dialog and head
+		switch (stage.stage_id)
+		{
+			//senpai dialogs
+			case StageId_6_1:
+			week6_font_arial.draw_col(&week6_font_arial,
+	    	week6_dialog1[week6_select].text,
+			60,
+	    	180,
+			FontAlign_Left,
+			57 >> 1,
+			25 >> 1,
+			23 >> 1
+			);
+
+			//senpai head
+			if (week6_dialog1[week6_select].icon == 1)
+			{
+			RECT senpai_src = {56, 142, 52, 57};
+			RECT_FIXED senpai_dst = {
+				FIXED_DEC(-100,1),
+				FIXED_DEC(-32,1),
+				FIXED_DEC(72,1),
+				FIXED_DEC(77,1)
+			};
+			Stage_DrawTex(&stage.tex_hud1, &senpai_src, &senpai_dst, stage.bump);
+			}
+			
+			//bf head
+			else
+			{
+			RECT bf_src = {108, 154, 58, 45};
+			RECT_FIXED bf_dst = {
+				FIXED_DEC(40,1),
+				FIXED_DEC(-20,1),
+				FIXED_DEC(78,1),
+				FIXED_DEC(65,1)
+			};
+			Stage_DrawTex(&stage.tex_hud1, &bf_src, &bf_dst, stage.bump);
+			}
+			break;
+
+			//roses dialog
+			case StageId_6_2:
+			week6_font_arial.draw_col(&week6_font_arial,
+	    	week6_dialog2[week6_select].text,
+			60,
+	    	180,
+			FontAlign_Left,
+			57 >> 1,
+			25 >> 1,
+			23 >> 1
+			);
+
+			//senpai mad head
+			if (week6_dialog2[week6_select].icon == 1)
+			{
+			RECT senpaim_src = { 3, 141, 54, 58};
+			RECT_FIXED senpaim_dst = {
+				FIXED_DEC(-90,1),
+				FIXED_DEC(-33,1),
+				FIXED_DEC(74,1),
+				FIXED_DEC(78,1)
+			};
+			Stage_DrawTex(&stage.tex_hud1, &senpaim_src, &senpaim_dst, stage.bump);
+			}
+			
+			//bf head
+			else
+			{
+			RECT bf_src = {108, 154, 58, 45};
+			RECT_FIXED bf_dst = {
+				FIXED_DEC(40,1),
+				FIXED_DEC(-20,1),
+				FIXED_DEC(78,1),
+				FIXED_DEC(65,1)
+			};
+			Stage_DrawTex(&stage.tex_hud1, &bf_src, &bf_dst, stage.bump);
+			}
+			break;
+
+			//thorns dialogs
+			case StageId_6_3:
+			week6_font_arial.draw(&week6_font_arial,
+	    	week6_dialog3[week6_select].text,
+			60,
+	    	180,
+			FontAlign_Left
+			);
+
+			//spirit head
+			RECT spirit_src = {207, 138, 48, 106};
+			RECT_FIXED spirit_dst = {
+				FIXED_DEC(-100,1),
+				FIXED_DEC(-82,1),
+				FIXED_DEC(68,1),
+				FIXED_DEC(126,1)
+			};
+			Stage_DrawTex(&stage.tex_hud1, &spirit_src, &spirit_dst, stage.bump);
+			break;
+
+			default:
+			week6_font_arial.draw_col(&week6_font_arial,
+	    	week6_dialog1[week6_select].text,
+			60,
+	    	180,
+			FontAlign_Left,
+			57 >> 1,
+			25 >> 1,
+			23 >> 1
+			);
+			break;
+	 }
+
+	RECT box_src = {3, 199, 205, 56};
+	RECT_FIXED box_dst = {
+		FIXED_DEC(-140,1),
+		FIXED_DEC(39,1),
+		FIXED_DEC(290,1),
+		FIXED_DEC(70,1)
+	};
+	//draw normal box
+	if (stage.stage_id != StageId_6_3)
+	Stage_DrawTex(&stage.tex_hud1, &box_src, &box_dst, stage.bump);
+    
+	RECT blackbox = {20,170,270, 50};
+	//draw thorns box
+	if (stage.stage_id == StageId_6_3)
+	Gfx_DrawRect(&blackbox,0,0,0);
+
+     RECT screen = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	 Gfx_BlendRect(&screen, 255, 255, 255, 0);
+}
 static void Week6_DrawBG(void)
 {
 	fixed_t fx, fy;
@@ -385,14 +599,17 @@ static boolean Week6_NextStage(void)
 			stage.stage_id = StageId_6_2;
 			Character_Free(stage.opponent);
 			stage.opponent = Char_SenpaiM_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
+			week6_select = 0;
 			return true;
 		case StageId_6_2: //Roses
 			stage.stage_id = StageId_6_3;
 			stageoverlay_drawbg = Week6_DrawBG3;
 			Character_Free(stage.opponent);
 			stage.opponent = Char_Spirit_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
+			week6_select = 0;
 			return true;
 		case StageId_6_3: //Thorns
+		week6_select = 0;
 			return false;
 		default:
 			return false;
@@ -408,6 +625,7 @@ void Week6_SetPtr(void)
 	stageoverlay_drawbg = (stage.stage_id == StageId_6_3) ? Week6_DrawBG3 : Week6_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;
+	stageoverlay_dialog = Week6_Dialog;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week6_GetChart;
 	stageoverlay_loadscreen = Week6_LoadScreen;

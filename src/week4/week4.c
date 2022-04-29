@@ -333,6 +333,7 @@ void Week4_SetPtr(void)
 	stageoverlay_drawbg = Week4_DrawBG;
 	stageoverlay_drawmd = Week4_DrawMD;
 	stageoverlay_drawfg = Week4_DrawFG;
+	stageoverlay_dialog = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week4_GetChart;
 	stageoverlay_loadscreen = Week4_LoadScreen;

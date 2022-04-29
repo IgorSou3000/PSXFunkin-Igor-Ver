@@ -281,6 +281,7 @@ void Week2_SetPtr(void)
 	stageoverlay_drawbg = Week2_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = Week2_DrawFG;
+	stageoverlay_dialog = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week2_GetChart;
 	stageoverlay_loadscreen = Week2_LoadScreen;

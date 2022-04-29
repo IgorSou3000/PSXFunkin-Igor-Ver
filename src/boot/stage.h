@@ -119,6 +119,7 @@ typedef void (*StageOverlay_NoteMoviment)(void);
 typedef void (*StageOverlay_DrawBG)(void);
 typedef void (*StageOverlay_DrawMD)(void);
 typedef void (*StageOverlay_DrawFG)(void);
+typedef void (*StageOverlay_Dialog)(void);
 typedef void (*StageOverlay_Free)(void);
 typedef IO_Data (*StageOverlay_GetChart)(void);
 typedef boolean (*StageOverlay_LoadScreen)(void);
@@ -130,6 +131,7 @@ extern StageOverlay_NoteMoviment stageoverlay_notemoviment;
 extern StageOverlay_DrawBG stageoverlay_drawbg;
 extern StageOverlay_DrawMD stageoverlay_drawmd;
 extern StageOverlay_DrawFG stageoverlay_drawfg;
+extern StageOverlay_Dialog stageoverlay_dialog;
 extern StageOverlay_Free stageoverlay_free;
 extern StageOverlay_GetChart stageoverlay_getchart;
 extern StageOverlay_LoadScreen stageoverlay_loadscreen;
@@ -190,12 +192,9 @@ typedef struct
 	//Stage settings
 	boolean ghost, downscroll, expsync, middlescroll, botplay;
 	s32 mode;
-
 	s32 arrow;
-	
 	u32 offset;
-
-	boolean save;
+	boolean dialog;
 	
 	//HUD textures
 	Gfx_Tex tex_hud0, tex_hud1, tex_huds;
@@ -255,6 +254,7 @@ typedef struct
 	
 	enum
 	{
+		StageState_Dialog, //Dialog stuff
 		StageState_Play, //Game is playing as normal
 		StageState_Dead,       //Start BREAK animation and reading extra data from CD
 		StageState_DeadLoad,   //Wait for said data to be read

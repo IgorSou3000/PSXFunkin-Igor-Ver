@@ -393,6 +393,7 @@ void Week5_SetPtr(void)
 	stageoverlay_drawbg = (stage.stage_id == StageId_5_3) ? Week5_DrawBGEvil : Week5_DrawBG;
 	stageoverlay_drawmd = NULL;
 	stageoverlay_drawfg = NULL;
+	stageoverlay_dialog = NULL;
 	stageoverlay_free = NULL;
 	stageoverlay_getchart = Week5_GetChart;
 	stageoverlay_loadscreen = Week5_LoadScreen;

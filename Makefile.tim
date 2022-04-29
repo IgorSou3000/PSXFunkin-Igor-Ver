@@ -8,6 +8,7 @@ all: \
 	iso/menu/loading.tim \
 	iso/font/bold.tim \
 	iso/font/arial.tim \
+	iso/font/arialw.tim \
 	iso/stage/hud0.tim \
 	iso/stage/hud0cir.tim \
 	iso/stage/hud0w.tim \
