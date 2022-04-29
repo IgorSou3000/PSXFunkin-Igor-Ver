@@ -43,37 +43,37 @@ typedef struct
 
 //MenuO character definitions
 static const CharFrame char_menuo_frame[] = {
-	{MenuO_ArcMain_Dad, {  0,   1,  53,  91}, { 26 + 30, 115 + 68}}, //0 idle 1
-	{MenuO_ArcMain_Dad, { 53,   1,  51,  91}, { 27 + 30, 115 + 68}}, //1 idle 2
-	{MenuO_ArcMain_Dad, {104,   1,  51,  91}, { 27 + 30, 115 + 68}}, //2 idle 3
-	{MenuO_ArcMain_Dad, {155,   1,  50,  92}, { 26 + 30, 116 + 68}}, //3 idle 4
-	{MenuO_ArcMain_Dad, {  1,  92,  51,  93}, { 26 + 30, 117 + 68}}, //4 idle 5
-	{MenuO_ArcMain_Dad, { 52,  92,  50,  93}, { 26 + 30, 117 + 68}}, //5 idle 6
+	{MenuO_ArcMain_Dad, {  0,   1,  53,  91}, { 38, 90}}, //0 idle 1
+	{MenuO_ArcMain_Dad, { 53,   1,  51,  91}, { 37, 90}}, //1 idle 2
+	{MenuO_ArcMain_Dad, {104,   1,  51,  91}, { 37, 90}}, //2 idle 3
+	{MenuO_ArcMain_Dad, {155,   1,  50,  92}, { 37, 91}}, //3 idle 4
+	{MenuO_ArcMain_Dad, {  1,  92,  51,  93}, { 37, 92}}, //4 idle 5
+	{MenuO_ArcMain_Dad, { 52,  92,  50,  93}, { 36, 92}}, //5 idle 6
 
-	{MenuO_ArcMain_Spook, {  0,   0,  44,  64}, { 14 + 45, 83 + 75}}, //6 idle 1
-	{MenuO_ArcMain_Spook, { 44,   0,  45,  63}, { 14 + 45, 82 + 75}}, //7 idle 2
-	{MenuO_ArcMain_Spook, { 89,   0,  42,  56}, { 11 + 45, 74 + 75}}, //8 idle 3
-	{MenuO_ArcMain_Spook, {131,   0,  42,  58}, { 12 + 45, 75 + 75}}, //9 idle 4
-	{MenuO_ArcMain_Spook, {173,   0,  58,  62}, { 22 + 45, 80 + 75}}, //10 idle 5
-	{MenuO_ArcMain_Spook, {  0,  64,  56,  61}, { 20 + 45, 79 + 75}}, //11 idle 6
+	{MenuO_ArcMain_Spook, {  0,   0,  44,  64}, { 44, 63}}, //6 idle 1
+	{MenuO_ArcMain_Spook, { 44,   0,  45,  63}, { 45, 62}}, //7 idle 2
+	{MenuO_ArcMain_Spook, { 89,   0,  42,  56}, { 42, 56}}, //8 idle 3
+	{MenuO_ArcMain_Spook, {131,   0,  42,  58}, { 42, 57}}, //9 idle 4
+	{MenuO_ArcMain_Spook, {173,   0,  58,  62}, { 52, 60}}, //10 idle 5
+	{MenuO_ArcMain_Spook, {  0,  64,  56,  61}, { 50, 61}}, //11 idle 6
 
-	{MenuO_ArcMain_Pico, {  0,   1,  52,  55}, { 63, 66 + 78}}, //12 idle 1
-	{MenuO_ArcMain_Pico, { 52,   1,  52,  55}, { 63, 67 + 78}}, //13 idle 2
-	{MenuO_ArcMain_Pico, {104,   1,  53,  55}, { 62, 67 + 78}}, //14 idle 3
-	{MenuO_ArcMain_Pico, {157,   1,  53,  56}, { 61, 67 + 78}}, //15 idle 4
-	{MenuO_ArcMain_Pico, {  0,  56,  53,  56}, { 61, 67 + 78}}, //16 idle 5
-	{MenuO_ArcMain_Pico, { 53,  56,  53,  56}, { 61, 67 + 78}}, //17 idle 6
+	{MenuO_ArcMain_Pico, {  0,   1,  52,  55}, { 49, 51}}, //12 idle 1
+	{MenuO_ArcMain_Pico, { 52,   1,  52,  55}, { 48, 51}}, //13 idle 2
+	{MenuO_ArcMain_Pico, {104,   1,  53,  55}, { 48, 51}}, //14 idle 3
+	{MenuO_ArcMain_Pico, {157,   1,  53,  56}, { 47, 51}}, //15 idle 4
+	{MenuO_ArcMain_Pico, {  0,  56,  53,  56}, { 47, 52}}, //16 idle 5
+	{MenuO_ArcMain_Pico, { 53,  56,  53,  56}, { 47, 52}}, //17 idle 6
 
-	{MenuO_ArcMain_Mom, {  0,   1,  45,  94}, { 21 + 25, 116 + 68}}, //18 idle 1
-	{MenuO_ArcMain_Mom, { 44,   1,  45,  94}, { 20 + 25, 115 + 68}}, //19 idle 2
-	{MenuO_ArcMain_Mom, { 88,   1,  45,  94}, { 22 + 25, 115 + 68}}, //20 idle 3
-	{MenuO_ArcMain_Mom, {133,   1,  44,  94}, { 21 + 25, 116 + 68}}, //21 idle 4
-	{MenuO_ArcMain_Mom, {178,   0,  44,  96}, { 21 + 25, 116 + 68}}, //22 idle 5
+	{MenuO_ArcMain_Mom, {  0,   1,  45,  94}, { 33, 88}}, //18 idle 1
+	{MenuO_ArcMain_Mom, { 44,   1,  45,  94}, { 33, 87}}, //19 idle 2
+	{MenuO_ArcMain_Mom, { 88,   1,  45,  94}, { 35, 88}}, //20 idle 3
+	{MenuO_ArcMain_Mom, {133,   1,  44,  94}, { 34, 88}}, //21 idle 4
+	{MenuO_ArcMain_Mom, {178,   0,  44,  96}, { 33, 89}}, //22 idle 5
 
-	{MenuO_ArcMain_Xmasp, {  0,    0, 105,  93}, { 14 + 65, 82 + 95}}, //23 idle 1
-	{MenuO_ArcMain_Xmasp, {105,    0, 106,  92}, { 14 + 65, 82 + 95}}, //24 idle 2
-	{MenuO_ArcMain_Xmasp, {  0,  102, 106,  92}, { 14 + 65, 82 + 95}}, //25 idle 3
-	{MenuO_ArcMain_Xmasp, {106,  102, 105,  94}, { 14 + 65, 82 + 95}}, //26 idle 4
+	{MenuO_ArcMain_Xmasp, {  0,    0, 105,  93}, { 90, 87}}, //23 idle 1
+	{MenuO_ArcMain_Xmasp, {105,    0, 106,  92}, { 91, 85}}, //24 idle 2
+	{MenuO_ArcMain_Xmasp, {  0,  102, 106,  92}, { 90, 86}}, //25 idle 3
+	{MenuO_ArcMain_Xmasp, {106,  102, 105,  94}, { 88, 87}}, //26 idle 4
 };
 
 static const Animation char_menuo_anim[CharAnim_Max] = {
