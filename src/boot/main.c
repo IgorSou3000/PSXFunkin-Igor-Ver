@@ -125,6 +125,8 @@ int main(int argc, char **argv)
 	//Remember arguments
 	my_argc = argc;
 	my_argv = argv;
+
+	stage.movies = true;
 	
 	//Initialize system
 	PSX_Init();

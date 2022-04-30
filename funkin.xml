@@ -42,19 +42,29 @@
 			<!-- Sound effect -->
 			<dir name = "sound">
 				<!-- Menu Sounds -->
-				<file name = "scroll.vag" type = "data" source = "iso/sound/scroll.vag"/>
-				<file name = "confirm.vag" type = "data" source = "iso/sound/confirm.vag"/>
-				<file name = "cancel.vag" type = "data" source = "iso/sound/cancel.vag"/>
+				<file name = "scroll.vag" type = "data" source = "iso/sound/menu/scroll.vag"/>
+				<file name = "confirm.vag" type = "data" source = "iso/sound/menu/confirm.vag"/>
+				<file name = "cancel.vag" type = "data" source = "iso/sound/menu/cancel.vag"/>
+
 				<!-- Stage Sounds -->
-				<file name = "intro3.vag" type = "data" source = "iso/sound/intro3.vag"/>
-				<file name = "intro2.vag" type = "data" source = "iso/sound/intro2.vag"/>
-				<file name = "intro1.vag" type = "data" source = "iso/sound/intro1.vag"/>
-				<file name = "introgo.vag" type = "data" source = "iso/sound/introgo.vag"/>
+				<file name = "intro3.vag" type = "data" source = "iso/sound/stage/intro3.vag"/>
+				<file name = "intro2.vag" type = "data" source = "iso/sound/stage/intro2.vag"/>
+				<file name = "intro1.vag" type = "data" source = "iso/sound/stage/intro1.vag"/>
+				<file name = "introgo.vag" type = "data" source = "iso/sound/stage/introgo.vag"/>
+
 				<!-- Week 2 Sounds -->
-				<file name = "thunder1.vag" type = "data" source = "iso/sound/thunder1.vag"/>
-				<file name = "thunder2.vag" type = "data" source = "iso/sound/thunder2.vag"/>
+				<file name = "thunder1.vag" type = "data" source = "iso/sound/week2/thunder1.vag"/>
+				<file name = "thunder2.vag" type = "data" source = "iso/sound/week2/thunder2.vag"/>
+
 				<!-- Week 3 Sounds -->
 				<file name = "train.vag" type = "data" source = "iso/sound/train.vag"/>
+
+				<!-- Week 6 Sounds -->
+				<file name = "click.vag" type = "data" source = "iso/sound/week6/click.vag"/>
+				<file name = "intro3p.vag" type = "data" source = "iso/sound/week6/intro3.vag"/>
+				<file name = "intro2p.vag" type = "data" source = "iso/sound/week6/intro2.vag"/>
+				<file name = "intro1p.vag" type = "data" source = "iso/sound/week6/intro1.vag"/>
+				<file name = "introgop.vag" type = "data" source = "iso/sound/week6/introgo.vag"/>
 			</dir>
 			
 			<!-- Week 1 assets -->

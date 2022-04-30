@@ -15,8 +15,6 @@
 fixed_t week3_fade;
 fixed_t week3_fadespd = FIXED_DEC(150,1);
 
-u32 Week3_Sounds[1];
-
 //Charts
 static u8 week3_cht_pico_easy[] = {
 	#include "iso/chart/pico-easy.json.cht.h"
@@ -132,17 +130,6 @@ static void Week3_Load(void)
 	week3_train_timer = RandomRange(TRAIN_TIME_A, TRAIN_TIME_B);
 
 	Gfx_SetClear(0, 0, 0);
-
-	//load train sound
-	CdlFILE file;
-    IO_FindFile(&file, "\\SOUND\\TRAIN.VAG;1");
-    u32 *data = IO_ReadFile(&file);
-    Week3_Sounds[0] = Audio_LoadVAGData(data, file.size);
-    
-	for (int i = 0; i < 1; i++)
-	printf("address = %08x\n", Week3_Sounds[i]);
-
-	Mem_Free(data);
 }
 
 static void Week3_Tick()
@@ -258,7 +245,6 @@ static void Week3_DrawBG()
 	//Move train
 	if (week3_train_x <= TRAIN_END_X)
 	{
-		Audio_PlaySound(Week3_Sounds[0]);
 		//Reset train
 		if ((stage.flag & STAGE_FLAG_JUST_STEP) && (stage.song_step & 0xF) == 0)
 		{

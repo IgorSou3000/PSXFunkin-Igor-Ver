@@ -884,7 +884,11 @@ void Menu_Tick(void)
 					menu.page_param.stage.id = menu_options[menu.select].stage;
 					menu.page_param.stage.story = true;
 					menu.trans_time = FIXED_UNIT;
-					menu.next_page = (menu.page_param.stage.id == StageId_7_1) ? MenuPage_Movie : MenuPage_Stage; //start movie if you select week 7
+					//start movie if you select week 7
+					if (menu.page_param.stage.id == StageId_7_1 && stage.movies)
+					menu.next_page =  MenuPage_Movie;
+					else 
+					menu.next_page =  MenuPage_Stage;
 				}
 				
 				//Return to main menu if circle is pressed
@@ -1326,6 +1330,11 @@ void Menu_Tick(void)
 			menu.sects = 3;
 			menu.sectf = 5;
 			break;
+			//"misc"
+			case 2:
+			menu.sects = 6;
+			menu.sectf = 6;
+			break;
 			}
 
 			static const char *gamemode_strs[] = {"Normal", "Swap", "Two Player"};
@@ -1360,6 +1369,8 @@ void Menu_Tick(void)
 				{OptType_Enum,    "Arrow", &stage.arrow, {.spec_enum = {COUNT_OF(arrow_strs), arrow_strs}}},
 				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
+				//Misc options
+				{OptType_Boolean, "Movies", &stage.movies, {.spec_boolean = {0}}},
 			};
 
 			static const struct

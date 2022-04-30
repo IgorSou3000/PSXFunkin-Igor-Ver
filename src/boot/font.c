@@ -93,6 +93,7 @@ void Font_Arial_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, F
 	
 	//Draw string character by character
 	u8 c;
+	u32 writing;
 
 	while ((c = *text++) != '\0')
 	{	

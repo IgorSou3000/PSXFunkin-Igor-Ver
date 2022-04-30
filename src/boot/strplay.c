@@ -51,16 +51,7 @@
 
 // Original PsyQ sample code : /psyq/addons/cd/MOVIE
 // Video to STR conversion : https://github.com/ABelliqueux/nolibgs_hello_worlds/tree/main/hello_str
-#include <sys/types.h>
-#include <stdio.h>
-#include <libgte.h>
-#include <libetc.h>
-#include <libgpu.h>
-#include <libspu.h>
-// CD library
-#include <libcd.h>
-// CODEC library
-#include <libpress.h>
+#include "movie.h"
 
 #define IS_RGB24	1	// 0:16-bit playback, 1:24-bit playback (recommended for quality)
 #define RING_SIZE	32	// Ring Buffer size (32 sectors seems good enough)
@@ -345,7 +336,6 @@ static u_long *strNext(STRENV *strEnv) {
 	// set the strPlayDone flag.
 	if ((u_long **)sector->frameCount >= (u_long **)strNumFrames)
 		strPlayDone = 1;
-	
 	
 	// if the resolution is differ to previous frame, clear frame buffer
 	if (strFrameWidth != sector->width || strFrameHeight != sector->height) {

@@ -190,7 +190,7 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean ghost, downscroll, expsync, middlescroll, botplay;
+	boolean ghost, downscroll, expsync, middlescroll, movies,botplay;
 	s32 mode;
 	s32 arrow;
 	u32 offset;
@@ -224,7 +224,7 @@ typedef struct
 		fixed_t tx, ty, tz, td;
 		fixed_t bzoom;
 	} camera;
-	fixed_t bump, sbump;
+	fixed_t bump, sbump,hbump;
 	
 	Character *player;
 	Character *opponent;

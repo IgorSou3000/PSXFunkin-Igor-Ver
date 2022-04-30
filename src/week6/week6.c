@@ -13,6 +13,10 @@
 #include "boot/timer.h"
 
 #include "boot/font.h"
+#include "boot/audio.h"
+
+//week6 sounds
+u32 Week6_Sounds[1];
 
 //Charts
 static u8 week6_cht_senpai_easy[] = {
@@ -108,36 +112,28 @@ static u8 week6_freaks_frame;
 //week 6 dialogs
 
 //senpai dialog
-	static const struct
-	{
-		const char *text;
-		u8 icon;
-	}week6_dialog1[] = {
-	{"Ah, a new fair maiden has come\nin search of true love!",1},
-	{"A serenade between gentlemen\nshall decide where her beautiful\nheart shall reside.",1},
-	{"Beep bo bop",0},
+
+static const char * week6_dialog1[] = {
+	"Ah, a new fair maiden has come\nin search of true love!",
+	"A serenade between gentlemen\nshall decide where her beautiful\nheart shall reside.",
+	"Beep bo bop",
 };
 
 //roses dialog
-	static const struct
-	{
-		const char *text;
-		u8 icon;
-	}week6_dialog2[] = {
-	{"Not bad for an ugly worm.",1},
-	{"But this time I'll rip your nuts off\nright after your girlfriend\nfinishes gargling mine.",1},
-	{"Bop beep be be skdoo bep",0},
+
+static const char * week6_dialog2[] = {
+	"Not bad for an ugly worm.",
+	"But this time I'll rip your nuts off\nright after your girlfriend\nfinishes gargling mine.",
+	"Bop beep be be skdoo bep",
 };
 //Thorns dialog
-	static const struct
-	{
-		const char *text;
-	}week6_dialog3[] = {
-	{"Direct contact with real humans,\nafter being trapped in here for\nso long..."},
-	{"and HER of all people."},
-	{"I'll make her father pay for what\nhe's done to me and all the\nothers...."},
-	{"I'll beat you and make you take\nmy place."},
-	{"You don't mind your bodies\nbeing borrowed right? It's only\nfair..."},
+
+static const char * week6_dialog3[] = {
+	"Direct contact with real humans,\nafter being trapped in here for\nso long...",
+	"and HER of all people.",
+	"I'll make her father pay for what\nhe's done to me and all the\nothers....",
+	"I'll beat you and make you take\nmy place.",
+	"You don't mind your bodies\nbeing borrowed right? It's only\nfair...",
 };
 
 //Freaks functions
@@ -205,6 +201,17 @@ static void Week6_Load(void)
 	//Initialize freaks state
 	Animatable_Init(&week6_freaks_animatable, freaks_anim);
 	Animatable_SetAnim(&week6_freaks_animatable, 0);
+
+	// Begin Read Sound effects
+	CdlFILE file;
+    IO_FindFile(&file, "\\SOUND\\CLICK.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Week6_Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	for (int i = 0; i < 1; i++)
+	printf("address = %08x\n", Week6_Sounds[i]);
+
+	Mem_Free(data);
 }
 
 static fixed_t week6_back_paraly[] = {
@@ -275,6 +282,7 @@ static void Week6_Dialog(void)
 {
 	if (pad_state.press & PAD_CROSS)
 	{
+		Audio_PlaySound(Week6_Sounds[0]);
 		switch (stage.stage_id)
 		{
 			//senpai
@@ -317,7 +325,7 @@ static void Week6_Dialog(void)
 			//senpai dialogs
 			case StageId_6_1:
 			week6_font_arial.draw_col(&week6_font_arial,
-	    	week6_dialog1[week6_select].text,
+	    	week6_dialog1[week6_select],
 			60,
 	    	180,
 			FontAlign_Left,
@@ -327,7 +335,7 @@ static void Week6_Dialog(void)
 			);
 
 			//senpai head
-			if (week6_dialog1[week6_select].icon == 1)
+			if (week6_select != 2)
 			{
 			RECT senpai_src = {56, 142, 52, 57};
 			RECT_FIXED senpai_dst = {
@@ -356,7 +364,7 @@ static void Week6_Dialog(void)
 			//roses dialog
 			case StageId_6_2:
 			week6_font_arial.draw_col(&week6_font_arial,
-	    	week6_dialog2[week6_select].text,
+	    	week6_dialog2[week6_select],
 			60,
 	    	180,
 			FontAlign_Left,
@@ -366,7 +374,7 @@ static void Week6_Dialog(void)
 			);
 
 			//senpai mad head
-			if (week6_dialog2[week6_select].icon == 1)
+			if (week6_select != 2)
 			{
 			RECT senpaim_src = { 3, 141, 54, 58};
 			RECT_FIXED senpaim_dst = {
@@ -395,7 +403,7 @@ static void Week6_Dialog(void)
 			//thorns dialogs
 			case StageId_6_3:
 			week6_font_arial.draw(&week6_font_arial,
-	    	week6_dialog3[week6_select].text,
+	    	week6_dialog3[week6_select],
 			60,
 	    	180,
 			FontAlign_Left
@@ -413,15 +421,6 @@ static void Week6_Dialog(void)
 			break;
 
 			default:
-			week6_font_arial.draw_col(&week6_font_arial,
-	    	week6_dialog1[week6_select].text,
-			60,
-	    	180,
-			FontAlign_Left,
-			57 >> 1,
-			25 >> 1,
-			23 >> 1
-			);
 			break;
 	 }
 
@@ -432,13 +431,13 @@ static void Week6_Dialog(void)
 		FIXED_DEC(290,1),
 		FIXED_DEC(70,1)
 	};
+	RECT blackbox = {20,170,270, 50};
 	//draw normal box
 	if (stage.stage_id != StageId_6_3)
 	Stage_DrawTex(&stage.tex_hud1, &box_src, &box_dst, stage.bump);
     
-	RECT blackbox = {20,170,270, 50};
 	//draw thorns box
-	if (stage.stage_id == StageId_6_3)
+	else
 	Gfx_DrawRect(&blackbox,0,0,0);
 
      RECT screen = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -596,17 +595,17 @@ static boolean Week6_NextStage(void)
 	switch (stage.stage_id)
 	{
 		case StageId_6_1: //Senpai
+			week6_select = 0;
 			stage.stage_id = StageId_6_2;
 			Character_Free(stage.opponent);
 			stage.opponent = Char_SenpaiM_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
-			week6_select = 0;
 			return true;
 		case StageId_6_2: //Roses
+			week6_select = 0;
 			stage.stage_id = StageId_6_3;
 			stageoverlay_drawbg = Week6_DrawBG3;
 			Character_Free(stage.opponent);
 			stage.opponent = Char_Spirit_New(FIXED_DEC(-60,1), FIXED_DEC(50,1));
-			week6_select = 0;
 			return true;
 		case StageId_6_3: //Thorns
 		week6_select = 0;

@@ -15,6 +15,8 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include <libcd.h>
+// CODEC library
+#include <libpress.h>
 
 #include "strplay.c"
 
@@ -39,7 +41,6 @@ void PlayMovie() {
 
 void Movie_Tick(void) 
 {
-    
     Gfx_SetClear(0, 0, 0);
 
         switch (movie.select)

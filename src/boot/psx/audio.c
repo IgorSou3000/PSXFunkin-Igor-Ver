@@ -409,7 +409,7 @@ void Audio_ClearAlloc(void) {
 u32 Audio_LoadVAGData(u32 *sound, u32 sound_size) {
 	// subtract size of .vag header (48 bytes), round to 64 bytes
 	u32 xfer_size = ((sound_size - VAG_HEADER_SIZE) + 63) & 0xffffffc0;
-	u8  *data = (u8 *) sound;
+	u32 *data = sound;
 
 	// modify sound data to ensure sound "loops" to dummy sample
 	// https://psx-spx.consoledev.net/soundprocessingunitspu/#flag-bits-in-2nd-byte-of-adpcm-header
@@ -427,7 +427,7 @@ u32 Audio_LoadVAGData(u32 *sound, u32 sound_size) {
 
 	SpuSetTransferStartAddr(addr); // set transfer starting address to malloced area
 	SpuSetTransferMode(SPU_TRANSFER_BY_DMA); // set transfer mode to DMA
-	SpuWrite((u32 *) (data + VAG_HEADER_SIZE), xfer_size); // perform actual transfer
+	SpuWrite(((u8 *)data + VAG_HEADER_SIZE), xfer_size); // perform actual transfer
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT); // wait for DMA to complete
 
 	printf("Allocated new sound (addr=%08x, size=%d)\n", addr, xfer_size);

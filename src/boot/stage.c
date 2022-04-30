@@ -29,6 +29,7 @@
 
 u32 Stage_Sounds[4];
 
+
 //notes initialization
 void Note_Init(void)
 {
@@ -77,7 +78,7 @@ void Note_Init(void)
 
 
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
-static const u8 note_anims[4][3] = {
+static  u8 note_anims[4][3] = {
 	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
 	{CharAnim_Down,  CharAnim_DownAlt,  PlayerAnim_DownMiss},
 	{CharAnim_Up,    CharAnim_UpAlt,    PlayerAnim_UpMiss},
@@ -99,6 +100,7 @@ StageOverlay_Free stageoverlay_free;
 StageOverlay_GetChart stageoverlay_getchart;
 StageOverlay_LoadScreen stageoverlay_loadscreen;
 StageOverlay_NextStage stageoverlay_nextstage;
+s16 special_step;
 
 //Stage definitions
 #include "stagedef_disc1.h"
@@ -375,7 +377,9 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			
 			//Hit the note
 			note->type |= NOTE_FLAG_HIT;
-             
+
+             //bump data like score
+			 stage.hbump = FIXED_DEC(103,100);
 			if (this->character->ignoreanim != true)
 		    this->character->set_anim(this->character, note_anims[type & 0x3][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
 
@@ -969,30 +973,56 @@ static void Stage_LoadSFX(void)
 {
 	// Begin Read Sound effects
 	CdlFILE file;
-    IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
+
+	//intro week 6
+	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	{
+    IO_FindFile(&file, "\\SOUND\\INTRO3P.VAG;1");
     u32 *data = IO_ReadFile(&file);
     Stage_Sounds[0] = Audio_LoadVAGData(data, file.size);
 
-	IO_FindFile(&file, "\\SOUND\\CANCEL.VAG;1");
+	IO_FindFile(&file, "\\SOUND\\INTRO2P.VAG;1");
     data = IO_ReadFile(&file);
     Stage_Sounds[1] = Audio_LoadVAGData(data, file.size);
 
-	IO_FindFile(&file, "\\SOUND\\SCROLL.VAG;1");
+	IO_FindFile(&file, "\\SOUND\\INTRO1P.VAG;1");
     data = IO_ReadFile(&file);
     Stage_Sounds[2] = Audio_LoadVAGData(data, file.size);
 
-	IO_FindFile(&file, "\\SOUND\\CONFIRM.VAG;1");
+	IO_FindFile(&file, "\\SOUND\\INTROGOP.VAG;1");
     data = IO_ReadFile(&file);
     Stage_Sounds[3] = Audio_LoadVAGData(data, file.size);
+	Mem_Free(data);
+	}
+
+	//normal intro
+	else
+	{
+    IO_FindFile(&file, "\\SOUND\\INTRO3.VAG;1");
+    u32 *data = IO_ReadFile(&file);
+    Stage_Sounds[0] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\INTRO2.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[1] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\INTRO1.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[2] = Audio_LoadVAGData(data, file.size);
+
+	IO_FindFile(&file, "\\SOUND\\INTROGO.VAG;1");
+    data = IO_ReadFile(&file);
+    Stage_Sounds[3] = Audio_LoadVAGData(data, file.size);
+	Mem_Free(data);
+	}
 
 	for (int i = 0; i < 4; i++)
 	printf("address = %08x\n", Stage_Sounds[i]);
-
-	Mem_Free(data);
 }
 
 static void Stage_LoadMusic(void)
 {
+	special_step = 0;  
 	//Offset sing ends
 	stage.player->sing_end -= stage.note_scroll;
 	stage.opponent->sing_end -= stage.note_scroll;
@@ -1087,6 +1117,7 @@ static void Stage_InitCamera(void)
 	
 	stage.bump = FIXED_UNIT;
 	stage.sbump = FIXED_UNIT;
+	stage.hbump = FIXED_UNIT;
 }
 
 //Stage functions
@@ -1263,8 +1294,6 @@ void Stage_Tick(void)
 					Stage_LoadChart();
 					Stage_LoadState();
 					Stage_InitCamera();
-					Audio_ClearAlloc();
-					Stage_LoadSFX();
 					Stage_LoadMusic();
 					Timer_Reset();
 					break;
@@ -1305,7 +1334,12 @@ void Stage_Tick(void)
 	{
 		//og dialog made by bilious
 		case StageState_Dialog:
-		{
+		{   
+			special_step++;      
+			stage.song_step = special_step / 10;
+			
+
+			FntPrint("step: %d", stage.song_step);
 
 			//Dialogs
 			if (stageoverlay_dialog != NULL)
@@ -1346,7 +1380,6 @@ void Stage_Tick(void)
 		}
 		case StageState_Play:
 		{
-
 			 Stage_PlayIntro();
 			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
@@ -1424,8 +1457,6 @@ void Stage_Tick(void)
 							stage.stage_def = &stage_defs[stage.stage_id];
 							Stage_LoadChart();
 							Stage_LoadState();
-							Audio_ClearAlloc();
-							Stage_LoadSFX();
 							Stage_LoadMusic();
 							goto SeamLoad;
 						}
@@ -1485,6 +1516,7 @@ void Stage_Tick(void)
 			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
 				stage.bump = FIXED_UNIT;
 			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(60,100));
+			stage.hbump = FIXED_UNIT + FIXED_MUL(stage.hbump - FIXED_UNIT, FIXED_DEC(60,100));
 			
 			if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
 			{
@@ -1578,11 +1610,11 @@ void Stage_Tick(void)
 				
 				//Display score
 				RECT score_src = {80, 224, 40, 10};
-				RECT_FIXED score_dst = {(i ^ (stage.mode == StageMode_Swap)) ? FIXED_DEC(-100,1) : FIXED_DEC(-150,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
+				RECT_FIXED score_dst = {(stage.mode == StageMode_2P && i == 0) ? FIXED_DEC(10,1) : FIXED_DEC(-150,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(40,1), FIXED_DEC(10,1)};
 				if (stage.downscroll)
 					score_dst.y = FIXED_DEC(-87,1);
 				
-				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+				Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, FIXED_MUL(stage.bump, stage.hbump));
 				
 				//Draw number
 				score_src.y = 240;
@@ -1603,7 +1635,7 @@ void Stage_Tick(void)
 					else //Should be a number
 						score_src.x = 80 + ((c - '0') << 3);
 					
-					Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, stage.bump);
+					Stage_DrawTex(&stage.tex_hud0, &score_src, &score_dst, FIXED_MUL(stage.bump, stage.hbump));
 					
 					//Move character right
 					score_dst.x += FIXED_DEC(7,1);
@@ -1627,20 +1659,21 @@ void Stage_Tick(void)
 				
 				//Display miss
 				RECT miss_src = {163, 155, 36, 9};
-				RECT_FIXED miss_dst = {FIXED_DEC(-60,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(36,1), FIXED_DEC(9,1)};
+				RECT_FIXED miss_dst = {(stage.mode == StageMode_2P && i == 0) ? FIXED_DEC(100,1) : FIXED_DEC(-60,1), (SCREEN_HEIGHT2 - 22) << FIXED_SHIFT, FIXED_DEC(36,1), FIXED_DEC(9,1)};
 				if (stage.downscroll)
 					miss_dst.y = FIXED_DEC(-87,1);
 				
 				RECT slash_src = {163, 224, 3, 13};
 				RECT_FIXED slash_dst = {FIXED_DEC(-64,1), miss_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
-				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, stage.bump);
+				if (stage.mode != StageMode_2P)
+				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, FIXED_MUL(stage.bump, stage.hbump));
 				
-				Stage_DrawTex(&stage.tex_huds, &miss_src, &miss_dst, stage.bump);
+				Stage_DrawTex(&stage.tex_huds, &miss_src, &miss_dst, FIXED_MUL(stage.bump, stage.hbump));
 				
 				//Draw number
 				miss_src.y = 240;
 				miss_src.w = 8;
-				miss_dst.x += FIXED_DEC(45,1);
+				miss_dst.x += FIXED_DEC(40,1);
 				miss_dst.w = FIXED_DEC(8,1);
 				
 				for (const char *p = this->miss_text; ; p++)
@@ -1653,7 +1686,7 @@ void Stage_Tick(void)
 					//Draw character
 					miss_src.x = 80 + ((c - '0') << 3);
 					
-					Stage_DrawTex(&stage.tex_huds, &miss_src, &miss_dst, stage.bump);
+					Stage_DrawTex(&stage.tex_huds, &miss_src, &miss_dst, FIXED_MUL(stage.bump, stage.hbump));
 					
 					//Move character right
 					miss_dst.x += FIXED_DEC(7,1);
@@ -1685,10 +1718,11 @@ void Stage_Tick(void)
 				
 				RECT slash_src = {163, 224, 3, 13};
 				RECT_FIXED slash_dst = {FIXED_DEC(10,1), accuracy_dst.y - FIXED_DEC(2,1), FIXED_DEC(3,1), FIXED_DEC(13,1)};
-
-				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, stage.bump);
-
-				Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, stage.bump);
+                if (stage.mode != StageMode_2P)
+				{
+				Stage_DrawTex(&stage.tex_huds, &slash_src, &slash_dst, FIXED_MUL(stage.bump, stage.hbump));
+				Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, FIXED_MUL(stage.bump, stage.hbump));
+				}
 				
 				//Draw number
 				accuracy_src.y = 240;
@@ -1709,7 +1743,8 @@ void Stage_Tick(void)
 					else //Should be a number
 						accuracy_src.x = 80 + ((c - '0') << 3);
 					
-					Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, stage.bump);
+					if (stage.mode != StageMode_2P)
+					Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, FIXED_MUL(stage.bump, stage.hbump));
 					
 					//Move character right
 					accuracy_dst.x += FIXED_DEC(7,1);
@@ -1717,20 +1752,16 @@ void Stage_Tick(void)
                 
 				RECT accur_src = {138, 223, 9, 11};
 				RECT_FIXED accur_dst = {accuracy_dst.x, accuracy_dst.y - FIXED_DEC(1,1), FIXED_DEC(9,1), FIXED_DEC(11,1)};
-				Stage_DrawTex(&stage.tex_huds, &accur_src, &accur_dst, stage.bump);
+				if (stage.mode != StageMode_2P)
+				Stage_DrawTex(&stage.tex_huds, &accur_src, &accur_dst, FIXED_MUL(stage.bump, stage.hbump));
 
 				if (this->miss == 0)
 				{		
 				//Draw fc
-				accuracy_src.x = 149;
-				accuracy_src.y = 226;
-				accuracy_src.w = 13;
-				accuracy_src.h =  9;
-				accuracy_dst.x += FIXED_DEC(16,1);
-				accuracy_dst.w = FIXED_DEC(13,1);
-				accuracy_dst.h = FIXED_DEC(9,1);
-
-				Stage_DrawTex(&stage.tex_huds, &accuracy_src, &accuracy_dst, stage.bump);
+				RECT fc_src = {149, 226, 13, 9};
+				RECT_FIXED fc_dst = {accuracy_dst.x + FIXED_DEC(16,1), accuracy_dst.y, FIXED_DEC(13,1), FIXED_DEC(9,1)};
+                if (stage.mode != StageMode_2P)
+				Stage_DrawTex(&stage.tex_huds, &fc_src, &fc_dst, FIXED_MUL(stage.bump, stage.hbump));
 				}
 			}
 			
@@ -1876,7 +1907,7 @@ void Stage_Tick(void)
 			
 			//Reset stage state
 			stage.flag = 0;
-			stage.bump = stage.sbump = FIXED_UNIT;
+			stage.bump = stage.sbump = stage.hbump = FIXED_UNIT;
 			
 			//Change background colour to black
 			Gfx_SetClear(0, 0, 0);
