@@ -110,6 +110,11 @@ typedef struct
 	
 	//Mus file
 	const char *mus_path;
+
+	//Switch week.c in the next song
+	boolean swap;
+	//if it will have loading screen
+	boolean loadscr;
 } StageDef;
 
 //Stage overlay state
@@ -165,7 +170,6 @@ typedef struct
 	Character *character;
 	
 	fixed_t arrow_hitan[4]; //Arrow hit animation for presses
-	u8 flip;
 	
 	s16 health;
 	u16 combo;
@@ -175,13 +179,13 @@ typedef struct
 	char score_text[13];
 
 	boolean refresh_miss;
-	s32 miss;
+	s16 miss;
 	char miss_text[13];
 	
 	boolean refresh_accuracy;
-	s32 min_accuracy;
-	s32 accuracy;
-	s32 max_accuracy;
+	s16 min_accuracy;
+	s16 accuracy;
+	s16 max_accuracy;
 	char accuracy_text[13];
 	
 	u16 pad_held, pad_press;
@@ -282,7 +286,7 @@ void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, c
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom);
 void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode);
 void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode);
-
+void Stage_FocusCharacter(Character *ch, fixed_t div);
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y);
 

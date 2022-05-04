@@ -33,20 +33,32 @@ u32 Stage_Sounds[4];
 //notes initialization
 void Note_Init(void)
 {
+	u8 swaplayer, swapoppo;
 	//OG code by Unstop4ble,Changes by IgorSou3000
 	 //middle scroll x
 		if(stage.middlescroll)
 		{
 		 for (int i = 0; i <= 3; i++)
 		 {
-		 u16 x = i*34;
-		 //bf
-		 stage.note_x[i] = FIXED_DEC(x - 55,1) + FIXED_DEC(SCREEN_WIDEADD,4);
-		 }
+			 //swap middlescroll
+			if (stage.mode == StageMode_Swap)
+			{
+		 	swaplayer = i + 4;
+		 	swapoppo = i;
+			}
+			else
+			{
+			swaplayer = i;
+			swapoppo = i + 4;
+			}
+				u16 x = i*34;
+				//bf
+				stage.note_x[swaplayer] = FIXED_DEC(x - 55,1) + FIXED_DEC(SCREEN_WIDEADD,4);
 
-		 //opponent
-		 stage.note_x[4] = stage.note_x[5] = stage.note_x[6] = stage.note_x[7] = FIXED_DEC(-256,1) - FIXED_DEC(SCREEN_WIDEADD,4);
+				//opponent
+				stage.note_x[swapoppo] = FIXED_DEC(-256,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 		}
+}
 	//normal note x
 	else
 	{
@@ -100,7 +112,6 @@ StageOverlay_Free stageoverlay_free;
 StageOverlay_GetChart stageoverlay_getchart;
 StageOverlay_LoadScreen stageoverlay_loadscreen;
 StageOverlay_NextStage stageoverlay_nextstage;
-s16 special_step;
 
 //Stage definitions
 #include "stagedef_disc1.h"
@@ -132,7 +143,7 @@ static void Stage_CutVocal(void)
 }
 
 //Stage camera functions
-static void Stage_FocusCharacter(Character *ch, fixed_t div)
+void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	//Use character focus settings to update target position and zoom
 	stage.camera.tx = ch->x + ch->focus_x;
@@ -171,7 +182,7 @@ static void Stage_ScrollCamera(void)
 		if (stage.stage_id >= StageId_4_1 && stage.stage_id <= StageId_4_3)
 		{
 			stage.camera.x += RandomRange(FIXED_DEC(-1,10),FIXED_DEC(1,10));
-			stage.camera.y += RandomRange(FIXED_DEC(-25,100),FIXED_DEC(25,100));
+			stage.camera.y += RandomRange(FIXED_DEC(-22,100),FIXED_DEC(22,100));
 		}
 	#endif
 	
@@ -818,7 +829,7 @@ static void Stage_DrawNotes(void)
 					if (clip < (24 << FIXED_SHIFT))
 					{
 						note_src.x = 160;
-						note_src.y = ((note->type & 0x3) << 5) + 4 + (clip >> FIXED_SHIFT);
+						note_src.y = ((note->type & 0x3) << 5) + (clip >> FIXED_SHIFT);
 						note_src.w = 32;
 						note_src.h = 28 - (clip >> FIXED_SHIFT);
 						
@@ -1022,7 +1033,6 @@ static void Stage_LoadSFX(void)
 
 static void Stage_LoadMusic(void)
 {
-	special_step = 0;  
 	//Offset sing ends
 	stage.player->sing_end -= stage.note_scroll;
 	stage.opponent->sing_end -= stage.note_scroll;
@@ -1100,6 +1110,27 @@ static void Stage_LoadState(void)
 	ObjectList_Free(&stage.objlist_splash);
 	ObjectList_Free(&stage.objlist_fg);
 	ObjectList_Free(&stage.objlist_bg);
+}
+
+static boolean LoadWeek(void)
+{
+ if (stage.stage_def->swap && stage.stage_def->loadscr)
+  {
+    Stage_Unload();
+	Stage_LoadScr(stage.stage_id,stage.stage_diff,stage.story);
+	return true;
+  }
+
+  else if (stage.stage_def->swap)
+  {
+    Stage_Unload();
+	Audio_ClearAlloc();
+	Stage_Load(stage.stage_id,stage.stage_diff,stage.story);
+	return true;
+  }
+
+  else
+  return false;
 }
 
 static void Stage_InitCamera(void)
@@ -1290,12 +1321,18 @@ void Stage_Tick(void)
 				//Load next stage
 				if (stageoverlay_nextstage())
 				{
+					if(LoadWeek())
+					LoadWeek();
+
+					else
+					{
 					stage.stage_def = &stage_defs[stage.stage_id];
 					Stage_LoadChart();
 					Stage_LoadState();
 					Stage_InitCamera();
 					Stage_LoadMusic();
 					Timer_Reset();
+					}
 					break;
 				}
 		//Fallthrough
@@ -1335,12 +1372,6 @@ void Stage_Tick(void)
 		//og dialog made by bilious
 		case StageState_Dialog:
 		{   
-			special_step++;      
-			stage.song_step = special_step / 10;
-			
-
-			FntPrint("step: %d", stage.song_step);
-
 			//Dialogs
 			if (stageoverlay_dialog != NULL)
 				stageoverlay_dialog();
@@ -1383,6 +1414,31 @@ void Stage_Tick(void)
 			 Stage_PlayIntro();
 			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
+            
+			//moviment camera
+			//og code by lucky
+			if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
+			{
+				if ((stage.opponent->animatable.anim == CharAnim_Up) || (stage.opponent->animatable.anim == CharAnim_UpAlt))
+					stage.camera.y -= FIXED_DEC(2,10);
+				if ((stage.opponent->animatable.anim == CharAnim_Down) || (stage.opponent->animatable.anim == CharAnim_DownAlt))
+					stage.camera.y += FIXED_DEC(2,10);
+				if ((stage.opponent->animatable.anim == CharAnim_Left) || (stage.opponent->animatable.anim == CharAnim_LeftAlt))
+					stage.camera.x -= FIXED_DEC(2,10);
+				if ((stage.opponent->animatable.anim == CharAnim_Right) || (stage.opponent->animatable.anim == CharAnim_RightAlt))
+					stage.camera.x += FIXED_DEC(2,10);
+			}
+			else
+			{
+				if ((stage.player->animatable.anim == CharAnim_Up) || (stage.player->animatable.anim == CharAnim_UpAlt))
+					stage.camera.y -= FIXED_DEC(2,10);
+				if ((stage.player->animatable.anim == CharAnim_Down) || (stage.player->animatable.anim == CharAnim_DownAlt))
+					stage.camera.y += FIXED_DEC(2,10);
+				if ((stage.player->animatable.anim == CharAnim_Left) || (stage.player->animatable.anim == CharAnim_LeftAlt))
+					stage.camera.x -= FIXED_DEC(2,10);
+				if ((stage.player->animatable.anim == CharAnim_Right) || (stage.player->animatable.anim == CharAnim_RightAlt))
+					stage.camera.x += FIXED_DEC(2,10);
+			}
 			
 			//Get song position
 			boolean playing;
@@ -1454,10 +1510,16 @@ void Stage_Tick(void)
 					{
 						if (stageoverlay_nextstage())
 						{
+							if(LoadWeek())
+							LoadWeek();
+
+							else
+							{
 							stage.stage_def = &stage_defs[stage.stage_id];
 							Stage_LoadChart();
 							Stage_LoadState();
 							Stage_LoadMusic();
+							}
 							goto SeamLoad;
 						}
 						else
@@ -1513,7 +1575,7 @@ void Stage_Tick(void)
 				stageoverlay_tick();
 			
 			//Handle bump
-			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(92,100))) <= FIXED_DEC(1003,1000))
 				stage.bump = FIXED_UNIT;
 			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(60,100));
 			stage.hbump = FIXED_UNIT + FIXED_MUL(stage.hbump - FIXED_UNIT, FIXED_DEC(60,100));

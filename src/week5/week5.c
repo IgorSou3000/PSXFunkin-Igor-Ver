@@ -278,7 +278,6 @@ static void Week5_DrawBG()
 	}
 }
 
-
 //evil!!!
 static void Week5_DrawBGEvil()
 {

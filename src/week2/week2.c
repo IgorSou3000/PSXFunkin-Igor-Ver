@@ -136,6 +136,8 @@ static void Week2_Load(void)
 	printf("address = %08x\n", Week2_Sounds[i]);
 
 	Mem_Free(data);
+
+	Gfx_SetClear(47, 51, 90);
 }
 
 static void Week2_Tick()

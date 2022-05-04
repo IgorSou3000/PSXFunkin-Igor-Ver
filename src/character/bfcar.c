@@ -140,7 +140,7 @@ static const CharFrame char_bfcar_frame[] = {
 	{BF_ArcDead_Dead2, {128, 128, 127, 127}, { 53,  98}}, //34 dead2 balls twitch 1
 };
 
-static const Animation char_bfcar_anim[PlayerAnim_Max] = {
+static Animation char_bfcar_anim[PlayerAnim_Max] = {
 	{1, (const u8[]){ 0,  1,  2,  3,  4,  5,  5,  6,  6,  7,  8,  9, 10, 10, 10, ASCR_BACK, 1}}, //CharAnim_Idle
 	{1, (const u8[]){11, 12, 13, 14, 15, ASCR_BACK, 2}},             //CharAnim_Left
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_LeftAlt
@@ -380,7 +380,15 @@ static Character *Char_BFCar_New(fixed_t x, fixed_t y)
 	this->character.health_b = 0xFF2ba9c9;
 	this->character.health_i = 0;
 
-	this->character.flip = true;
+	this->character.flip = false;
+     
+	 //invert constants if flip it's true
+	if (this->character.flip == true)
+	{
+	Animation swap = char_bfcar_anim[7];
+	char_bfcar_anim[7] = char_bfcar_anim[1];
+	char_bfcar_anim[1] = swap;
+	}
 	
 	this->character.focus_x = FIXED_DEC(-50,1);
 	this->character.focus_y = (stage.stage_id == StageId_1_4) ? FIXED_DEC(-85,1) : FIXED_DEC(-65,1);

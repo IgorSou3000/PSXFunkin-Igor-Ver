@@ -309,6 +309,8 @@ static boolean Week7_NextStage(void)
 			return true;
 		case StageId_7_2: //Guns
 			stage.stage_id = StageId_7_3;
+			Character_Free(stage.opponent);
+			stage.opponent = Char_Tank_New(FIXED_DEC(-120,1),  FIXED_DEC(100,1)); //load "heh,pretty good"
 			return true;
 		case StageId_7_3: //Stress
 			return false;
