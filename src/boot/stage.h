@@ -194,7 +194,7 @@ typedef struct
 typedef struct
 {
 	//Stage settings
-	boolean ghost, downscroll, expsync, middlescroll, movies,botplay;
+	boolean ghost, downscroll, expsync, middlescroll, movies, botplay, movimentcamera;
 	s32 mode;
 	s32 arrow;
 	u32 offset;
@@ -286,7 +286,6 @@ void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, c
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom);
 void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode);
 void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode);
-void Stage_FocusCharacter(Character *ch, fixed_t div);
 //Stage move bg function
 void Stage_MoveTex(u32 input, s16 x, s16 y);
 

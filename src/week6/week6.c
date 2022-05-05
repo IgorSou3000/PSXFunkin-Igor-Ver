@@ -14,6 +14,7 @@
 
 #include "boot/font.h"
 #include "boot/audio.h"
+
 //OG dialog code by bilious
 //changes and improvements by igorsou3000(me LOL)
 
@@ -195,7 +196,7 @@ static Dialogs week6_dialog3[] = {
 };
 
 //this variable will receive dialog information
-Dialogs week6_alldia[week6_setsize];
+Dialogs week6_alldia[25];
 
 //pog code that receives information from dialogs
 switch(stage.stage_id)
@@ -244,7 +245,7 @@ break;
 	{
 		//if dialog not over,start next phrase ,else,finish dialog
 			Audio_PlaySound(Week6_Sounds[0]);
-			if (week6_select < COUNT_OF(week6_alldia) - 1)
+			if (week6_select < week6_setsize - 1)
 			week6_select++;
 
 			else

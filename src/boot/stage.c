@@ -143,7 +143,7 @@ static void Stage_CutVocal(void)
 }
 
 //Stage camera functions
-void Stage_FocusCharacter(Character *ch, fixed_t div)
+static void Stage_FocusCharacter(Character *ch, fixed_t div)
 {
 	//Use character focus settings to update target position and zoom
 	stage.camera.tx = ch->x + ch->focus_x;
@@ -1415,8 +1415,11 @@ void Stage_Tick(void)
 			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP | STAGE_FLAG_SCORE_REFRESH);
             
-			//moviment camera
+			//moviment camera like psych engine
 			//og code by lucky
+
+			if (stage.movimentcamera)
+			{
 			if (stage.cur_section->flag & SECTION_FLAG_OPPFOCUS)
 			{
 				if ((stage.opponent->animatable.anim == CharAnim_Up) || (stage.opponent->animatable.anim == CharAnim_UpAlt))
@@ -1439,6 +1442,7 @@ void Stage_Tick(void)
 				if ((stage.player->animatable.anim == CharAnim_Right) || (stage.player->animatable.anim == CharAnim_RightAlt))
 					stage.camera.x += FIXED_DEC(2,10);
 			}
+		}
 			
 			//Get song position
 			boolean playing;
