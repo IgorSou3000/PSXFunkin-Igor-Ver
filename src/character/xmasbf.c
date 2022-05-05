@@ -154,7 +154,7 @@ static const Animation char_xmasbf_anim[PlayerAnim_Max] = {
 };
 
 //Boyfriend player functions
-void Char_XmasBF_SetFrame(void *user, u8 frame)
+static void Char_XmasBF_SetFrame(void *user, u8 frame)
 {
 	Char_XmasBF *this = (Char_XmasBF*)user;
 	
@@ -168,7 +168,7 @@ void Char_XmasBF_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_XmasBF_Tick(Character *character)
+static void Char_XmasBF_Tick(Character *character)
 {
 	Char_XmasBF *this = (Char_XmasBF*)character;
 	
@@ -327,7 +327,7 @@ void Char_XmasBF_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_xmasbf_frame[this->frame]);
 }
 
-void Char_XmasBF_SetAnim(Character *character, u8 anim)
+static void Char_XmasBF_SetAnim(Character *character, u8 anim)
 {
 	Char_XmasBF *this = (Char_XmasBF*)character;
 	
@@ -350,15 +350,12 @@ void Char_XmasBF_SetAnim(Character *character, u8 anim)
 	Character_CheckStartSing(character);
 }
 
-void Char_XmasBF_Free(Character *character)
+static void Char_XmasBF_Free(Character *character)
 {
-	Char_XmasBF *this = (Char_XmasBF*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_XmasBF_New(fixed_t x, fixed_t y)
+static Character *Char_XmasBF_New(fixed_t x, fixed_t y)
 {
 	//Allocate boyfriend object
 	Char_XmasBF *this = Mem_Alloc(sizeof(Char_XmasBF));

@@ -78,7 +78,7 @@ static const Animation char_spirit_anim[CharAnim_Max] = {
 };
 
 //Dad character functions
-void Char_Spirit_SetFrame(void *user, u8 frame)
+static void Char_Spirit_SetFrame(void *user, u8 frame)
 {
 	Char_Spirit *this = (Char_Spirit*)user;
 	
@@ -130,7 +130,7 @@ static void Char_Spirit_Draw(Char_Spirit *this, fixed_t x, fixed_t y, fixed_t ph
 		Stage_DrawTexArb(&this->tex, &src, &d0, &d1, &d2, &d3, stage.camera.bzoom);
 }
 
-void Char_Spirit_Tick(Character *character)
+static void Char_Spirit_Tick(Character *character)
 {
 	Char_Spirit *this = (Char_Spirit*)character;
 	
@@ -146,7 +146,7 @@ void Char_Spirit_Tick(Character *character)
 	Char_Spirit_Draw(this, character->x + this->ghost_x, character->y + this->ghost_y, FIXED_DEC(15,10), true);
 }
 
-void Char_Spirit_SetAnim(Character *character, u8 anim)
+static void Char_Spirit_SetAnim(Character *character, u8 anim)
 {
 	Char_Spirit *this = (Char_Spirit*)character;
 	
@@ -179,15 +179,12 @@ void Char_Spirit_SetAnim(Character *character, u8 anim)
 	}
 }
 
-void Char_Spirit_Free(Character *character)
+static void Char_Spirit_Free(Character *character)
 {
-	Char_Spirit *this = (Char_Spirit*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_Spirit_New(fixed_t x, fixed_t y)
+static Character *Char_Spirit_New(fixed_t x, fixed_t y)
 {
 	//Allocate spirit object
 	Char_Spirit *this = Mem_Alloc(sizeof(Char_Spirit));

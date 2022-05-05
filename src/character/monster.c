@@ -79,7 +79,7 @@ static const Animation char_monster_anim[CharAnim_Max] = {
 };
 
 //Monster character functions
-void Char_Monster_SetFrame(void *user, u8 frame)
+static void Char_Monster_SetFrame(void *user, u8 frame)
 {
 	Char_Monster *this = (Char_Monster*)user;
 	
@@ -93,7 +93,7 @@ void Char_Monster_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_Monster_Tick(Character *character)
+static void Char_Monster_Tick(Character *character)
 {
 	Char_Monster *this = (Char_Monster*)character;
 	
@@ -106,22 +106,19 @@ void Char_Monster_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_monster_frame[this->frame]);
 }
 
-void Char_Monster_SetAnim(Character *character, u8 anim)
+static void Char_Monster_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);
 	Character_CheckStartSing(character);
 }
 
-void Char_Monster_Free(Character *character)
+static void Char_Monster_Free(Character *character)
 {
-	Char_Monster *this = (Char_Monster*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
+	(void)character;
 }
 
-Character *Char_Monster_New(fixed_t x, fixed_t y)
+static Character *Char_Monster_New(fixed_t x, fixed_t y)
 {
 	//Allocate monster object
 	Char_Monster *this = Mem_Alloc(sizeof(Char_Monster));

@@ -98,7 +98,7 @@ static const Animation char_tank_anim[CharAnim_Max] = {
 };
 
 //Tank character functions
-void Char_Tank_SetFrame(void *user, u8 frame)
+static void Char_Tank_SetFrame(void *user, u8 frame)
 {
 	Char_Tank *this = (Char_Tank*)user;
 	
@@ -112,7 +112,7 @@ void Char_Tank_SetFrame(void *user, u8 frame)
 	}
 }
 
-void Char_Tank_Tick(Character *character)
+static void Char_Tank_Tick(Character *character)
 {
 	Char_Tank *this = (Char_Tank*)character;
 	
@@ -161,7 +161,7 @@ void Char_Tank_Tick(Character *character)
 	Character_Draw(character, &this->tex, &char_tank_frame[this->frame]);
 }
 
-void Char_Tank_SetAnim(Character *character, u8 anim)
+static void Char_Tank_SetAnim(Character *character, u8 anim)
 {
 	//Set animation
 	if (anim == CharAnim_DownAlt && character->animatable.anim != CharAnim_DownAlt)
@@ -180,16 +180,12 @@ void Char_Tank_SetAnim(Character *character, u8 anim)
 	Character_CheckStartSing(character);
 }
 
-void Char_Tank_Free(Character *character)
+static void Char_Tank_Free(Character *character)
 {
-	Char_Tank *this = (Char_Tank*)character;
-	
-	//Free art
-	Mem_Free(this->arc_main);
-	Mem_Free(this->arc_scene);
+	(void)character;
 }
 
-Character *Char_Tank_New(fixed_t x, fixed_t y)
+static Character *Char_Tank_New(fixed_t x, fixed_t y)
 {
 	//Allocate tank object
 	Char_Tank *this = Mem_Alloc(sizeof(Char_Tank));

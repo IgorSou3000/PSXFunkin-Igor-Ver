@@ -110,29 +110,6 @@ struct
     int  *p_data;
   } envMessage;
 
-typedef struct
-			{
-				enum
-				{
-					OptType_Boolean,
-					OptType_Enum,
-				} type;
-				const char *text;
-				void *value;
-				union
-				{
-					struct
-					{
-						int a;
-					} spec_boolean;
-					struct
-					{
-						s32 max;
-						const char **strs;
-					} spec_enum;
-				} spec;
-			}Options;
-
 //Menu state
 static struct
 {
@@ -1131,28 +1108,18 @@ void Menu_Tick(void)
 		}
 
 		case MenuPage_Credits:
-		{        
-			/*
-			 //switch section
-			switch(menu.switchop)
+		{   
+			//make this a typedef for avoid make a shit code
+			typedef struct
 			{
-			//"fork made by"
-			case 0:
-			menu.sects = 0;
-			menu.sectf = 5;
-			break;
-			//"special thanks"
-			case 1:
-			menu.sects = 6;
-			menu.sectf = 9;
-			break;
-			}
-			static const struct
-			{
-				const char *text;
-				const char *text2;
-				s16 icon;
-			} menu_options[] = {
+				const char *text; //person name
+				const char *text2; //person information
+				s16 icon; //person image
+			}Credits;
+
+			Credits menu_allcre[25];
+			 
+			Credits menu_credits0[] = {
 				//fork made by
 				{"IGORSOU",  "MAKE MOSTLY\nOF THE PORT",0},
 				{"SPICYJPEG",  "MAKE SOUND\nEFFECTS",9},
@@ -1160,6 +1127,9 @@ void Menu_Tick(void)
 				{"LORD SCOUT", "HELPED WITH\nOFFSETS",2},
 				{"JOHN PAUL",  "PLAYTESTER\nAND FRIEND",7},
 				{"LUCKY","MISS\nACCURATE CODE",4},
+			};
+
+			Credits menu_credits1[] = {
 				//special thanks
 				{"CUCKYDEV","MAKE THE\nPSXFUNKIN",6},
 				{"PSXFUNKIN DISCORD","DISCORD", 3},
@@ -1168,19 +1138,37 @@ void Menu_Tick(void)
 			};
 
 			//section
-			static const struct
-			{
-				const char *text;
-			} menu_section[] = {
-				{"FORK MADE BY"},
-				{"SPECIAL CREDITS"},
+			static const char * menu_section[] = {
+				"FORK MADE BY",
+				"SPECIAL CREDITS",
 			};
+
+			 //switch section
+			switch(menu.switchop)
+			{
+			//"fork made by"
+			case 0:
+			menu.setsize = COUNT_OF(menu_credits0);
+			for (u8 i = 0; i <= menu.setsize - 1; i++)
+			menu_allcre[i] = menu_credits0[i];
+			break;
+
+			//"special thanks"
+			case 1:
+			menu.setsize = COUNT_OF(menu_credits1);
+			for (u8 i = 0; i <= menu.setsize - 1; i++)
+			menu_allcre[i] = menu_credits1[i];
+			break;
+
+			default:
+			break;
+			}
 			
 			//Initialize page
 			if (menu.page_swap)
 			{
-				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
-				menu.page_param.stage.diff = StageDiff_Normal;
+				menu.switchop = 0;
+				menu.scroll = COUNT_OF(menu_allcre) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
 			}
 			
 			//Handle option and selection
@@ -1217,36 +1205,18 @@ void Menu_Tick(void)
 			        if (menu.select > 0)
 						menu.select--;
 					else
-					menu.select = menu.sectf - menu.sects;
+					menu.select = menu.setsize - 1;
 				}
-		   }
 
 				if (pad_state.press & PAD_RIGHT)
 				{
 					//play scroll sound
                     Audio_PlaySound(Menu_Sounds[0]);
-					{
-				    if (menu.select < menu.sectf - menu.sects)
+				    if (menu.select < menu.setsize - 1)
 						menu.select++;
 					else
 						menu.select = 0;
 					}
-				}
-
-				if (pad_state.press & PAD_DOWN)
-				{
-					//play scroll sound
-                    Audio_PlaySound(Menu_Sounds[0]);
-				    if (menu.select < 3)
-						menu.select += 3;
-				}
-
-				if (pad_state.press & PAD_UP)
-				{
-					//play scroll sound
-                    Audio_PlaySound(Menu_Sounds[0]);
-			        if (menu.select > 2)
-						menu.select -= 3;
 				}
 				
 				//Return to main menu if circle is pressed
@@ -1270,7 +1240,7 @@ void Menu_Tick(void)
                   
 			    //draw section
 				menu.font_bold.draw(&menu.font_bold,
-			    menu_section[menu.switchop].text,
+			    menu_section[menu.switchop],
 				160,
 			    10,
 				FontAlign_Center
@@ -1279,7 +1249,7 @@ void Menu_Tick(void)
 
 			   //Draw information
 			   menu.font_arial.draw(&menu.font_arial,
-			   Menu_LowerIf(menu_options[menu.select].text2, false),
+			   Menu_LowerIf(menu_allcre[menu.select].text2, false),
 			   200,
 			   150,
 			   FontAlign_Left
@@ -1287,17 +1257,18 @@ void Menu_Tick(void)
 
 		      //Draw name
 			  menu.font_arial.draw(&menu.font_arial,
-			  Menu_LowerIf(menu_options[menu.select].text, false),
+			  Menu_LowerIf(menu_allcre[menu.select].text, false),
 			  260,
 			  70,
 			  FontAlign_Center
 			  );
-				for (u8 i = menu.sects; i <= menu.sectf; i++)
+				for (u8 i = 0; i <= menu.setsize - 1; i++)
 				{
 					//Draw credits image
-					if (menu_options[i].icon != -1)
+					if (menu_allcre[i].icon != -1)
+
 					//stupid math
-					DrawCredit(menu_options[i].icon, ((i - menu.sects)*64), 30, menu.select != (i - menu.sects));
+					DrawCredit(menu_allcre[i].icon, (i *64), 30, menu.select != i);
 			    }
 
 			 		//draw "name"
@@ -1335,12 +1306,37 @@ void Menu_Tick(void)
 				65 >> 1,
 				0, 0, 0
 			);
-			*/
 			break;
 		}
 
 		case MenuPage_Options:
 		{
+			//make this a typedef for avoid make a shit code
+			typedef struct
+			{
+				enum
+				{
+					//option type
+					OptType_Boolean,
+					OptType_Enum,
+				} type;
+				const char *text; //option name
+				const char *text2; //option information
+				void *value;
+				union
+				{
+					struct
+					{
+						int a;
+					} spec_boolean;
+					struct
+					{
+						s32 max;
+						const char **strs;
+					} spec_enum;
+				} spec;
+			}Options;
+
 			Options menu_allop[20];
 
 			static const char *gamemode_strs[] = {"Normal", "Swap", "Two Player"};
@@ -1348,22 +1344,22 @@ void Menu_Tick(void)
 
 			//general options
 			Options menu_mainoptions0[] = {
-				{OptType_Enum,    "Gamemode", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
-				{OptType_Boolean, "Ghost Tap", &stage.ghost, {.spec_boolean = {0}}},
-				{OptType_Boolean, "BotPlay", &stage.botplay, {.spec_boolean = {0}}},
+				{OptType_Enum,    "Gamemode","different modes", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
+				{OptType_Boolean, "Ghost Tap","made you don't miss when you hit nothing", &stage.ghost, {.spec_boolean = {0}}},
+				{OptType_Boolean, "BotPlay", "pretty obvious i guess",&stage.botplay, {.spec_boolean = {0}}},
 			};
 			
 			//Note options
 			Options menu_mainoptions1[] = {
-				{OptType_Enum,    "Arrow", &stage.arrow, {.spec_enum = {COUNT_OF(arrow_strs), arrow_strs}}},
-				{OptType_Boolean, "Downscroll", &stage.downscroll, {.spec_boolean = {0}}},
-				{OptType_Boolean, "Middlescroll", &stage.middlescroll, {.spec_boolean = {0}}},
+				{OptType_Enum,    "Arrow", "select your type notes", &stage.arrow, {.spec_enum = {COUNT_OF(arrow_strs), arrow_strs}}},
+				{OptType_Boolean, "Downscroll","arrows like guitar hero", &stage.downscroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "Middlescroll", "put your notes in the center", &stage.middlescroll, {.spec_boolean = {0}}},
 			};
 
 			//Misc options
 			Options menu_mainoptions2[] = {
-				{OptType_Boolean, "Moviment Camera", &stage.movimentcamera, {.spec_boolean = {0}}},
-				{OptType_Boolean, "Movies", &stage.movies, {.spec_boolean = {0}}},
+				{OptType_Boolean, "Moviment Camera", "camera like psych engine", &stage.movimentcamera, {.spec_boolean = {0}}},
+				{OptType_Boolean, "Movies", "allow you see movies",&stage.movies, {.spec_boolean = {0}}},
 			};
 
 			static const struct
@@ -1404,7 +1400,10 @@ void Menu_Tick(void)
 			
 			//Initialize page
 			if (menu.page_swap)
+			{
+				menu.switchop = 0;
 				menu.scroll = COUNT_OF(menu_allop) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+			}
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -1480,6 +1479,17 @@ void Menu_Tick(void)
 	
 				Gfx_BlitTex(&menu.tex_extra, &l1_src, 0, 10);
 				Gfx_BlitTex(&menu.tex_extra, &r1_src, 290, 10);
+
+			//draw information
+				menu.font_arial.draw_col(&menu.font_arial,
+					menu_allop[menu.select].text2,
+					160,
+				    200,
+					FontAlign_Center,
+					0x80,
+					0x80,
+					0x80
+				);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
