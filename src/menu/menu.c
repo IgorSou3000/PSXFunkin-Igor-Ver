@@ -1543,7 +1543,7 @@ void Menu_Tick(void)
 				);
 			}
 			
-			//draw big square
+			//draw big floppa
 			RECT square_src = {26, 33, 270, 180};
 			Gfx_BlendRect(&square_src,111,111,111, 0);
 
