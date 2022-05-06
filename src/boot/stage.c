@@ -29,6 +29,8 @@
 
 u32 Stage_Sounds[4];
 
+//random color cuz yes
+u8 bot_randomr,bot_randomg,bot_randomb;
 
 //notes initialization
 void Note_Init(void)
@@ -1836,10 +1838,19 @@ void Stage_Tick(void)
 			{
 			RECT bot_fill = {172, 227, 67, 16};
 			RECT_FIXED bot_dst = {FIXED_DEC(-33,1), FIXED_DEC(-60,1), FIXED_DEC(67,1), FIXED_DEC(16,1)};
-				
+             
+			 //select a random color
+			if (stage.flag & STAGE_FLAG_JUST_STEP && ((stage.song_step & 0xF) == 0))
+			{
+			bot_randomr = RandomRange(0,255);
+			bot_randomg = RandomRange(0,255);
+			bot_randomb = RandomRange(0,255);
+			}
+
 			bot_dst.w = bot_fill.w << FIXED_SHIFT;
+			
 			if (animf_count & 20)
-			Stage_DrawTex(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump);
+			Stage_DrawTexCol(&stage.tex_huds, &bot_fill, &bot_dst, stage.bump,bot_randomr,bot_randomg,bot_randomb);
 			}
 
 			//health system for normal and swap mode

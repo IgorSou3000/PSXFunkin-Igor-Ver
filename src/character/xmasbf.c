@@ -98,14 +98,14 @@ static const CharFrame char_xmasbf_frame[] = {
 	{XmasBF_ArcMain_XmasBF4, {  0,   0,  93, 108}, { 52, 101}}, //20 left miss 1
 	{XmasBF_ArcMain_XmasBF4, { 94,   0,  93, 108}, { 52, 101}}, //21 left miss 2
 	
-	{XmasBF_ArcMain_XmasBF4, {  0, 109,  95,  98}, { 50,  90}}, //22 down miss 1
-	{XmasBF_ArcMain_XmasBF4, { 96, 109,  95,  97}, { 50,  89}}, //23 down miss 2
+	{XmasBF_ArcMain_XmasBF4, {  0, 110,  96, 100}, { 50,  90}}, //22 down miss 1
+	{XmasBF_ArcMain_XmasBF4, { 97, 110,  97,  99}, { 50,  89}}, //23 down miss 2
 	
 	{XmasBF_ArcMain_XmasBF5, {  0,   0,  90, 107}, { 44,  99}}, //24 up miss 1
 	{XmasBF_ArcMain_XmasBF5, { 91,   0,  89, 108}, { 44, 100}}, //25 up miss 2
 	
-	{XmasBF_ArcMain_XmasBF5, {  0, 108,  99, 108}, { 42, 101}}, //26 right miss 1
-	{XmasBF_ArcMain_XmasBF5, {100, 109, 101, 108}, { 43, 101}}, //27 right miss 2
+	{XmasBF_ArcMain_XmasBF5, {  0, 108, 100, 109}, { 42, 101}}, //26 right miss 1
+	{XmasBF_ArcMain_XmasBF5, {101, 110, 101, 109}, { 43, 101}}, //27 right miss 2
 
 	{XmasBF_ArcMain_Dead0, {  0,   0, 128, 128}, { 53,  98}}, //23 dead0 0
 	{XmasBF_ArcMain_Dead0, {128,   0, 128, 128}, { 53,  98}}, //24 dead0 1

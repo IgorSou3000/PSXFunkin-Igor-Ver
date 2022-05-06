@@ -41,28 +41,32 @@ typedef struct
 
 //MenuGF character definitions
 static const CharFrame char_menugf_frame[] = {
-	{MenuGF_ArcMain_MenuGF0, {  0,   0, 113, 101}, { 37,  72}}, //0 bop left 1
-	{MenuGF_ArcMain_MenuGF0, {112,   0, 113, 101}, { 37,  72}}, //1 bop left 2
-	{MenuGF_ArcMain_MenuGF0, {  0, 101, 113, 102}, { 37,  72}}, //2 bop left 3
-	{MenuGF_ArcMain_MenuGF0, {112, 102, 112, 102}, { 37,  72}}, //3 bop left 4
+	{MenuGF_ArcMain_MenuGF0, {  1,   0,  86,  78}, { 37,  72}}, //0 bop left 1
+	{MenuGF_ArcMain_MenuGF0, { 87,   0,  86,  78}, { 37,  72}}, //1 bop left 2
+	{MenuGF_ArcMain_MenuGF0, {  1,  82,  86,  78}, { 37,  72}}, //2 bop left 3
+	{MenuGF_ArcMain_MenuGF0, { 87,  82,  86,  78}, { 37,  72}}, //3 bop left 4
+	{MenuGF_ArcMain_MenuGF0, {  0, 164,  86,  79}, { 37,  73}}, //4 bop left 5
+	{MenuGF_ArcMain_MenuGF0, { 86, 164,  86,  79}, { 37,  73}}, //5 bop left 6
 	
-	{MenuGF_ArcMain_MenuGF1, {  0,   0, 112, 101}, { 37,  72}}, //4 bop right 1
-	{MenuGF_ArcMain_MenuGF1, {112,   0, 112, 101}, { 37,  72}}, //5 bop right 2
-	{MenuGF_ArcMain_MenuGF1, {  0, 101, 112, 102}, { 37,  72}}, //6 bop right 3
-	{MenuGF_ArcMain_MenuGF1, {112, 104, 112, 102}, { 37,  72}}, //7 bop right 4
+	{MenuGF_ArcMain_MenuGF1, {  3,   1,  85,  77}, { 36,  71}}, //6 bop right 1
+	{MenuGF_ArcMain_MenuGF1, { 88,   1,  86,  77}, { 37,  71}}, //7 bop right 2
+	{MenuGF_ArcMain_MenuGF1, {  2,  80,  86,  77}, { 37,  71}}, //8 bop right 3
+	{MenuGF_ArcMain_MenuGF1, { 88,  80,  86,  77}, { 37,  71}}, //9 bop right 4
+	{MenuGF_ArcMain_MenuGF1, {  2, 159,  86,  79}, { 37,  73}}, //10 bop right 5
+	{MenuGF_ArcMain_MenuGF1, { 88, 160,  86,  78}, { 37,  72}}, //11 bop right 6
 	
 };
 
 static const Animation char_menugf_anim[CharAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                        //CharAnim_Idle
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                                   //CharAnim_Left
-	{1, (const u8[]){ 0,  0,  1,  1,  2,  2,  3, ASCR_BACK, 1}}, //CharAnim_LeftAlt
+	{1, (const u8[]){ 0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5, ASCR_BACK, 1}}, //CharAnim_LeftAlt
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                                    //CharAnim_Down
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                          //CharAnim_DownAlt
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                                     //CharAnim_Up
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                                     //CharAnim_UpAlt
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_LeftAlt}},                                     //CharAnim_Right
-	{1, (const u8[]){ 4,  4,  5,  5,  6,  6,  3,  ASCR_BACK, 1}}, //CharAnim_RightAlt
+	{1, (const u8[]){6,  6,  7,  7,  8,  8,  9,  9, 10, 10, 11,  ASCR_BACK, 1}}, //CharAnim_RightAlt
 };
 
 //MenuGF character functions

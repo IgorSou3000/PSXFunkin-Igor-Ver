@@ -377,7 +377,7 @@ void Menu_Load2(MenuPage page)
 	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
 	menu.bf = Char_BF_New(FIXED_DEC(0,1), FIXED_DEC( 37,1));
 	menu.opponent = Char_MenuO_New(FIXED_DEC(-90,1), FIXED_DEC(114,1));
-	menu.menugf = Char_MenuGF_New(FIXED_DEC(90,1), FIXED_DEC(-15,1));
+	menu.menugf = Char_MenuGF_New(FIXED_DEC(90,1), FIXED_DEC(15,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;
 	stage.gf_speed = 4;
@@ -905,7 +905,7 @@ void Menu_Tick(void)
 			menu.font_arial.draw_col(&menu.font_arial,
 				menu_options[menu.select].name,
 				SCREEN_WIDTH - 8,
-				6,
+				16,
 				FontAlign_Right,
 				86,
 				80,
@@ -937,7 +937,7 @@ void Menu_Tick(void)
 			menu.menugf->tick(menu.menugf);
 			
 			//Draw upper strip
-			RECT name_bar = {0, 16, SCREEN_WIDTH, 128};
+			RECT name_bar = {0, 16+18, SCREEN_WIDTH, 110};
 			Gfx_DrawRect(&name_bar, 249, 207, 81);
 			
 			//Draw options
